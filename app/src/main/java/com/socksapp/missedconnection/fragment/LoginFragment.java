@@ -102,14 +102,7 @@ public class LoginFragment extends Fragment {
         auth.signInWithEmailAndPassword(mail, password)
             .addOnCompleteListener(task -> {
                 if(task.isSuccessful()) {
-                    if(user.isEmailVerified()){
-                        Intent intent = new Intent(view.getContext(), MainActivity.class);
-                        startActivity(intent);
-                        requireActivity().finish();
-                    }else {
-                        Toast.makeText(view.getContext(), "E-posta adresinizi doğrulamadınız.", Toast.LENGTH_SHORT).show();
-                        binding.confirmMail.setVisibility(View.VISIBLE);
-                    }
+                    userVerified(view);
                 } else {
                     Exception exception = task.getException();
                     if (exception instanceof FirebaseAuthInvalidUserException) {
@@ -133,5 +126,17 @@ public class LoginFragment extends Fragment {
                 }
             });
     }
+
+    private void userVerified(View view){
+        if(auth.getCurrentUser().isEmailVerified()){
+            Intent intent = new Intent(view.getContext(), MainActivity.class);
+            startActivity(intent);
+            requireActivity().finish();
+        }else {
+            Toast.makeText(view.getContext(), "E-posta adresinizi doğrulamadınız.", Toast.LENGTH_SHORT).show();
+            binding.confirmMail.setVisibility(View.VISIBLE);
+        }
+    }
+
 
 }

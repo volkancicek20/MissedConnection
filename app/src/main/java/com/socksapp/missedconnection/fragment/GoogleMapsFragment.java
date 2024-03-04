@@ -25,16 +25,21 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.FragmentFindBinding;
 import com.socksapp.missedconnection.databinding.FragmentGoogleMapsBinding;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
 
     private FragmentGoogleMapsBinding binding;
+    private FirebaseFirestore firestore;
     private GoogleMap mMap;
+    private String type;
 
     public GoogleMapsFragment() {
         // Required empty public constructor
@@ -43,11 +48,16 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        firestore = FirebaseFirestore.getInstance();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentGoogleMapsBinding.inflate(inflater,container,false);
+        Bundle args = getArguments();
+        if (args != null) {
+            type = args.getString("fragment_type");
+        }
         return binding.getRoot();
     }
 
@@ -106,7 +116,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
             markerOptions.position(latLng);
             markerOptions.title(latLng.latitude+" KG " + latLng.longitude);
             mMap.clear();
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,12));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
             mMap.addMarker(markerOptions);
             CircleOptions circleOptions = new CircleOptions();
             circleOptions.center(latLng);
@@ -116,6 +126,31 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
             circleOptions.strokeWidth(2);
             mMap.addCircle(circleOptions);
 
+            binding.saveLocation.setOnClickListener(v ->{
+
+            });
+
+            saveLocationWithRadius(latLng, 500);
+
         });
+    }
+
+    private void saveLocationWithRadius(LatLng center, double radius) {
+        Map<String, Object> locationData = new HashMap<>();
+        locationData.put("latitude", center.latitude);
+        locationData.put("longitude", center.longitude);
+        locationData.put("radius", radius);
+
+
+
+
+//        firestore.collection("savedLocations")
+//            .add(locationData)
+//            .addOnSuccessListener(documentReference -> {
+//
+//            })
+//            .addOnFailureListener(e -> {
+//
+//            });
     }
 }

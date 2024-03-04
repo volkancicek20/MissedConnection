@@ -87,9 +87,7 @@ public class RegisterFragment extends Fragment {
         auth.createUserWithEmailAndPassword(mail, password)
             .addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    if(user != null){
-                        sendEmailVerification(view);
-                    }
+                    sendEmailVerification(view);
                 } else {
                     Exception exception = task.getException();
                     if(exception instanceof FirebaseAuthUserCollisionException){
@@ -102,16 +100,14 @@ public class RegisterFragment extends Fragment {
     }
 
     private void sendEmailVerification(View view) {
-        if (user != null) {
-            user.sendEmailVerification()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(view.getContext(), "Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.", Toast.LENGTH_LONG).show();
-                    } else {
-                        Exception exception = task.getException();
-                        Toast.makeText(view.getContext(), "Doğrulama e-postası gönderilirken bir hata oluştu.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-        }
+        auth.getCurrentUser().sendEmailVerification()
+            .addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(view.getContext(), "Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.", Toast.LENGTH_LONG).show();
+                } else {
+                    Exception exception = task.getException();
+                    Toast.makeText(view.getContext(), "Doğrulama e-postası gönderilirken bir hata oluştu.", Toast.LENGTH_SHORT).show();
+                }
+            });
     }
 }

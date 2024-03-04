@@ -4,6 +4,7 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static androidx.core.content.ContextCompat.getSystemService;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.graphics.Color;
@@ -28,6 +29,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -38,6 +40,7 @@ import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClic
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.FragmentFindBinding;
 
+import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -116,21 +119,7 @@ public class FindFragment extends Fragment {
         });
 
         binding.openDate.setOnClickListener(v ->{
-            MaterialDatePicker<Pair<Long,Long>> materialDatePicker = MaterialDatePicker.Builder.dateRangePicker().setSelection(new Pair<>(
-                    MaterialDatePicker.thisMonthInUtcMilliseconds(),
-                    MaterialDatePicker.todayInUtcMilliseconds()
-            )).build();
-            materialDatePicker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Pair<Long, Long>>() {
-                @Override
-                public void onPositiveButtonClick(Pair<Long, Long> selection) {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("tr", "TR"));
-                    String date1 = dateFormat.format(new Date(selection.first));
-                    String date2 = dateFormat.format(new Date(selection.second));
-                    String mergeDate = date1 + " - " + date2;
-                    binding.dateText.setText(mergeDate);
-                }
-            });
-            materialDatePicker.show(getChildFragmentManager(),"tag");
+            showCustomDateDialog(v);
         });
 
         binding.openTime.setOnClickListener(v ->{
@@ -138,7 +127,9 @@ public class FindFragment extends Fragment {
         });
 
         binding.mapView.setOnClickListener(v -> {
-            Navigation.findNavController(v).navigate(R.id.action_findFragment_to_googleMapsFragment);
+            Bundle args = new Bundle();
+            args.putString("fragment_type", "find_post");
+            Navigation.findNavController(v).navigate(R.id.action_findFragment_to_googleMapsFragment,args);
         });
     }
 
@@ -216,6 +207,81 @@ public class FindFragment extends Fragment {
         dialog.show();
     }
 
+    private void showCustomDateDialog(View view) {
+        Dialog dialog = new Dialog(view.getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.start_and_end_date_layout);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT);
+
+        Button first = dialog.findViewById(R.id.firstDate);
+        Button second = dialog.findViewById(R.id.secondDate);
+        Button save = dialog.findViewById(R.id.saveDate);
+        TextView firstText = dialog.findViewById(R.id.firstDateText);
+        TextView secondText = dialog.findViewById(R.id.secondDateText);
+
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int dayOfMonth = calendar.get(Calendar.DAY_OF_MONTH);
+
+        first.setOnClickListener(v ->{
+            DatePickerDialog datePickerDialog = new DatePickerDialog(v.getContext(),
+                    new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            String monthName = new DateFormatSymbols(new Locale("tr")).getMonths()[month];
+                            String selectedDate = dayOfMonth + " " + monthName + " " + year;
+                            firstText.setText(selectedDate);
+                        }
+                    }, year, month, dayOfMonth);
+
+            datePickerDialog.show();
+        });
+
+        second.setOnClickListener(v ->{
+            DatePickerDialog datePickerDialog = new DatePickerDialog(v.getContext(),
+                    new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            String monthName = new DateFormatSymbols(new Locale("tr")).getMonths()[month];
+                            String selectedDate = dayOfMonth + " " + monthName + " " + year;
+                            secondText.setText(selectedDate);
+                        }
+                    }, year, month, dayOfMonth);
+
+            datePickerDialog.show();
+        });
+
+        save.setOnClickListener(v ->{
+            String firstDate = firstText.getText().toString();
+            String secondDate = secondText.getText().toString();
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy", new Locale("tr"));
+            try {
+                Date date1 = sdf.parse(firstDate);
+                Date date2 = sdf.parse(secondDate);
+                int comparisonResult = date1.compareTo(date2);
+
+                if (comparisonResult < 0) {
+                    String dateRange = firstDate + " - " + secondDate;
+                    binding.dateText.setText(dateRange);
+                    dialog.dismiss();
+                } else if (comparisonResult > 0) {
+                    Toast.makeText(v.getContext(), "Bitiş tarihi başlangıç tarihinden önce olamaz!", Toast.LENGTH_LONG).show();
+                } else {
+                    String dateRange = firstDate + " - " + secondDate;
+                    binding.dateText.setText(dateRange);
+                    dialog.dismiss();
+                }
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        dialog.show();
+    }
 
     private void selectDistrict(String selectedCity){
         switch (selectedCity){
