@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "448118223678",
+    "project_id": "missedconnection-c000f",
+    "storage_bucket": "missedconnection-c000f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448118223678:android:c132042b9ede5961a3f26f",
+        "android_client_info": {
+          "package_name": "com.socksapp.missedconnection"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBsLYtq-CHQhP3VjZEmbtjKztyMFynX2Y0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

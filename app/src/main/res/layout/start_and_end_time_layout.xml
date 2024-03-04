@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:elevation="10dp"
+    android:background="#4A4C9A"
+    android:layout_gravity="center"
+    android:gravity="center">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/firstTime"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_button_date_background"
+            android:text="Başlangıç"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:layout_margin="16dp"
+            android:padding="1dp"
+            android:textAllCaps="false" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/secondTime"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@drawable/edit_button_date_background"
+            android:text="Bitiş"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:layout_margin="16dp"
+            android:padding="1dp"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/firstTimeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="17:30"
+            android:layout_marginHorizontal="16dp"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="16sp"
+            />
+
+        <TextView
+            android:id="@+id/secondTimeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="18:30"
+            android:layout_marginHorizontal="16dp"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="16sp"
+            />
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/saveTime"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Kaydet"
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:background="@drawable/edit_time_button_background"
+        android:layout_marginTop="40dp"
+        android:layout_marginHorizontal="16dp"/>
+
+
+</LinearLayout>
