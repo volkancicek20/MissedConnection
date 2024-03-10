@@ -129,27 +129,36 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toEndOf="@id/down_arrow_maps"/>
 
-
-
-                    <androidx.cardview.widget.CardView
+                    <com.google.android.gms.maps.MapView
                         android:id="@+id/mapView"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:cardCornerRadius="10dp"
+                        android:layout_height="100dp"
                         android:layout_margin="16dp"
-                        android:visibility="gone"
                         app:layout_constraintTop_toBottomOf="@id/google_map_text_view"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent">
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        />
 
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="100dp"
-                            android:background="@drawable/istanbul"
-                            android:contentDescription="Google Haritalar" />
+<!--                    <androidx.cardview.widget.CardView-->
+<!--                        android:id="@+id/mapView"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        app:cardCornerRadius="10dp"-->
+<!--                        android:layout_margin="16dp"-->
+<!--                        android:visibility="visible"-->
+<!--                        app:layout_constraintTop_toBottomOf="@id/google_map_text_view"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintBottom_toBottomOf="parent">-->
 
-                    </androidx.cardview.widget.CardView>
+<!--                        <ImageView-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="100dp"-->
+<!--                            android:background="@drawable/istanbul"-->
+<!--                            android:contentDescription="Google Haritalar" />-->
+
+<!--                    </androidx.cardview.widget.CardView>-->
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -296,7 +305,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="4dp"
                         android:orientation="horizontal"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
@@ -338,7 +347,7 @@
             </com.google.android.material.card.MaterialCardView>
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/add_post"
+                android:id="@+id/find_post"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"

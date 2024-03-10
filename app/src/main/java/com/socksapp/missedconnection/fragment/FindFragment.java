@@ -35,10 +35,16 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.FragmentFindBinding;
+import com.socksapp.missedconnection.model.FindPost;
 
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
@@ -54,6 +60,7 @@ public class FindFragment extends Fragment {
     private String[] cityNames,districtNames;
     private ArrayAdapter<String> cityAdapter,districtAdapter;
     private AutoCompleteTextView cityCompleteTextView,districtCompleteTextView;
+    public static Double lat,lng;
 
     public FindFragment() {
         // Required empty public constructor
@@ -62,6 +69,8 @@ public class FindFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        lat = 0.0;
+        lng = 0.0;
     }
 
     @Override
@@ -74,10 +83,12 @@ public class FindFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        binding.mapView.onCreate(savedInstanceState);
         cityNames = getResources().getStringArray(R.array.city_names);
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
         cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
         cityCompleteTextView.setAdapter(cityAdapter);
+
         binding.cityCompleteText.setOnItemClickListener((parent, view1, position, id) -> {
             String selectedCity = parent.getItemAtPosition(position).toString();
             binding.districtCompleteText.setText("");
@@ -92,7 +103,6 @@ public class FindFragment extends Fragment {
             }else {
                 binding.visibleDatePicker.setVisibility(View.GONE);
             }
-
             return false;
         });
 
@@ -130,6 +140,53 @@ public class FindFragment extends Fragment {
             Bundle args = new Bundle();
             args.putString("fragment_type", "find_post");
             Navigation.findNavController(v).navigate(R.id.action_findFragment_to_googleMapsFragment,args);
+        });
+
+        binding.findPost.setOnClickListener(v ->{
+            Double latitude = lat;
+            Double longitude = lng;
+            String city = binding.cityCompleteText.getText().toString();
+            String district = binding.districtCompleteText.getText().toString();
+            String place = binding.place.getText().toString();
+            String date = binding.dateText.getText().toString();
+            String time = binding.timeText.getText().toString();
+
+            if(!city.isEmpty() && !district.isEmpty()){
+                FindPost findPost = new FindPost();
+                findPost.city = city;
+                findPost.district = district;
+                if(!place.isEmpty()){
+                    findPost.place = place;
+                }else {
+                    findPost.place = "";
+                }
+                findPost.date = date;
+                findPost.time = time;
+                if(latitude != 0 && longitude != 0){
+                    findPost.lat = latitude;
+                }else {
+                   findPost.lng = longitude;
+                }
+            }else {
+
+            }
+
+        });
+
+        binding.mapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull GoogleMap googleMap) {
+                // Harita hazır olduğunda yapılacak işlemler buraya yazılır
+
+                // Belirlediğiniz koordinatları oluşturun
+                LatLng location = new LatLng(40.7128, -74.0060); // Örnek: New York koordinatları
+
+                // Haritayı hareket ettir ve zoom yap
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 10)); // Zoom seviyesi 10
+
+                // İşaretçi ekle (isteğe bağlı)
+                googleMap.addMarker(new MarkerOptions().position(location).title("New York City")); // İşaretçi başlığı
+            }
         });
     }
 
@@ -776,4 +833,15 @@ public class FindFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        binding.mapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        binding.mapView.onPause();
+    }
 }

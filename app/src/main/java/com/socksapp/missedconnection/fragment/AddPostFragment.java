@@ -46,6 +46,7 @@ public class AddPostFragment extends Fragment {
     private String[] cityNames,districtNames;
     private ArrayAdapter<String> cityAdapter,districtAdapter;
     private AutoCompleteTextView cityCompleteTextView,districtCompleteTextView;
+    public static Double lat,lng;
 
     public AddPostFragment() {
         // Required empty public constructor
@@ -122,6 +123,10 @@ public class AddPostFragment extends Fragment {
             Bundle args = new Bundle();
             args.putString("fragment_type", "add_post");
             Navigation.findNavController(v).navigate(R.id.action_addPostFragment_to_googleMapsFragment,args);
+        });
+
+        binding.addPost.setOnClickListener(v ->{
+
         });
     }
 

@@ -7,9 +7,27 @@ public class AddPost {
     public String date;
     public String time;
     public String explain;
+    public Double lat;
+    public Double lng;
 
     public AddPost(){
 
+    }
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLng() {
+        return lng;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
     }
 
     public String getDate() {

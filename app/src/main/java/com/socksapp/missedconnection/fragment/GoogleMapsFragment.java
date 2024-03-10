@@ -141,8 +141,14 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
         locationData.put("longitude", center.longitude);
         locationData.put("radius", radius);
 
+        if(type.equals("find_post")){
+            FindFragment.lat = center.latitude;
+            FindFragment.lng = center.longitude;
+        } else if (type.equals("add_post")) {
 
+        }else {
 
+        }
 
 //        firestore.collection("savedLocations")
 //            .add(locationData)
