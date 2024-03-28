@@ -7,16 +7,21 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainerView;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -44,6 +49,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.socksapp.missedconnection.R;
+import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentFindBinding;
 import com.socksapp.missedconnection.model.FindPost;
 
@@ -62,6 +68,7 @@ public class FindFragment extends Fragment {
     private AutoCompleteTextView cityCompleteTextView,districtCompleteTextView;
     public static Double lat,lng;
     private int mYear,mMonth,mDay;
+    private MainActivity mainActivity;
 
     public FindFragment() {
         // Required empty public constructor
@@ -84,6 +91,7 @@ public class FindFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         binding.mapView.onCreate(savedInstanceState);
         cityNames = getResources().getStringArray(R.array.city_names);
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
@@ -172,15 +180,18 @@ public class FindFragment extends Fragment {
                     public void onMapClick(@NonNull LatLng latLng) {
                         Bundle args = new Bundle();
                         args.putString("fragment_type", "find_post");
-                        Navigation.findNavController(view).navigate(R.id.action_findFragment_to_googleMapsFragment,args);
+                        GoogleMapsFragment myFragment = new GoogleMapsFragment();
+                        myFragment.setArguments(args);
+                        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
                     }
                 });
             }
         });
 
-
     }
-
 
     private void showCustomTimeDialog(View view) {
         final Calendar currentTime = Calendar.getInstance();
@@ -722,5 +733,13 @@ public class FindFragment extends Fragment {
     public void onPause() {
         super.onPause();
         binding.mapView.onPause();
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof MainActivity) {
+            mainActivity = (MainActivity) context;
+        }
     }
 }

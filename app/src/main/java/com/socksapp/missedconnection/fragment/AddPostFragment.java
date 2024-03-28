@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 
 import android.view.LayoutInflater;
@@ -129,7 +130,12 @@ public class AddPostFragment extends Fragment {
                     public void onMapClick(@NonNull LatLng latLng) {
                         Bundle args = new Bundle();
                         args.putString("fragment_type", "add_post");
-                        Navigation.findNavController(view).navigate(R.id.action_addPostFragment_to_googleMapsFragment,args);
+                        GoogleMapsFragment myFragment = new GoogleMapsFragment();
+                        myFragment.setArguments(args);
+                        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
                     }
                 });
             }
