@@ -126,7 +126,21 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
             binding.slider.setVisibility(View.VISIBLE);
             MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
-            markerOptions.title(latLng.latitude+" KG " + latLng.longitude);
+
+            try {
+                Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
+                List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                String streetAddress = "";
+                if (addresses != null && addresses.size() > 0) {
+                    Address address = addresses.get(0);
+                    streetAddress = address.getAddressLine(0);
+                }
+                markerOptions.title(streetAddress);
+            }catch (Exception e){
+                markerOptions.title(latLng.latitude + " / " + latLng.longitude);
+                e.printStackTrace();
+            }
+
             mMap.clear();
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
             mMap.addMarker(markerOptions);
@@ -141,18 +155,22 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
             circleOptions.strokeColor(Color.BLACK);
             circleOptions.fillColor(0x30ff0000);
             circleOptions.strokeWidth(2);
-//            mMap.addCircle(circleOptions);
             currentCircle = mMap.addCircle(circleOptions);
-
-            binding.saveLocation.setOnClickListener(v ->{
-
-            });
-            saveLocationWithRadius(latLng, 500);
         });
 
         binding.slider.addOnChangeListener((slider, value, fromUser) -> {
             if (currentCircle != null && fromUser) {
                 currentCircle.setRadius(value);
+            }
+        });
+
+        binding.saveLocation.setOnClickListener(v ->{
+//            saveLocationWithRadius(customLatLng, (int) binding.slider.getValue());
+            if (customLatLng != null) {
+                saveLocationWithRadius(customLatLng, (int) binding.slider.getValue());
+            } else {
+                // Haritaya tıklama yapılmadı, kullanıcıya uyarı verilebilir veya işlem iptal edilebilir.
+                Toast.makeText(requireContext(), "Haritaya tıklama yapmadınız.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -179,7 +197,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-    private void saveLocationWithRadius(LatLng center, double radius) {
+    private void saveLocationWithRadius(LatLng center, int radius) {
         Map<String, Object> locationData = new HashMap<>();
         locationData.put("latitude", center.latitude);
         locationData.put("longitude", center.longitude);
@@ -189,18 +207,19 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
             FindFragment.lat = center.latitude;
             FindFragment.lng = center.longitude;
         } else if (type.equals("add_post")) {
-
-        }else {
-
+            AddPostFragment.lat = center.latitude;
+            AddPostFragment.lng = center.longitude;
         }
+
+        requireActivity().getSupportFragmentManager().popBackStack();
 
 //        firestore.collection("savedLocations")
 //            .add(locationData)
 //            .addOnSuccessListener(documentReference -> {
-//
+//                Toast.makeText(requireContext(),"Yüklendi",Toast.LENGTH_LONG).show();
 //            })
 //            .addOnFailureListener(e -> {
-//
+//                Toast.makeText(requireContext(),e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
 //            });
     }
 

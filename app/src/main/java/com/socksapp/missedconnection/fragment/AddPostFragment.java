@@ -65,6 +65,8 @@ public class AddPostFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        lat = 0.0;
+        lng = 0.0;
     }
 
     @Override
@@ -85,6 +87,7 @@ public class AddPostFragment extends Fragment {
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
         cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
         cityCompleteTextView.setAdapter(cityAdapter);
+
         binding.cityCompleteText.setOnItemClickListener((parent, view1, position, id) -> {
             String selectedCity = parent.getItemAtPosition(position).toString();
             binding.districtCompleteText.setText("");
@@ -134,14 +137,20 @@ public class AddPostFragment extends Fragment {
                 googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(@NonNull LatLng latLng) {
-                        Bundle args = new Bundle();
-                        args.putString("fragment_type", "add_post");
-                        GoogleMapsFragment myFragment = new GoogleMapsFragment();
-                        myFragment.setArguments(args);
-                        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
-                        fragmentTransaction.addToBackStack(null);
-                        fragmentTransaction.commit();
+                        String city = binding.cityCompleteText.getText().toString();
+                        String district = binding.districtCompleteText.getText().toString();
+                        if(!city.isEmpty() && !district.isEmpty()){
+                            Bundle args = new Bundle();
+                            args.putString("fragment_type", "add_post");
+                            GoogleMapsFragment myFragment = new GoogleMapsFragment();
+                            myFragment.setArguments(args);
+                            FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                            fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
+                            fragmentTransaction.addToBackStack(null);
+                            fragmentTransaction.commit();
+                        }else {
+                            Toast.makeText(requireContext(),"İl ve ilçeyi girmeniz gerekmektedir",Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
@@ -686,6 +695,10 @@ public class AddPostFragment extends Fragment {
     public void onResume() {
         super.onResume();
         binding.mapView.onResume();
+        cityNames = getResources().getStringArray(R.array.city_names);
+        cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
+        cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
+        cityCompleteTextView.setAdapter(cityAdapter);
     }
 
     @Override

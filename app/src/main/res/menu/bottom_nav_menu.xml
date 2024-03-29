@@ -12,19 +12,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/icon_search"
-        android:title="Kullanıcı Bul" />
+        android:title="Bul" />
     <item
         android:id="@+id/navAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/icon_add"
-        android:title="Gönderi Ekle" />
+        android:title="Ekle" />
     <item
         android:id="@+id/navProfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:icon="@drawable/icon_person"
-        android:title="Profilim" />
+        android:title="Profil" />
     <item
         android:id="@+id/navSettings"
         android:layout_width="wrap_content"
