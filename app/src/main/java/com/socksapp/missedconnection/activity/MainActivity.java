@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences userDone;
     private String userMail;
     public FragmentContainerView fragmentContainerView;
+    public BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
+        bottomNavigationView = binding.bottomNavView;
+
         nameShared = getSharedPreferences("Name", Context.MODE_PRIVATE);
         imageUrlShared = getSharedPreferences("ImageUrl", Context.MODE_PRIVATE);
 
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentContainerView = findViewById(R.id.fragmentContainerView2);
 
-        binding.bottomNavView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int itemId = item.getItemId();

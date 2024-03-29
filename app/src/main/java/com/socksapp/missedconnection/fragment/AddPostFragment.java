@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -36,6 +37,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.socksapp.missedconnection.R;
+import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentAddPostBinding;
 
 import java.text.DateFormatSymbols;
@@ -54,6 +56,7 @@ public class AddPostFragment extends Fragment {
     private AutoCompleteTextView cityCompleteTextView,districtCompleteTextView;
     public static Double lat,lng;
     private int mYear,mMonth,mDay;
+    private MainActivity mainActivity;
 
     public AddPostFragment() {
         // Required empty public constructor
@@ -75,6 +78,9 @@ public class AddPostFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         binding.mapView.onCreate(savedInstanceState);
+
+        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+
         cityNames = getResources().getStringArray(R.array.city_names);
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
         cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
@@ -686,5 +692,13 @@ public class AddPostFragment extends Fragment {
     public void onPause() {
         super.onPause();
         binding.mapView.onPause();
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof MainActivity) {
+            mainActivity = (MainActivity) context;
+        }
     }
 }

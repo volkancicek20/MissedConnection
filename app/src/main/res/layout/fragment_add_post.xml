@@ -60,32 +60,6 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/place_text_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:hint="Mekan"
-                app:helperText="Ör: AVM,Park,Kafe vb. isimleri"
-                android:textColorHint="@color/black"
-                app:counterTextColor="@color/white"
-                app:hintTextColor="@color/black"
-                app:layout_constraintTop_toBottomOf="@id/district_text_input"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                >
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/place"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textColorHint="@color/black"
-                    >
-                </com.google.android.material.textfield.TextInputEditText>
-            </com.google.android.material.textfield.TextInputLayout>
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/map_card_view"
                 android:layout_width="match_parent"
@@ -94,7 +68,7 @@
                 app:cardCornerRadius="5dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/place_text_input">
+                app:layout_constraintTop_toBottomOf="@id/district_text_input">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/mapView_constraint_layout"
@@ -134,6 +108,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
                         android:layout_margin="16dp"
+                        android:visibility="gone"
                         app:layout_constraintTop_toBottomOf="@id/google_map_text_view"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -145,6 +120,32 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/place_text_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:hint="Mekan"
+                app:helperText="Ör: AVM,Park,Kafe vb. isimleri"
+                android:textColorHint="@color/black"
+                app:counterTextColor="@color/white"
+                app:hintTextColor="@color/black"
+                app:layout_constraintTop_toBottomOf="@id/map_card_view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                >
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/place"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textColorHint="@color/black"
+                    >
+                </com.google.android.material.textfield.TextInputEditText>
+            </com.google.android.material.textfield.TextInputLayout>
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/date_card_view"
                 android:layout_width="match_parent"
@@ -152,7 +153,7 @@
                 android:layout_margin="16dp"
                 android:elevation="20dp"
                 app:cardCornerRadius="5dp"
-                app:layout_constraintTop_toBottomOf="@id/map_card_view"
+                app:layout_constraintTop_toBottomOf="@id/place_text_input"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 

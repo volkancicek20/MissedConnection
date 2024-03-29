@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.socksapp.missedconnection"
-        minSdk 24
+        minSdk 23
         targetSdk 34
         versionCode 1
         versionName "1.0"
@@ -52,7 +52,7 @@ dependencies {
 
     //google
     implementation("com.google.android.gms:play-services-maps:18.2.0")
-
+    implementation ("com.google.maps:google-maps-services:0.15.0")
 
     //others
     implementation 'com.github.denzcoskun:ImageSlideshow:0.1.2'

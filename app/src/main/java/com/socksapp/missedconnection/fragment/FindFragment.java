@@ -93,6 +93,9 @@ public class FindFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         binding.mapView.onCreate(savedInstanceState);
+
+        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+
         cityNames = getResources().getStringArray(R.array.city_names);
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
         cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
@@ -178,14 +181,22 @@ public class FindFragment extends Fragment {
                 googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(@NonNull LatLng latLng) {
-                        Bundle args = new Bundle();
-                        args.putString("fragment_type", "find_post");
-                        GoogleMapsFragment myFragment = new GoogleMapsFragment();
-                        myFragment.setArguments(args);
-                        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
-                        fragmentTransaction.addToBackStack(null);
-                        fragmentTransaction.commit();
+                        String city = binding.cityCompleteText.getText().toString();
+                        String district = binding.districtCompleteText.getText().toString();
+                        if(!city.isEmpty() && !district.isEmpty()){
+                            Bundle args = new Bundle();
+                            args.putString("fragment_type", "find_post");
+                            args.putString("fragment_city", city);
+                            args.putString("fragment_district", district);
+                            GoogleMapsFragment myFragment = new GoogleMapsFragment();
+                            myFragment.setArguments(args);
+                            FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                            fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
+                            fragmentTransaction.addToBackStack(null);
+                            fragmentTransaction.commit();
+                        }else {
+                            Toast.makeText(requireContext(),"İl ve ilçeyi girmeniz gerekmektedir",Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
@@ -727,6 +738,10 @@ public class FindFragment extends Fragment {
     public void onResume() {
         super.onResume();
         binding.mapView.onResume();
+        cityNames = getResources().getStringArray(R.array.city_names);
+        cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
+        cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
+        cityCompleteTextView.setAdapter(cityAdapter);
     }
 
     @Override
