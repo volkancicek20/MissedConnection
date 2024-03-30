@@ -198,7 +198,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent">
@@ -209,24 +209,53 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="100dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
-                                android:text="Ne Zaman?"
+                                android:text="Tarih Aralığı"
                                 android:textColor="@color/black"
                                 android:textSize="14sp"
                                 android:layout_gravity="center"
                                 />
 
                             <EditText
-                                android:id="@+id/date_edit_text"
-                                android:layout_width="match_parent"
+                                android:id="@+id/date_edit_text1"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="1"
                                 android:hint="GG/AA/YYYY"
                                 android:inputType="date"
                                 android:gravity="center"
+                                android:textSize="12sp"
                                 android:layout_gravity="center"
-                                android:layout_margin="16dp"/>
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginBottom="16dp"
+                                android:text="-"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <EditText
+                                android:id="@+id/date_edit_text2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:hint="GG/AA/YYYY"
+                                android:inputType="date"
+                                android:gravity="center"
+                                android:textSize="12sp"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginStart="8dp"/>
 
                         </LinearLayout>
 
@@ -236,24 +265,53 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:layout_width="wrap_content"
+                                android:layout_width="100dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
-                                android:text="Saat Kaçta?"
+                                android:text="Saat Aralığı"
                                 android:textColor="@color/black"
                                 android:textSize="14sp"
                                 android:layout_gravity="center"
                                 />
 
                             <EditText
-                                android:id="@+id/time_edit_text"
-                                android:layout_width="match_parent"
+                                android:id="@+id/time_edit_text1"
+                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
+                                android:textSize="12sp"
+                                android:layout_weight="1"
                                 android:hint="SS:DD"
                                 android:inputType="time"
                                 android:gravity="center"
                                 android:layout_gravity="center"
-                                android:layout_margin="16dp"/>
+                                android:layout_marginStart="16dp"
+                                android:layout_marginEnd="8dp"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginBottom="16dp"
+                                android:text="-"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+
+                            <EditText
+                                android:id="@+id/time_edit_text2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="12sp"
+                                android:layout_weight="1"
+                                android:hint="SS:DD"
+                                android:inputType="time"
+                                android:gravity="center"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginStart="8dp"/>
 
                         </LinearLayout>
 

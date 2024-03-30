@@ -105,13 +105,14 @@ public class ProfileFragment extends Fragment {
 
         binding.saveProfile.setOnClickListener(this::saveProfile);
 
-        binding.nameTextInputLayout.setEndIconOnLongClickListener(v -> {
+        binding.nameTextInputLayout.setEndIconOnClickListener(v ->{
             binding.nameEdittext.setEnabled(true);
             binding.nameEdittext.requestFocus();
             binding.nameTextInputLayout.setEndIconVisible(false);
-            return false;
         });
+
     }
+
 
     private void saveProfile(View view){
 
@@ -120,6 +121,7 @@ public class ProfileFragment extends Fragment {
         boolean nameCheck;
 
         nameCheck = !nameString.isEmpty();
+
 
         uploadProfile(view,nameString,nameCheck);
 
@@ -135,8 +137,17 @@ public class ProfileFragment extends Fragment {
         if (imageData != null) {
 
             if(nameCheck){
-                updates.put("name", uploadName);
-                batch.set(usersRef, updates, SetOptions.merge());
+                if(!nameShared.getString("name","").isEmpty()){
+                    if(!uploadName.equals(myUserName)){
+                        updates.put("name", uploadName);
+                        batch.set(usersRef, updates, SetOptions.merge());
+                    }else {
+
+                    }
+                }else {
+                    updates.put("name", uploadName);
+                    batch.set(usersRef, updates, SetOptions.merge());
+                }
             }
 
             storageReference.child("userProfilePhoto").child(userMail).putFile(imageData)
@@ -165,21 +176,39 @@ public class ProfileFragment extends Fragment {
                 });
 
         } else {
+
+            boolean checkCommit = true;
+
             if(nameCheck){
-                updates.put("name", uploadName);
-                batch.set(usersRef, updates,SetOptions.merge());
+                if(!nameShared.getString("name","").isEmpty()){
+                    if(!uploadName.equals(myUserName)){
+                        updates.put("name", uploadName);
+                        batch.set(usersRef, updates, SetOptions.merge());
+                    }else {
+                        checkCommit = false;
+                    }
+                }else {
+                    updates.put("name", uploadName);
+                    batch.set(usersRef, updates, SetOptions.merge());
+                }
+            }else {
+                checkCommit = false;
             }
 
-            batch.commit()
-                .addOnSuccessListener(aVoid -> {
-                    progressDialog.dismiss();
-                    updateProfile(nameCheck,uploadName);
-                    showToastShort("Profiliniz kaydedildi");
-                })
-                .addOnFailureListener(e -> {
-                    progressDialog.dismiss();
-                    showErrorMessage(view.getContext(), e.getLocalizedMessage());
-                });
+            if(checkCommit){
+                batch.commit()
+                    .addOnSuccessListener(aVoid -> {
+                        progressDialog.dismiss();
+                        updateProfile(nameCheck,uploadName);
+                        showToastShort("Profiliniz kaydedildi");
+                    })
+                    .addOnFailureListener(e -> {
+                        progressDialog.dismiss();
+                        showErrorMessage(view.getContext(), e.getLocalizedMessage());
+                    });
+            }else {
+                progressDialog.dismiss();
+            }
 
         }
     }
@@ -216,14 +245,13 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-
     private void setImage(View view) {
         String[] permissions;
         String rationaleMessage;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             permissions = new String[]{Manifest.permission.READ_MEDIA_IMAGES};
-        } else {
+        }else {
             permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
         }
 
@@ -254,15 +282,25 @@ public class ProfileFragment extends Fragment {
                     Intent intentForResult = result.getData();
                     if(intentForResult != null){
                         imageData = intentForResult.getData();
-                        try {
-                            InputStream inputStream = view.getContext().getContentResolver().openInputStream(imageData);
-                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                            binding.profileImage.setImageBitmap(bitmap);
-                            if (inputStream != null) {
-                                inputStream.close();
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                            try {
+                                ImageDecoder.Source source = ImageDecoder.createSource(view.getContext().getContentResolver(),imageData);
+                                selectedBitmap = ImageDecoder.decodeBitmap(source);
+                                binding.profileImage.setImageBitmap(selectedBitmap);
+                            }catch (Exception e){
+                                e.printStackTrace();
                             }
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        }else {
+                            try {
+                                InputStream inputStream = view.getContext().getContentResolver().openInputStream(imageData);
+                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                binding.profileImage.setImageBitmap(bitmap);
+                                if (inputStream != null) {
+                                    inputStream.close();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
 
                     }
@@ -304,6 +342,7 @@ public class ProfileFragment extends Fragment {
         }else {
             binding.profileImage.setImageResource(R.drawable.icon_person);
         }
+
     }
 
     public void showToastShort(String message){

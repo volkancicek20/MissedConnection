@@ -42,6 +42,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
     private MainActivity mainActivity;
     private LatLng customLatLng;
     private Circle currentCircle;
+    private int radius;
 
     public GoogleMapsFragment() {
         // Required empty public constructor
@@ -121,6 +122,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
         loadCoordinate();
 
         mMap.setOnMapClickListener(latLng -> {
+            radius = 100;
             customLatLng = new LatLng(latLng.latitude,latLng.longitude);
             binding.slider.setValue(100);
             binding.slider.setVisibility(View.VISIBLE);
@@ -160,16 +162,15 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
 
         binding.slider.addOnChangeListener((slider, value, fromUser) -> {
             if (currentCircle != null && fromUser) {
+                radius = (int) value;
                 currentCircle.setRadius(value);
             }
         });
 
         binding.saveLocation.setOnClickListener(v ->{
-//            saveLocationWithRadius(customLatLng, (int) binding.slider.getValue());
             if (customLatLng != null) {
                 saveLocationWithRadius(customLatLng, (int) binding.slider.getValue());
             } else {
-                // Haritaya tıklama yapılmadı, kullanıcıya uyarı verilebilir veya işlem iptal edilebilir.
                 Toast.makeText(requireContext(), "Haritaya tıklama yapmadınız.", Toast.LENGTH_SHORT).show();
             }
         });
@@ -198,29 +199,19 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
 
 
     private void saveLocationWithRadius(LatLng center, int radius) {
-        Map<String, Object> locationData = new HashMap<>();
-        locationData.put("latitude", center.latitude);
-        locationData.put("longitude", center.longitude);
-        locationData.put("radius", radius);
 
         if(type.equals("find_post")){
+            FindFragment.rad = radius;
             FindFragment.lat = center.latitude;
             FindFragment.lng = center.longitude;
         } else if (type.equals("add_post")) {
+            AddPostFragment.rad = radius;
             AddPostFragment.lat = center.latitude;
             AddPostFragment.lng = center.longitude;
         }
 
         requireActivity().getSupportFragmentManager().popBackStack();
 
-//        firestore.collection("savedLocations")
-//            .add(locationData)
-//            .addOnSuccessListener(documentReference -> {
-//                Toast.makeText(requireContext(),"Yüklendi",Toast.LENGTH_LONG).show();
-//            })
-//            .addOnFailureListener(e -> {
-//                Toast.makeText(requireContext(),e.getLocalizedMessage(),Toast.LENGTH_LONG).show();
-//            });
     }
 
     @Override

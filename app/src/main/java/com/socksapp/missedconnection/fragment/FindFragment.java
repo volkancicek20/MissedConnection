@@ -67,8 +67,9 @@ public class FindFragment extends Fragment {
     private ArrayAdapter<String> cityAdapter,districtAdapter;
     private AutoCompleteTextView cityCompleteTextView,districtCompleteTextView;
     public static Double lat,lng;
-    private DatePickerDialog datePickerDialog;
-    private TimePickerDialog timePickerDialog;
+    public static int rad;
+    private DatePickerDialog datePickerDialog,datePickerDialog2;
+    private TimePickerDialog timePickerDialog,timePickerDialog2;
     private int mYear,mMonth,mDay;
     private MainActivity mainActivity;
 
@@ -81,6 +82,7 @@ public class FindFragment extends Fragment {
         super.onCreate(savedInstanceState);
         lat = 0.0;
         lng = 0.0;
+        rad = 100;
     }
 
     @Override
@@ -131,54 +133,35 @@ public class FindFragment extends Fragment {
             return false;
         });
 
-        binding.dateEditText.setOnTouchListener((v, event) -> {
-            showCustomDateDialog(v);
+        binding.dateEditText1.setOnTouchListener((v, event) -> {
+            showCustomDateDialog1(v);
             return false;
         });
 
-        binding.timeEditText.setOnTouchListener((v, event) -> {
-            showCustomTimeDialog(v);
+        binding.timeEditText1.setOnTouchListener((v, event) -> {
+            showCustomTimeDialog1(v);
+            return false;
+        });
+
+        binding.dateEditText2.setOnTouchListener((v, event) -> {
+            showCustomDateDialog2(v);
+            return false;
+        });
+
+        binding.timeEditText2.setOnTouchListener((v, event) -> {
+            showCustomTimeDialog2(v);
             return false;
         });
 
 
-        binding.findPost.setOnClickListener(v ->{
-            Double latitude = lat;
-            Double longitude = lng;
-            String city = binding.cityCompleteText.getText().toString();
-            String district = binding.districtCompleteText.getText().toString();
-            String place = binding.place.getText().toString();
-            String date = binding.dateEditText.getText().toString();
-            String time = binding.timeEditText.getText().toString();
-
-            if(!city.isEmpty() && !district.isEmpty()){
-                FindPost findPost = new FindPost();
-                findPost.city = city;
-                findPost.district = district;
-                if(!place.isEmpty()){
-                    findPost.place = place;
-                }else {
-                    findPost.place = "";
-                }
-                findPost.date = date;
-                findPost.time = time;
-                if(latitude != 0 && longitude != 0){
-                    findPost.lat = latitude;
-                }else {
-                   findPost.lng = longitude;
-                }
-            }else {
-
-            }
-
-        });
+        binding.findPost.setOnClickListener(this::findData);
 
         binding.mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
             public void onMapReady(@NonNull GoogleMap googleMap) {
-                LatLng location = new LatLng(40.7128, -74.0060);
+                LatLng location = new LatLng(41.008240, 28.978359);
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 10));
-                googleMap.addMarker(new MarkerOptions().position(location).title("New York City"));
+                googleMap.addMarker(new MarkerOptions().position(location).title("İstanbul"));
 
                 googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
@@ -206,30 +189,65 @@ public class FindFragment extends Fragment {
 
     }
 
-    private void showCustomTimeDialog(View view) {
+    private void findData(View v){
+        Double latitude = lat;
+        Double longitude = lng;
+        int radius = rad;
+        String city = binding.cityCompleteText.getText().toString();
+        String district = binding.districtCompleteText.getText().toString();
+        String place = binding.place.getText().toString();
+        String date1 = binding.dateEditText1.getText().toString();
+        String time1 = binding.timeEditText1.getText().toString();
+        String date2 = binding.dateEditText2.getText().toString();
+        String time2 = binding.timeEditText2.getText().toString();
+
+//        if(!city.isEmpty() && !district.isEmpty()){
+//            FindPost findPost = new FindPost();
+//            findPost.city = city;
+//            findPost.district = district;
+//            if(!place.isEmpty()){
+//                findPost.place = place;
+//            }else {
+//                findPost.place = "";
+//            }
+//            findPost.date = date;
+//            findPost.time = time;
+//            if(latitude != 0 && longitude != 0){
+//                findPost.lat = latitude;
+//            }else {
+//                findPost.lng = longitude;
+//            }
+//        }else {
+//
+//        }
+
+    }
+
+    private void showCustomTimeDialog1(View view) {
         if(timePickerDialog == null){
             final Calendar currentTime = Calendar.getInstance();
             int hour = currentTime.get(Calendar.HOUR_OF_DAY);
             int minute = currentTime.get(Calendar.MINUTE);
 
             timePickerDialog = new TimePickerDialog(
-                view.getContext(),
-                new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-                        String timeString = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
-                        binding.timeEditText.setText(timeString);
-                    }
-                },
-                hour,
-                minute,
-                true
+                    view.getContext(),
+                    new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
+                            String timeString = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
+                            binding.timeEditText1.setText(timeString);
+                        }
+                    },
+                    hour,
+                    minute,
+                    true
             );
         }
 
+
         timePickerDialog.show();
     }
-    private void showCustomDateDialog(View view) {
+    private void showCustomDateDialog1(View view) {
         if(datePickerDialog == null){
             final Calendar calendar = Calendar.getInstance();
             mYear = calendar.get(Calendar.YEAR);
@@ -240,12 +258,53 @@ public class FindFragment extends Fragment {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                     String timeString = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, (month + 1), year);
-                    binding.dateEditText.setText(timeString);
+                    binding.dateEditText1.setText(timeString);
                 }
             },mYear,mMonth,mDay);
         }
 
         datePickerDialog.show();
+    }
+    private void showCustomTimeDialog2(View view) {
+        if(timePickerDialog2 == null){
+            final Calendar currentTime = Calendar.getInstance();
+            int hour = currentTime.get(Calendar.HOUR_OF_DAY);
+            int minute = currentTime.get(Calendar.MINUTE);
+
+            timePickerDialog2 = new TimePickerDialog(
+                    view.getContext(),
+                    new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
+                            String timeString = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
+                            binding.timeEditText2.setText(timeString);
+                        }
+                    },
+                    hour,
+                    minute,
+                    true
+            );
+        }
+
+        timePickerDialog2.show();
+    }
+    private void showCustomDateDialog2(View view) {
+        if(datePickerDialog2 == null){
+            final Calendar calendar = Calendar.getInstance();
+            mYear = calendar.get(Calendar.YEAR);
+            mMonth = calendar.get(Calendar.MONTH);
+            mDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+            datePickerDialog2 = new DatePickerDialog(view.getContext(), new DatePickerDialog.OnDateSetListener() {
+                @Override
+                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                    String timeString = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, (month + 1), year);
+                    binding.dateEditText2.setText(timeString);
+                }
+            },mYear,mMonth,mDay);
+        }
+
+        datePickerDialog2.show();
     }
 
     private void selectDistrict(String selectedCity){
