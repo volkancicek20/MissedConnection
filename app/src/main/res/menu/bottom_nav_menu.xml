@@ -26,9 +26,9 @@
         android:icon="@drawable/icon_person"
         android:title="Profil" />
     <item
-        android:id="@+id/navSettings"
+        android:id="@+id/navMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:icon="@drawable/icon_settings"
-        android:title="Ayarlar" />
+        android:icon="@drawable/icon_mail"
+        android:title="Mesajlar" />
 </menu>

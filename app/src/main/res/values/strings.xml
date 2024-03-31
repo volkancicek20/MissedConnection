@@ -4,6 +4,8 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="mapApi">AIzaSyAa3bocqAvozi-CMbMkpkul_GokfApX6Z4</string>
+    <string name="open_drawer" />
+    <string name="close_drawer" />
 
     <string-array name="city_names">
         <item>İstanbul</item>
