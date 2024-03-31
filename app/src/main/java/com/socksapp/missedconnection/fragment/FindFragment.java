@@ -8,6 +8,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -48,6 +49,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentFindBinding;
@@ -58,14 +62,22 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FindFragment extends Fragment {
 
     private FragmentFindBinding binding;
+    private FirebaseFirestore firestore;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
     private String[] cityNames,districtNames;
     private ArrayAdapter<String> cityAdapter,districtAdapter;
     private AutoCompleteTextView cityCompleteTextView,districtCompleteTextView;
+    private SharedPreferences nameShared,imageUrlShared;
+    private String myUserName,myImageUrl,userMail;
     public static Double lat,lng;
     public static int rad;
     private DatePickerDialog datePickerDialog,datePickerDialog2;
@@ -80,9 +92,16 @@ public class FindFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        firestore = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
         lat = 0.0;
         lng = 0.0;
         rad = 100;
+
+        nameShared = requireActivity().getSharedPreferences("Name",Context.MODE_PRIVATE);
+        imageUrlShared = requireActivity().getSharedPreferences("ImageUrl",Context.MODE_PRIVATE);
     }
 
     @Override
@@ -104,6 +123,10 @@ public class FindFragment extends Fragment {
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
         cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
         cityCompleteTextView.setAdapter(cityAdapter);
+
+        userMail = user.getEmail();
+        myUserName = nameShared.getString("name","");
+        myImageUrl = imageUrlShared.getString("imageUrl","");
 
         binding.cityCompleteText.setOnItemClickListener((parent, view1, position, id) -> {
             String selectedCity = parent.getItemAtPosition(position).toString();
@@ -187,6 +210,24 @@ public class FindFragment extends Fragment {
             }
         });
 
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                goToMainFragment(view);
+            }
+        });
+
+    }
+
+    private void goToMainFragment(View v){
+
+        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
+
+        MainFragment myFragment = new MainFragment();
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     private void findData(View v){
@@ -201,25 +242,133 @@ public class FindFragment extends Fragment {
         String date2 = binding.dateEditText2.getText().toString();
         String time2 = binding.timeEditText2.getText().toString();
 
-//        if(!city.isEmpty() && !district.isEmpty()){
-//            FindPost findPost = new FindPost();
-//            findPost.city = city;
-//            findPost.district = district;
-//            if(!place.isEmpty()){
-//                findPost.place = place;
-//            }else {
-//                findPost.place = "";
-//            }
-//            findPost.date = date;
-//            findPost.time = time;
-//            if(latitude != 0 && longitude != 0){
-//                findPost.lat = latitude;
-//            }else {
-//                findPost.lng = longitude;
-//            }
-//        }else {
-//
-//        }
+        boolean checkCity,checkDistrict,checkPlace,checkDate1,checkDate2,checkTime1,checkTime2;
+
+        checkCity = !city.isEmpty();
+        checkDistrict = !district.isEmpty();
+        checkPlace = !place.isEmpty();
+        checkDate1 = !date1.isEmpty();
+        checkDate2 = !date2.isEmpty();
+        checkTime1 = !time1.isEmpty();
+        checkTime2 = !time2.isEmpty();
+
+        if(checkCity && checkDistrict && checkPlace && checkDate1 && checkDate2 && checkTime1 && checkTime2){
+            boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
+
+            checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
+            checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
+
+            checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
+            checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
+
+            if(checkFormatDate1 && checkFormatDate2 && checkFormatTime1 && checkFormatTime2){
+
+                boolean checkComparesDate,checkComparesTime;
+
+                checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
+                checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
+
+                if(checkComparesDate && checkComparesTime){
+
+                    HashMap<String,Object> post = new HashMap<>();
+                    post.put("city",city);
+                    post.put("district",district);
+                    post.put("place",place);
+                    post.put("date1",date1);
+                    post.put("time1",time1);
+                    post.put("time2",time2);
+                    post.put("date2",date2);
+                    post.put("lat",latitude);
+                    post.put("lng",longitude);
+                    post.put("radius",radius);
+                    post.put("name",myUserName);
+                    post.put("imageUrl",myImageUrl);
+
+                    firestore.collection("post").add(post).addOnSuccessListener(documentReference -> {
+                        showToastShort("Eklendi");
+                    }).addOnFailureListener(e -> {
+                        showToastShort(e.getLocalizedMessage());
+                    });
+                }else {
+                    if(!checkComparesDate){
+                        binding.dateEditText1.setError("2. girdiğiniz tarihten büyük olamaz");
+                    }else {
+                        binding.dateEditText1.setError(null);
+                    }
+                    if(!checkComparesTime){
+                        binding.timeEditText1.setError("2. girdiğiniz saatten büyük olamaz");
+                    }else {
+                        binding.timeEditText1.setError(null);
+                    }
+                }
+
+            }else {
+                if(!checkFormatDate1){
+                    binding.dateEditText1.setError("Uygun formatta tarih giriniz");
+                }else {
+                    binding.dateEditText1.setError(null);
+                }
+                if(!checkFormatDate2){
+                    binding.dateEditText2.setError("Uygun formatta tarih giriniz");
+                }else {
+                    binding.dateEditText2.setError(null);
+                }
+                if(!checkFormatTime1){
+                    binding.timeEditText1.setError("Uygun formatta saat giriniz");
+                }else {
+                    binding.timeEditText1.setError(null);
+                }
+                if(!checkFormatTime2){
+                    binding.timeEditText2.setError("Uygun formatta saat giriniz");
+                }else {
+                    binding.timeEditText2.setError(null);
+                }
+            }
+
+        }else {
+            if(!checkCity){
+                binding.cityTextInput.setError("İl boş bırakılamaz");
+                binding.cityTextInput.setErrorIconDrawable(R.drawable.icon_error);
+            }else {
+                binding.cityTextInput.setError(null);
+                binding.cityTextInput.setErrorIconDrawable(null);
+            }
+            if(!checkDistrict){
+                binding.districtTextInput.setError("İlçe boş bırakılamaz");
+                binding.districtTextInput.setErrorIconDrawable(R.drawable.icon_error);
+            }else {
+                binding.districtTextInput.setError(null);
+                binding.districtTextInput.setErrorIconDrawable(null);
+            }
+            if(!checkPlace){
+                binding.placeTextInput.setError("Yeri belirtiniz");
+                binding.placeTextInput.setErrorIconDrawable(R.drawable.icon_error);
+            }else {
+                binding.placeTextInput.setError(null);
+                binding.placeTextInput.setErrorIconDrawable(null);
+            }
+            if(!checkDate1){
+                binding.dateEditText1.setError("Tarihi giriniz");
+            }else {
+                binding.dateEditText1.setError(null);
+            }
+            if(!checkDate2){
+                binding.dateEditText2.setError("Tarihi giriniz");
+            }else {
+                binding.dateEditText2.setError(null);
+            }
+            if(!checkTime1){
+                binding.timeEditText1.setError("Saati giriniz");
+            }else {
+                binding.timeEditText1.setError(null);
+            }
+            if(!checkTime2){
+                binding.timeEditText2.setError("Saati giriniz");
+            }else {
+                binding.timeEditText2.setError(null);
+            }
+
+        }
 
     }
 
@@ -305,6 +454,51 @@ public class FindFragment extends Fragment {
         }
 
         datePickerDialog2.show();
+    }
+
+    private boolean isValidDateFormat(String input) {
+        Pattern pattern = Pattern.compile("\\d{2}/\\d{2}/\\d{4}");
+        Matcher matcher = pattern.matcher(input);
+
+        return matcher.matches();
+    }
+    private boolean isValidTimeFormat(String timeString) {
+        String regexPattern = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$";
+
+        return timeString.matches(regexPattern);
+    }
+    private boolean compareDates(String dateText1, String dateText2) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        Date date1 = null;
+        Date date2 = null;
+
+        try {
+            date1 = sdf.parse(dateText1);
+            date2 = sdf.parse(dateText2);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (date1 != null && date2 != null) {
+            return date1.compareTo(date2) <= 0;
+        }
+
+        return false;
+    }
+    private boolean compareTimes(String time1, String time2) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+            Date date1 = sdf.parse(time1);
+            Date date2 = sdf.parse(time2);
+
+            if (date1 != null && date2 != null) {
+                return date1.compareTo(date2) <= 0; // Saat1, saat2'den büyük veya eşitse true döndürün
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return false;
     }
 
     private void selectDistrict(String selectedCity){
@@ -822,5 +1016,15 @@ public class FindFragment extends Fragment {
         if (context instanceof MainActivity) {
             mainActivity = (MainActivity) context;
         }
+    }
+
+    public void showToastShort(String message){
+        Toast.makeText(requireActivity().getApplicationContext(),message,Toast.LENGTH_SHORT).show();
+    }
+    public void showToastLong(String message){
+        Toast.makeText(requireActivity().getApplicationContext(),message,Toast.LENGTH_LONG).show();
+    }
+    private void showErrorMessage(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 }

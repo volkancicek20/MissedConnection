@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,6 +24,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.provider.MediaStore;
 import android.util.Patterns;
@@ -42,6 +44,7 @@ import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.socksapp.missedconnection.R;
+import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentProfileBinding;
 import com.squareup.picasso.Picasso;
 
@@ -64,6 +67,7 @@ public class ProfileFragment extends Fragment {
     private Bitmap selectedBitmap;
     private Uri imageData;
     private String myUserName,myImageUrl,userMail;
+    private MainActivity mainActivity;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -111,6 +115,24 @@ public class ProfileFragment extends Fragment {
             binding.nameTextInputLayout.setEndIconVisible(false);
         });
 
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                goToMainFragment(view);
+            }
+        });
+
+    }
+
+    private void goToMainFragment(View v){
+
+        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
+
+        MainFragment myFragment = new MainFragment();
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
 
@@ -343,6 +365,14 @@ public class ProfileFragment extends Fragment {
             binding.profileImage.setImageResource(R.drawable.icon_person);
         }
 
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof MainActivity) {
+            mainActivity = (MainActivity) context;
+        }
     }
 
     public void showToastShort(String message){
