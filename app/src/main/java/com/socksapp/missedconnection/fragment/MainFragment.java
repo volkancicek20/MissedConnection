@@ -1,6 +1,8 @@
 package com.socksapp.missedconnection.fragment;
 
 import android.app.AlertDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -16,20 +18,26 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.socksapp.missedconnection.R;
+import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentFindBinding;
 import com.socksapp.missedconnection.databinding.FragmentMainBinding;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class MainFragment extends Fragment {
 
     private FragmentMainBinding binding;
+    private SharedPreferences nameShared,imageUrlShared;
+    private MainActivity mainActivity;
     public MainFragment() {
         // Required empty public constructor
     }
@@ -37,6 +45,9 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        nameShared = requireActivity().getSharedPreferences("Name", Context.MODE_PRIVATE);
+        imageUrlShared = requireActivity().getSharedPreferences("ImageUrl", Context.MODE_PRIVATE);
     }
 
     @Override
@@ -68,5 +79,14 @@ public class MainFragment extends Fragment {
 
         });
         builder.show();
+    }
+
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof MainActivity) {
+            mainActivity = (MainActivity) context;
+        }
     }
 }

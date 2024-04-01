@@ -6,20 +6,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    tools:openDrawer="end"
+    android:fitsSystemWindows="true"
     tools:context=".activity.MainActivity">
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <include android:id="@+id/content"
+            layout="@layout/activity_main_content"/>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentContainerView2"
             android:name="androidx.navigation.fragment.NavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:background="@color/white"
             app:defaultNavHost="true"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@id/bottomNavView"
@@ -29,8 +34,11 @@
             android:id="@+id/bottomNavView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="?android:attr/windowBackground"
             app:menu="@menu/bottom_nav_menu"
             app:labelVisibilityMode="unlabeled"
+            app:itemRippleColor="@color/white"
+            app:itemIconTint="@color/icons_color"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"/>
@@ -43,7 +51,15 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:menu="@menu/menu_drawer" />
+        app:dividerInsetStart="60dp"
+        android:background="#FFFFFF"
+        app:itemIconTint="@color/black"
+        app:itemTextAppearanceActiveBoldEnabled="false"
+        app:itemTextColor="@color/black"
+        app:itemBackground="@color/tp"
+        app:headerLayout="@layout/drawer_header_layout"
+        app:menu="@menu/menu_drawer"
+        />
 
 
 </androidx.drawerlayout.widget.DrawerLayout>

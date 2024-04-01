@@ -12,6 +12,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -26,6 +30,7 @@ import com.socksapp.missedconnection.fragment.MainFragment;
 import com.socksapp.missedconnection.fragment.MessageFragment;
 import com.socksapp.missedconnection.fragment.ProfileFragment;
 import com.socksapp.missedconnection.fragment.SettingsFragment;
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +46,10 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
+    private ImageButton buttonDrawerToggle;
+    private ImageView headerImage;
+    private TextView headerName;
+    private View headerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,20 +61,25 @@ public class MainActivity extends AppCompatActivity {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        drawerLayout = findViewById(R.id.drawerLayout);
-        navigationView = findViewById(R.id.nav_view);
 
-        actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open_drawer, R.string.close_drawer);
-        drawerLayout.addDrawerListener(actionBarDrawerToggle);
-        actionBarDrawerToggle.syncState();
+        drawerLayout = binding.drawerLayout;
+        navigationView = binding.navView;
+        buttonDrawerToggle = findViewById(R.id.buttonDrawerToggle);
 
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        buttonDrawerToggle.setOnClickListener(v ->{
+            drawerLayout.open();
+        });
+
+        headerView = navigationView.getHeaderView(0);
+        headerImage = headerView.findViewById(R.id.drawer_image);
+        headerName = headerView.findViewById(R.id.drawer_user_name);
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                // Menü öğesine tıklanınca yapılacak işlemleri burada tanımlayın
+
                 if(item.getItemId() == R.id.nav_drawer_home){
+                    bottomNavigationView.setSelectedItemId(R.id.navHome);
                     loadFragment(MainFragment.class);
                 } else if (item.getItemId() == R.id.nav_drawer_setting) {
                     loadFragment(SettingsFragment.class);
@@ -133,11 +147,15 @@ public class MainActivity extends AppCompatActivity {
                     String imageUrl = documentSnapshot.getString("imageUrl");
 
                     if(name != null && !name.isEmpty()){
+                        headerName.setText(nameShared.getString("name",""));
+
                         SharedPreferences.Editor editor = nameShared.edit();
                         editor.putString("name",name);
                         editor.apply();
                     }
                     if(imageUrl != null && !imageUrl.isEmpty()){
+                        Picasso.get().load(imageUrlShared.getString("imageUrl","")).into(headerImage);
+
                         SharedPreferences.Editor editor = imageUrlShared.edit();
                         editor.putString("imageUrl",imageUrl);
                         editor.apply();
@@ -149,6 +167,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             });
+        }else {
+            if(!nameShared.getString("name","").isEmpty()){
+                headerName.setText(nameShared.getString("name",""));
+            }
+
+            if(!imageUrlShared.getString("imageUrl","").isEmpty()){
+                Picasso.get().load(imageUrlShared.getString("imageUrl","")).into(headerImage);
+            }
         }
     }
 
