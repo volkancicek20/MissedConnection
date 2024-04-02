@@ -17,6 +17,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentTransaction;
@@ -118,6 +119,8 @@ public class FindFragment extends Fragment {
         binding.mapView.onCreate(savedInstanceState);
 
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+        mainActivity.includedLayout.setVisibility(View.VISIBLE);
+        mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 
         cityNames = getResources().getStringArray(R.array.city_names);
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
@@ -252,7 +255,15 @@ public class FindFragment extends Fragment {
         checkTime1 = !time1.isEmpty();
         checkTime2 = !time2.isEmpty();
 
-        if(checkCity && checkDistrict && checkPlace && checkDate1 && checkDate2 && checkTime1 && checkTime2){
+        if(checkCity){
+
+            if(checkDate1 == checkDate2){
+
+            }else {
+
+            }
+
+
             boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
 
             checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
@@ -333,40 +344,40 @@ public class FindFragment extends Fragment {
                 binding.cityTextInput.setError(null);
                 binding.cityTextInput.setErrorIconDrawable(null);
             }
-            if(!checkDistrict){
-                binding.districtTextInput.setError("İlçe boş bırakılamaz");
-                binding.districtTextInput.setErrorIconDrawable(R.drawable.icon_error);
-            }else {
-                binding.districtTextInput.setError(null);
-                binding.districtTextInput.setErrorIconDrawable(null);
-            }
-            if(!checkPlace){
-                binding.placeTextInput.setError("Yeri belirtiniz");
-                binding.placeTextInput.setErrorIconDrawable(R.drawable.icon_error);
-            }else {
-                binding.placeTextInput.setError(null);
-                binding.placeTextInput.setErrorIconDrawable(null);
-            }
-            if(!checkDate1){
-                binding.dateEditText1.setError("Tarihi giriniz");
-            }else {
-                binding.dateEditText1.setError(null);
-            }
-            if(!checkDate2){
-                binding.dateEditText2.setError("Tarihi giriniz");
-            }else {
-                binding.dateEditText2.setError(null);
-            }
-            if(!checkTime1){
-                binding.timeEditText1.setError("Saati giriniz");
-            }else {
-                binding.timeEditText1.setError(null);
-            }
-            if(!checkTime2){
-                binding.timeEditText2.setError("Saati giriniz");
-            }else {
-                binding.timeEditText2.setError(null);
-            }
+//            if(!checkDistrict){
+//                binding.districtTextInput.setError("İlçe boş bırakılamaz");
+//                binding.districtTextInput.setErrorIconDrawable(R.drawable.icon_error);
+//            }else {
+//                binding.districtTextInput.setError(null);
+//                binding.districtTextInput.setErrorIconDrawable(null);
+//            }
+//            if(!checkPlace){
+//                binding.placeTextInput.setError("Yeri belirtiniz");
+//                binding.placeTextInput.setErrorIconDrawable(R.drawable.icon_error);
+//            }else {
+//                binding.placeTextInput.setError(null);
+//                binding.placeTextInput.setErrorIconDrawable(null);
+//            }
+//            if(!checkDate1){
+//                binding.dateEditText1.setError("Tarihi giriniz");
+//            }else {
+//                binding.dateEditText1.setError(null);
+//            }
+//            if(!checkDate2){
+//                binding.dateEditText2.setError("Tarihi giriniz");
+//            }else {
+//                binding.dateEditText2.setError(null);
+//            }
+//            if(!checkTime1){
+//                binding.timeEditText1.setError("Saati giriniz");
+//            }else {
+//                binding.timeEditText1.setError(null);
+//            }
+//            if(!checkTime2){
+//                binding.timeEditText2.setError("Saati giriniz");
+//            }else {
+//                binding.timeEditText2.setError(null);
+//            }
 
         }
 

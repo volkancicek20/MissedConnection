@@ -43,13 +43,12 @@ public class MainActivity extends AppCompatActivity {
     private String userMail;
     public FragmentContainerView fragmentContainerView;
     public BottomNavigationView bottomNavigationView;
-    private DrawerLayout drawerLayout;
-    private ActionBarDrawerToggle actionBarDrawerToggle;
-    private NavigationView navigationView;
+    public DrawerLayout drawerLayout;
+    public NavigationView navigationView;
     private ImageButton buttonDrawerToggle;
     private ImageView headerImage;
     private TextView headerName;
-    private View headerView;
+    public View headerView,includedLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
         buttonDrawerToggle.setOnClickListener(v ->{
             drawerLayout.open();
         });
+
+        includedLayout = findViewById(R.id.content);
 
         headerView = navigationView.getHeaderView(0);
         headerImage = headerView.findViewById(R.id.drawer_image);
@@ -123,14 +124,6 @@ public class MainActivity extends AppCompatActivity {
         userMail = user.getEmail();
 
         getDataUser();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void loadFragment(Class<? extends Fragment> fragmentClass) {

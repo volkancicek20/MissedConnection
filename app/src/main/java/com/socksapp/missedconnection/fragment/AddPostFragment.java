@@ -14,6 +14,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
@@ -111,6 +112,8 @@ public class AddPostFragment extends Fragment {
         binding.mapView.onCreate(savedInstanceState);
 
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+        mainActivity.includedLayout.setVisibility(View.VISIBLE);
+        mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 
         cityNames = getResources().getStringArray(R.array.city_names);
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
@@ -268,6 +271,7 @@ public class AddPostFragment extends Fragment {
                 checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
 
                 if(checkComparesDate && checkComparesTime){
+
                     HashMap<String,Object> post = new HashMap<>();
                     post.put("city",city);
                     post.put("district",district);
@@ -283,7 +287,7 @@ public class AddPostFragment extends Fragment {
                     post.put("name",myUserName);
                     post.put("imageUrl",myImageUrl);
 
-                    firestore.collection("post").add(post).addOnSuccessListener(documentReference -> {
+                    firestore.collection("post"+city).add(post).addOnSuccessListener(documentReference -> {
                         showToastShort("Eklendi");
                     }).addOnFailureListener(e -> {
                         showToastShort(e.getLocalizedMessage());

@@ -23,9 +23,10 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="20dp"
         android:text=""
-        android:textSize="14sp"
+        android:textSize="12sp"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/drawer_image"
         app:layout_constraintStart_toStartOf="@id/drawer_image" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
