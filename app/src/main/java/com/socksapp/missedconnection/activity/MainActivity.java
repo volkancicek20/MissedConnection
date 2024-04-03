@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     public BottomNavigationView bottomNavigationView;
     public DrawerLayout drawerLayout;
     public NavigationView navigationView;
-    private ImageButton buttonDrawerToggle;
+    public ImageButton buttonDrawerToggle;
     private ImageView headerImage;
     private TextView headerName;
     public View headerView,includedLayout;
@@ -66,7 +66,14 @@ public class MainActivity extends AppCompatActivity {
         buttonDrawerToggle = findViewById(R.id.buttonDrawerToggle);
 
         buttonDrawerToggle.setOnClickListener(v ->{
-            drawerLayout.open();
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView2);
+            if (currentFragment instanceof SettingsFragment) {
+                buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
+                bottomNavigationView.setVisibility(View.VISIBLE);
+                getSupportFragmentManager().popBackStack();
+            } else {
+                drawerLayout.open();
+            }
         });
 
         includedLayout = findViewById(R.id.content);
@@ -129,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
     private void loadFragment(Class<? extends Fragment> fragmentClass) {
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.fragmentContainerView2, fragmentClass, null)
+            .addToBackStack(null)
             .commit();
     }
 

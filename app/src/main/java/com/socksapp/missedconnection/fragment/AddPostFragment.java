@@ -284,6 +284,7 @@ public class AddPostFragment extends Fragment {
                     post.put("lng",longitude);
                     post.put("radius",radius);
                     post.put("explain",explain);
+                    post.put("timestamp",new Date());
                     post.put("name",myUserName);
                     post.put("imageUrl",myImageUrl);
 

@@ -53,6 +53,7 @@ import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClic
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentFindBinding;
@@ -257,83 +258,126 @@ public class FindFragment extends Fragment {
 
         if(checkCity){
 
-            if(checkDate1 == checkDate2){
+            boolean checkBothDate,checkBothTime;
 
-            }else {
+            checkBothDate = !(checkDate1 == checkDate2);
 
-            }
+            checkBothTime = !(checkTime1 == checkTime2);
 
+            if(checkBothDate || checkBothTime){
 
-            boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
-
-            checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
-            checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
-
-            checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
-            checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
-
-            if(checkFormatDate1 && checkFormatDate2 && checkFormatTime1 && checkFormatTime2){
-
-                boolean checkComparesDate,checkComparesTime;
-
-                checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
-                checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
-
-                if(checkComparesDate && checkComparesTime){
-
-                    HashMap<String,Object> post = new HashMap<>();
-                    post.put("city",city);
-                    post.put("district",district);
-                    post.put("place",place);
-                    post.put("date1",date1);
-                    post.put("time1",time1);
-                    post.put("time2",time2);
-                    post.put("date2",date2);
-                    post.put("lat",latitude);
-                    post.put("lng",longitude);
-                    post.put("radius",radius);
-                    post.put("name",myUserName);
-                    post.put("imageUrl",myImageUrl);
-
-                    firestore.collection("post").add(post).addOnSuccessListener(documentReference -> {
-                        showToastShort("Eklendi");
-                    }).addOnFailureListener(e -> {
-                        showToastShort(e.getLocalizedMessage());
-                    });
-                }else {
-                    if(!checkComparesDate){
-                        binding.dateEditText1.setError("2. girdiğiniz tarihten büyük olamaz");
+                if(checkBothDate){
+                    if(checkDate1){
+                        binding.dateEditText1.setError("Tarihi giriniz");
                     }else {
                         binding.dateEditText1.setError(null);
                     }
-                    if(!checkComparesTime){
-                        binding.timeEditText1.setError("2. girdiğiniz saatten büyük olamaz");
+                    if(checkDate2){
+                        binding.dateEditText2.setError("Tarihi giriniz");
+                    }else {
+                        binding.dateEditText2.setError(null);
+                    }
+                }
+                if(checkBothTime){
+                    if(checkTime1){
+                        binding.timeEditText1.setError("Saati giriniz");
                     }else {
                         binding.timeEditText1.setError(null);
+                    }
+                    if(checkTime2){
+                        binding.timeEditText2.setError("Saati giriniz");
+                    }else {
+                        binding.timeEditText2.setError(null);
                     }
                 }
 
             }else {
-                if(!checkFormatDate1){
-                    binding.dateEditText1.setError("Uygun formatta tarih giriniz");
+
+                if(checkDate1 && checkTime1){
+
+                    boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
+
+                    checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
+                    checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
+
+                    checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
+                    checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
+
+                    if(checkFormatDate1 && checkFormatDate2 && checkFormatTime1 && checkFormatTime2){
+
+                        boolean checkComparesDate,checkComparesTime;
+
+                        checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
+                        checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
+
+                        if(checkComparesDate && checkComparesTime){
+
+                            firestore.collection("post"+city)
+                                .get()
+                                .addOnSuccessListener(queryDocumentSnapshots -> {
+                                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                        Toast.makeText(v.getContext(),"Bulundu",Toast.LENGTH_SHORT).show();
+                                        // Belge verilerini al
+//                                        Map<String, Object> postData = document.getData();
+                                        // İşlemleri burada yap
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Hata durumunda yapılacak işlemler
+                                });
+                        }else {
+                            if(!checkComparesDate){
+                                binding.dateEditText1.setError("2. girdiğiniz tarihten büyük olamaz");
+                            }else {
+                                binding.dateEditText1.setError(null);
+                            }
+                            if(!checkComparesTime){
+                                binding.timeEditText1.setError("2. girdiğiniz saatten büyük olamaz");
+                            }else {
+                                binding.timeEditText1.setError(null);
+                            }
+                        }
+
+                    }else {
+                        if(!checkFormatDate1){
+                            binding.dateEditText1.setError("Uygun formatta tarih giriniz");
+                        }else {
+                            binding.dateEditText1.setError(null);
+                        }
+                        if(!checkFormatDate2){
+                            binding.dateEditText2.setError("Uygun formatta tarih giriniz");
+                        }else {
+                            binding.dateEditText2.setError(null);
+                        }
+                        if(!checkFormatTime1){
+                            binding.timeEditText1.setError("Uygun formatta saat giriniz");
+                        }else {
+                            binding.timeEditText1.setError(null);
+                        }
+                        if(!checkFormatTime2){
+                            binding.timeEditText2.setError("Uygun formatta saat giriniz");
+                        }else {
+                            binding.timeEditText2.setError(null);
+                        }
+                    }
                 }else {
-                    binding.dateEditText1.setError(null);
+
+                    firestore.collection("post"+city)
+                        .get()
+                        .addOnSuccessListener(queryDocumentSnapshots -> {
+                            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                Toast.makeText(v.getContext(),"Bulundu",Toast.LENGTH_SHORT).show();
+                                // Belge verilerini al
+//                                Map<String, Object> postData = document.getData();
+                                // İşlemleri burada yap
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            // Hata durumunda yapılacak işlemler
+                        });
+
                 }
-                if(!checkFormatDate2){
-                    binding.dateEditText2.setError("Uygun formatta tarih giriniz");
-                }else {
-                    binding.dateEditText2.setError(null);
-                }
-                if(!checkFormatTime1){
-                    binding.timeEditText1.setError("Uygun formatta saat giriniz");
-                }else {
-                    binding.timeEditText1.setError(null);
-                }
-                if(!checkFormatTime2){
-                    binding.timeEditText2.setError("Uygun formatta saat giriniz");
-                }else {
-                    binding.timeEditText2.setError(null);
-                }
+
             }
 
         }else {
@@ -344,41 +388,6 @@ public class FindFragment extends Fragment {
                 binding.cityTextInput.setError(null);
                 binding.cityTextInput.setErrorIconDrawable(null);
             }
-//            if(!checkDistrict){
-//                binding.districtTextInput.setError("İlçe boş bırakılamaz");
-//                binding.districtTextInput.setErrorIconDrawable(R.drawable.icon_error);
-//            }else {
-//                binding.districtTextInput.setError(null);
-//                binding.districtTextInput.setErrorIconDrawable(null);
-//            }
-//            if(!checkPlace){
-//                binding.placeTextInput.setError("Yeri belirtiniz");
-//                binding.placeTextInput.setErrorIconDrawable(R.drawable.icon_error);
-//            }else {
-//                binding.placeTextInput.setError(null);
-//                binding.placeTextInput.setErrorIconDrawable(null);
-//            }
-//            if(!checkDate1){
-//                binding.dateEditText1.setError("Tarihi giriniz");
-//            }else {
-//                binding.dateEditText1.setError(null);
-//            }
-//            if(!checkDate2){
-//                binding.dateEditText2.setError("Tarihi giriniz");
-//            }else {
-//                binding.dateEditText2.setError(null);
-//            }
-//            if(!checkTime1){
-//                binding.timeEditText1.setError("Saati giriniz");
-//            }else {
-//                binding.timeEditText1.setError(null);
-//            }
-//            if(!checkTime2){
-//                binding.timeEditText2.setError("Saati giriniz");
-//            }else {
-//                binding.timeEditText2.setError(null);
-//            }
-
         }
 
     }

@@ -41,23 +41,18 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mainActivity.bottomNavigationView.setVisibility(View.GONE);
+        mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
+
+
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                goToMainFragment(view);
+                mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
+                mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+                requireActivity().getSupportFragmentManager().popBackStack();
             }
         });
-    }
-
-    private void goToMainFragment(View v){
-
-        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
-
-        MainFragment myFragment = new MainFragment();
-        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
     }
 
     @Override
