@@ -16,11 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.RecyclerEmptyPostBinding;
 import com.socksapp.missedconnection.databinding.RecyclerPostBinding;
 import com.socksapp.missedconnection.databinding.RecyclerviewPostBinding;
+import com.socksapp.missedconnection.fragment.MainFragment;
 import com.socksapp.missedconnection.model.FindPost;
 import com.squareup.picasso.Picasso;
 
@@ -33,9 +35,9 @@ public class PostAdapter extends RecyclerView.Adapter {
     private FirebaseFirestore firebaseFirestore;
     public ArrayList<FindPost> arrayList;
     public Context context;
-    public Fragment fragment;
+    public MainFragment fragment;
 
-    public PostAdapter(ArrayList<FindPost> arrayList,Context context,Fragment fragment) {
+    public PostAdapter(ArrayList<FindPost> arrayList,Context context,MainFragment fragment) {
         this.arrayList = arrayList;
         this.context = context;
         this.fragment = fragment;
@@ -81,6 +83,7 @@ public class PostAdapter extends RecyclerView.Adapter {
         String imageUrl,name,city,district,place,date1,date2,time1,time2,explain;
         double lat,lng;
         int radius;
+        DocumentReference documentReference;
         Timestamp timestamp;
 
         switch (holder.getItemViewType()) {
@@ -98,14 +101,17 @@ public class PostAdapter extends RecyclerView.Adapter {
                 time1 = arrayList.get(position).time1;
                 time2 = arrayList.get(position).time2;
                 explain = arrayList.get(position).explain;
-//                lat = arrayList.get(position).lat;
-//                lng = arrayList.get(position).lng;
+                lat = arrayList.get(position).lat;
+                lng = arrayList.get(position).lng;
                 radius = arrayList.get(position).radius;
                 timestamp = arrayList.get(position).timestamp;
+                documentReference = arrayList.get(position).documentReference;
 
                 getShow(imageUrl,name,city,district,place,explain,timestamp,postHolder);
 
-
+                ((PostHolder) holder).recyclerPostBinding.verticalMenu.setOnClickListener(v ->{
+                    fragment.dialogShow(v,user.getEmail(),name,lat,lng,radius,documentReference);
+                });
 
                 break;
             case LAYOUT_EMPTY:

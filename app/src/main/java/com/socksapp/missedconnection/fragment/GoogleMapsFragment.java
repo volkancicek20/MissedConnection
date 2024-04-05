@@ -43,7 +43,8 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
     private MainActivity mainActivity;
     private LatLng customLatLng;
     private Circle currentCircle;
-    private int radius;
+    private Double mainLat,mainLng;
+    private int radius,mainRadius;
 
     public GoogleMapsFragment() {
         // Required empty public constructor
@@ -63,6 +64,9 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
             type = args.getString("fragment_type");
             city = args.getString("fragment_city");
             district = args.getString("fragment_district");
+            mainLat = args.getDouble("fragment_lat");
+            mainLng = args.getDouble("fragment_lng");
+            mainRadius = args.getInt("fragment_radius");
         }
         return binding.getRoot();
     }
@@ -70,6 +74,12 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        if(type.equals("main")){
+            binding.slider.setVisibility(View.GONE);
+            binding.mapSearch.setVisibility(View.GONE);
+            binding.saveLocation.setVisibility(View.GONE);
+        }
 
         mainActivity.bottomNavigationView.setVisibility(View.GONE);
         mainActivity.includedLayout.setVisibility(View.GONE);
@@ -122,46 +132,66 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
-        loadCoordinate();
+        if(type.equals("main")){
+            LatLng turkey = new LatLng(mainLat, mainLng);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(turkey, 15));
 
-        mMap.setOnMapClickListener(latLng -> {
-            radius = 100;
-            customLatLng = new LatLng(latLng.latitude,latLng.longitude);
-            binding.slider.setValue(100);
-            binding.slider.setVisibility(View.VISIBLE);
             MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
+            markerOptions.position(turkey);
 
-            try {
-                Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
-                List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                String streetAddress = "";
-                if (addresses != null && addresses.size() > 0) {
-                    Address address = addresses.get(0);
-                    streetAddress = address.getAddressLine(0);
-                }
-                markerOptions.title(streetAddress);
-            }catch (Exception e){
-                markerOptions.title(latLng.latitude + " / " + latLng.longitude);
-                e.printStackTrace();
-            }
-
-            mMap.clear();
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
             mMap.addMarker(markerOptions);
 
-            if (currentCircle != null) {
-                currentCircle.remove();
-            }
-
             CircleOptions circleOptions = new CircleOptions();
-            circleOptions.center(latLng);
-            circleOptions.radius(100);
+            circleOptions.center(turkey);
+            circleOptions.radius(mainRadius);
             circleOptions.strokeColor(Color.BLACK);
             circleOptions.fillColor(0x30ff0000);
             circleOptions.strokeWidth(2);
-            currentCircle = mMap.addCircle(circleOptions);
-        });
+            mMap.addCircle(circleOptions);
+            mMap.setOnMapClickListener(null);
+        }else {
+            loadCoordinate();
+
+            mMap.setOnMapClickListener(latLng -> {
+                radius = 100;
+                customLatLng = new LatLng(latLng.latitude,latLng.longitude);
+                binding.slider.setValue(100);
+                binding.slider.setVisibility(View.VISIBLE);
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+
+                try {
+                    Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
+                    List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                    String streetAddress = "";
+                    if (addresses != null && addresses.size() > 0) {
+                        Address address = addresses.get(0);
+                        streetAddress = address.getAddressLine(0);
+                    }
+                    markerOptions.title(streetAddress);
+                }catch (Exception e){
+                    markerOptions.title(latLng.latitude + " / " + latLng.longitude);
+                    e.printStackTrace();
+                }
+
+                mMap.clear();
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+                mMap.addMarker(markerOptions);
+
+                if (currentCircle != null) {
+                    currentCircle.remove();
+                }
+
+                CircleOptions circleOptions = new CircleOptions();
+                circleOptions.center(latLng);
+                circleOptions.radius(100);
+                circleOptions.strokeColor(Color.BLACK);
+                circleOptions.fillColor(0x30ff0000);
+                circleOptions.strokeWidth(2);
+                currentCircle = mMap.addCircle(circleOptions);
+            });
+        }
+
 
         binding.slider.addOnChangeListener((slider, value, fromUser) -> {
             if (currentCircle != null && fromUser) {

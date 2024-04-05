@@ -1,6 +1,7 @@
 package com.socksapp.missedconnection.model;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 
 public class FindPost {
     public static final int LAYOUT_ONE = 1;
@@ -20,9 +21,18 @@ public class FindPost {
     public Double lng;
     public int radius;
     public Timestamp timestamp;
+    public DocumentReference documentReference;
 
     public FindPost (){
 
+    }
+
+    public DocumentReference getDocumentReference() {
+        return documentReference;
+    }
+
+    public void setDocumentReference(DocumentReference documentReference) {
+        this.documentReference = documentReference;
     }
 
     public Timestamp getTimestamp() {

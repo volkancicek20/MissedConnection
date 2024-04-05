@@ -1,25 +1,32 @@
 package com.socksapp.missedconnection.fragment;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.denzcoskun.imageslider.ImageSlider;
@@ -30,6 +37,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -82,6 +90,10 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+        mainActivity.includedLayout.setVisibility(View.VISIBLE);
+        mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+
         userMail = user.getEmail();
 
         binding.recyclerViewMain.setLayoutManager(new LinearLayoutManager(view.getContext()));
@@ -98,6 +110,57 @@ public class MainFragment extends Fragment {
 
     }
 
+    public void dialogShow(View view,String mail,String name,Double lat,Double lng,int radius,DocumentReference documentReference){
+        final Dialog dialog = new Dialog(view.getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.bottom_sheet_layout);
+
+        LinearLayout map = dialog.findViewById(R.id.layoutMap);
+
+        if(lat == 0.0 && lng == 0.0){
+            map.setVisibility(View.GONE);
+        }
+
+        map.setOnClickListener(v -> {
+            dialog.dismiss();
+            Bundle args = new Bundle();
+            args.putString("fragment_type", "main");
+            args.putDouble("fragment_lat", lat);
+            args.putDouble("fragment_lng", lng);
+            args.putInt("fragment_radius", radius);
+            GoogleMapsFragment myFragment = new GoogleMapsFragment();
+            myFragment.setArguments(args);
+            FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        });
+
+        LinearLayout save = dialog.findViewById(R.id.layoutSave);
+        LinearLayout message = dialog.findViewById(R.id.layoutMessage);
+        LinearLayout report = dialog.findViewById(R.id.layoutReport);
+
+        save.setOnClickListener(v ->{
+
+        });
+
+        message.setOnClickListener(v ->{
+
+        });
+
+        report.setOnClickListener(v ->{
+
+        });
+
+        if(dialog.getWindow() != null){
+            dialog.show();
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+            dialog.getWindow().setGravity(Gravity.BOTTOM);
+        }
+    }
+
     private void getData(){
         firestore.collection("post"+"İstanbul").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
@@ -109,7 +172,15 @@ public class MainFragment extends Fragment {
                     String district = querySnapshot.getString("district");
                     String place = querySnapshot.getString("place");
                     String explain = querySnapshot.getString("explain");
+                    Double lat = querySnapshot.getDouble("lat");
+                    Double lng = querySnapshot.getDouble("lng");
+                    Long x = querySnapshot.getLong("radius");
+                    int radius = 0;
+                    if(x != null){
+                        radius = x.intValue();
+                    }
                     Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                    DocumentReference documentReference = querySnapshot.getReference();
 
                     FindPost post = new FindPost();
                     post.viewType = 1;
@@ -120,6 +191,10 @@ public class MainFragment extends Fragment {
                     post.place = place;
                     post.explain = explain;
                     post.timestamp = timestamp;
+                    post.lat = lat;
+                    post.lng = lng;
+                    post.radius = radius;
+                    post.documentReference = documentReference;
 
                     postArrayList.add(post);
                     postAdapter.notifyDataSetChanged();

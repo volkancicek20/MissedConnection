@@ -44,7 +44,6 @@ public class SettingsFragment extends Fragment {
         mainActivity.bottomNavigationView.setVisibility(View.GONE);
         mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
 
-
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
