@@ -42,7 +42,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:inputType="none"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -69,7 +69,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:inputType="none"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -100,7 +100,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="16dp"
                         android:background="@drawable/icon_down_arrow"
-                        android:backgroundTint="@color/white"
+                        android:backgroundTint="@color/gray"
                         app:layout_constraintTop_toTopOf="@id/google_map_text_view"
                         app:layout_constraintBottom_toBottomOf="@id/google_map_text_view"
                         app:layout_constraintStart_toStartOf="parent"/>
@@ -110,7 +110,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Konum Seç"
-                        android:textColor="@color/white"
+                        android:textColor="@color/gray"
                         android:textSize="14sp"
                         android:textStyle="normal"
                         android:layout_marginTop="16dp"
@@ -123,9 +123,9 @@
                     <com.google.android.gms.maps.MapView
                         android:id="@+id/mapView"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="150dp"
                         android:layout_margin="16dp"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         app:layout_constraintTop_toBottomOf="@id/google_map_text_view"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -160,7 +160,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/white"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:textColorHint="@color/gray"
                     />
             </com.google.android.material.textfield.TextInputLayout>
@@ -191,7 +191,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="16dp"
                         android:background="@drawable/icon_down_arrow"
-                        android:backgroundTint="@color/white"
+                        android:backgroundTint="@color/gray"
                         app:layout_constraintTop_toTopOf="@id/date_title_text"
                         app:layout_constraintBottom_toBottomOf="@id/date_title_text"
                         app:layout_constraintStart_toStartOf="parent"/>
@@ -201,7 +201,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tarih Seçimi"
-                        android:textColor="@color/white"
+                        android:textColor="@color/gray"
                         android:textSize="14sp"
                         android:textStyle="normal"
                         android:layout_marginTop="16dp"
@@ -231,7 +231,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:text="Tarih Aralığı"
-                                android:textColor="@color/white"
+                                android:textColor="@color/gray"
                                 android:textSize="14sp"
                                 android:layout_gravity="center"
                                 />
@@ -294,7 +294,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:text="Saat Aralığı"
-                                android:textColor="@color/white"
+                                android:textColor="@color/gray"
                                 android:textSize="14sp"
                                 android:layout_gravity="center"
                                 />
@@ -360,13 +360,16 @@
                 android:layout_margin="16dp"
                 android:hint="Detay"
                 app:helperText="*Olayı detaylandırırsanız ulaşılabilme ihtimaliniz artacaktır"
-                android:textColorHint="@color/black"
-                app:counterTextColor="@color/white"
-                app:hintTextColor="@color/black"
+                app:helperTextTextColor="@color/gray"
+                android:textColorHint="@color/text_input_title_change"
+                app:hintTextColor="@color/text_input_title_change"
+                app:boxStrokeWidthFocused="1dp"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeColor="@color/text_input_stroke_change"
                 app:layout_constraintTop_toBottomOf="@id/date_card_view"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/CustomTextInputLayout.Dark2"
                 >
 
                 <EditText
@@ -374,9 +377,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="130dp"
                     android:gravity="top|start"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textColorHint="@color/black"
-                    android:textSize="16sp"/>
+                    android:textSize="14sp"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 
