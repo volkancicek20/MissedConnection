@@ -1,14 +1,16 @@
 package com.socksapp.missedconnection.activity;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -30,7 +33,10 @@ import com.socksapp.missedconnection.fragment.MainFragment;
 import com.socksapp.missedconnection.fragment.MessageFragment;
 import com.socksapp.missedconnection.fragment.ProfileFragment;
 import com.socksapp.missedconnection.fragment.SettingsFragment;
+import com.socksapp.missedconnection.myclass.RefDataAccess;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,12 +55,31 @@ public class MainActivity extends AppCompatActivity {
     private ImageView headerImage;
     private TextView headerName;
     public View headerView,includedLayout;
+    public RefDataAccess refDataAccess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        refDataAccess = new RefDataAccess(this);
+        refDataAccess.open();
+
+////        refDataAccess.insertRef("Volkan");
+////        refDataAccess.insertRef("Okan");
+////        refDataAccess.insertRef("Ahmet");
+////        refDataAccess.insertRef("Mehmet");
+//
+//        refDataAccess.deleteRef("Okan");
+////
+//        List<String> namesList = refDataAccess.getAllRefs();
+//        StringBuilder stringBuilder = new StringBuilder();
+//        for (String name : namesList) {
+//            stringBuilder.append(name).append("\n");
+//        }
+//
+//        Toast.makeText(this,stringBuilder.toString(),Toast.LENGTH_LONG).show();
 
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -91,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
                     loadFragment(MainFragment.class);
                 } else if (item.getItemId() == R.id.nav_drawer_setting) {
                     loadFragment(SettingsFragment.class);
+                } else if (item.getItemId() == R.id.nav_drawer_logout) {
+                    signOut();
                 }
 
                 item.setChecked(true);
@@ -110,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
                 int itemId = item.getItemId();
 
                 if(itemId == R.id.navHome){
@@ -133,6 +161,38 @@ public class MainActivity extends AppCompatActivity {
         getDataUser();
     }
 
+    private void signOut(){
+        new AlertDialog.Builder(MainActivity.this)
+            .setMessage("Hesaptan çıkış yapılıyor..")
+            .setPositiveButton("Çıkış yap", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    SharedPreferences.Editor editor = nameShared.edit();
+                    clearShared(editor);
+                    SharedPreferences.Editor editor1 = imageUrlShared.edit();
+                    clearShared(editor1);
+                    SharedPreferences.Editor editor2 = userDone.edit();
+                    clearShared(editor2);
+
+                    refDataAccess.deleteAllData();
+                    logout();
+                    drawerLayout.closeDrawers();
+                }
+            })
+            .setNegativeButton("Hayır", null).show();
+    }
+
+    private void clearShared(SharedPreferences.Editor editor){
+        editor.clear();
+        editor.apply();
+    }
+
+    private void logout() {
+        auth.signOut();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
     private void loadFragment(Class<? extends Fragment> fragmentClass) {
         getSupportFragmentManager().beginTransaction()
             .replace(R.id.fragmentContainerView2, fragmentClass, null)
@@ -148,14 +208,14 @@ public class MainActivity extends AppCompatActivity {
                     String imageUrl = documentSnapshot.getString("imageUrl");
 
                     if(name != null && !name.isEmpty()){
-                        headerName.setText(nameShared.getString("name",""));
+                        headerName.setText(name);
 
                         SharedPreferences.Editor editor = nameShared.edit();
                         editor.putString("name",name);
                         editor.apply();
                     }
                     if(imageUrl != null && !imageUrl.isEmpty()){
-                        Picasso.get().load(imageUrlShared.getString("imageUrl","")).into(headerImage);
+                        Picasso.get().load(imageUrl).into(headerImage);
 
                         SharedPreferences.Editor editor = imageUrlShared.edit();
                         editor.putString("imageUrl",imageUrl);
@@ -179,4 +239,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        refDataAccess.close();
+    }
 }

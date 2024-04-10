@@ -23,4 +23,14 @@
         <item name="android:windowEnterAnimation">@anim/slide_in_bottom</item>
         <item name="android:windowExitAnimation">@anim/slide_out_bottom</item>
     </style>
+
+    <style name="CustomTextInputLayout.Dark" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="android:textColorHint">@color/hint_color_dark</item>  <item name="colorControlActivated">@color/text_input_selection_color_dark</item>  <item name="boxBackgroundColor">@color/dark_background_color</item>
+    </style>
+
+    <style name="CustomTextInputLayout.Dark2" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">@color/hint_color_dark</item>  <item name="colorControlActivated">@color/text_input_selection_color_dark</item>  <item name="boxBackgroundColor">@color/dark_background_color</item>
+    </style>
+
+
 </resources>

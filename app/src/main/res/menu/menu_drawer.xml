@@ -1,27 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
+<!--    <group-->
+<!--        android:checkableBehavior="single"-->
+<!--        android:id="@+id/group1">-->
+
+
+
+<!--    </group>-->
+
+    <item
+        android:id="@+id/nav_drawer_home"
+        android:title="Anasayfa"
+        android:icon="@drawable/icon_home"/>
+
+
+    <item
+        android:id="@+id/nav_drawer_setting"
+        android:title="Ayarlar"
+        android:icon="@drawable/icon_settings"/>
+
+
+<!--    <group-->
+<!--        android:checkableBehavior="single"-->
+<!--        android:id="@+id/group2">-->
+
+
+
+<!--    </group>-->
+
+
     <group
         android:checkableBehavior="single"
-        android:id="@+id/group1">
+        android:id="@+id/group3">
 
         <item
-            android:id="@+id/nav_drawer_home"
-            android:title="Anasayfa"
-            android:icon="@drawable/icon_home"/>
+            android:id="@+id/nav_drawer_logout"
+            android:title="Çıkış yap"
+            android:icon="@drawable/icon_logout"/>
 
     </group>
-
-    <group
-        android:checkableBehavior="single"
-        android:id="@+id/group2">
-
-        <item
-            android:id="@+id/nav_drawer_setting"
-            android:title="Ayarlar"
-            android:icon="@drawable/icon_settings"/>
-
-    </group>
-
 
 </menu>

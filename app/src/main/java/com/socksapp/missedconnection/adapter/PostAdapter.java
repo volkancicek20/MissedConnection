@@ -27,6 +27,7 @@ import com.socksapp.missedconnection.model.FindPost;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PostAdapter extends RecyclerView.Adapter {
 
@@ -107,10 +108,25 @@ public class PostAdapter extends RecyclerView.Adapter {
                 timestamp = arrayList.get(position).timestamp;
                 documentReference = arrayList.get(position).documentReference;
 
+                HashMap<String,Object> data = new HashMap<>();
+                data.put("imageUrl",imageUrl);
+                data.put("name",name);
+                data.put("city",city);
+                data.put("district",district);
+                data.put("place",place);
+                data.put("date1",date1);
+                data.put("date2",date2);
+                data.put("time1",time1);
+                data.put("time2",time2);
+                data.put("lat",lat);
+                data.put("lng",lng);
+                data.put("radius",radius);
+                data.put("timestamp",timestamp);
+
                 getShow(imageUrl,name,city,district,place,explain,timestamp,postHolder);
 
                 ((PostHolder) holder).recyclerPostBinding.verticalMenu.setOnClickListener(v ->{
-                    fragment.dialogShow(v,user.getEmail(),name,lat,lng,radius,documentReference);
+                    fragment.dialogShow(v,user.getEmail(),name,lat,lng,radius,documentReference,data);
                 });
 
                 break;

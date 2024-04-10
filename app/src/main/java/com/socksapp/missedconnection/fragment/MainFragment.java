@@ -28,10 +28,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
@@ -41,15 +43,18 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.PostAdapter;
 import com.socksapp.missedconnection.databinding.FragmentFindBinding;
 import com.socksapp.missedconnection.databinding.FragmentMainBinding;
 import com.socksapp.missedconnection.model.FindPost;
+import com.socksapp.missedconnection.myclass.RefDataAccess;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainFragment extends Fragment {
 
@@ -110,12 +115,13 @@ public class MainFragment extends Fragment {
 
     }
 
-    public void dialogShow(View view,String mail,String name,Double lat,Double lng,int radius,DocumentReference documentReference){
+    public void dialogShow(View view, String mail, String name, Double lat, Double lng, int radius, DocumentReference documentReference, HashMap<String,Object> data){
         final Dialog dialog = new Dialog(view.getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.bottom_sheet_layout);
 
         LinearLayout map = dialog.findViewById(R.id.layoutMap);
+
 
         if(lat == 0.0 && lng == 0.0){
             map.setVisibility(View.GONE);
@@ -142,6 +148,19 @@ public class MainFragment extends Fragment {
 
         save.setOnClickListener(v ->{
 
+            WriteBatch batch = firestore.batch();
+
+            batch.set(firestore.collection(userMail).document(documentReference.getId()), data);
+
+            batch.commit()
+                .addOnSuccessListener(aVoid -> {
+                    mainActivity.refDataAccess.insertRef(documentReference.getId());
+                    Toast.makeText(view.getContext(), "Kaydedildi", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                })
+                .addOnFailureListener(e -> {
+
+                });
         });
 
         message.setOnClickListener(v ->{
@@ -170,6 +189,10 @@ public class MainFragment extends Fragment {
                     String name = querySnapshot.getString("name");
                     String city = querySnapshot.getString("city");
                     String district = querySnapshot.getString("district");
+                    String time1 = querySnapshot.getString("time1");
+                    String time2 = querySnapshot.getString("time2");
+                    String date1 = querySnapshot.getString("date1");
+                    String date2 = querySnapshot.getString("date2");
                     String place = querySnapshot.getString("place");
                     String explain = querySnapshot.getString("explain");
                     Double lat = querySnapshot.getDouble("lat");
@@ -188,6 +211,10 @@ public class MainFragment extends Fragment {
                     post.name = name;
                     post.city = city;
                     post.district = district;
+                    post.time1 = time1;
+                    post.time2 = time2;
+                    post.date1 = date1;
+                    post.date2 = date2;
                     post.place = place;
                     post.explain = explain;
                     post.timestamp = timestamp;

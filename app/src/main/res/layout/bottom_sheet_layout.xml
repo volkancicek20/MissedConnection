@@ -45,7 +45,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_save"
+            android:src="@drawable/icon_bookmark"
             android:layout_gravity="center"
             android:gravity="center"
             />
