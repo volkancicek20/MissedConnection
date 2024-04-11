@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -56,12 +58,19 @@ public class MainActivity extends AppCompatActivity {
     private TextView headerName;
     public View headerView,includedLayout;
     public RefDataAccess refDataAccess;
+    public boolean active_map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        active_map = true;
+
+        bottomNavigationView = binding.bottomNavView;
+
+        bottomNavigationView.setItemIconTintList(null);
 
         refDataAccess = new RefDataAccess(this);
         refDataAccess.open();
@@ -125,8 +134,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-        bottomNavigationView = binding.bottomNavView;
 
         nameShared = getSharedPreferences("Name", Context.MODE_PRIVATE);
         imageUrlShared = getSharedPreferences("ImageUrl", Context.MODE_PRIVATE);
@@ -215,7 +222,14 @@ public class MainActivity extends AppCompatActivity {
                         editor.apply();
                     }
                     if(imageUrl != null && !imageUrl.isEmpty()){
-                        Picasso.get().load(imageUrl).into(headerImage);
+//                        Picasso.get().load(imageUrl).into(headerImage);
+
+                        Glide.with(this)
+                            .load(imageUrl)
+                            .apply(new RequestOptions()
+                            .error(R.drawable.person_active_96)
+                            .centerCrop())
+                            .into(headerImage);
 
                         SharedPreferences.Editor editor = imageUrlShared.edit();
                         editor.putString("imageUrl",imageUrl);
@@ -234,7 +248,14 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if(!imageUrlShared.getString("imageUrl","").isEmpty()){
-                Picasso.get().load(imageUrlShared.getString("imageUrl","")).into(headerImage);
+//                Picasso.get().load(imageUrlShared.getString("imageUrl","")).into(headerImage);
+
+                Glide.with(this)
+                    .load(imageUrlShared.getString("imageUrl",""))
+                    .apply(new RequestOptions()
+                    .error(R.drawable.person_active_96)
+                    .centerCrop())
+                    .into(headerImage);
             }
         }
     }

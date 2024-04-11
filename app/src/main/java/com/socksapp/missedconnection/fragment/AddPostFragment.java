@@ -1014,6 +1014,7 @@ public class AddPostFragment extends Fragment {
     public void onResume() {
         super.onResume();
         binding.mapView.onResume();
+
         cityNames = getResources().getStringArray(R.array.city_names);
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
         cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
@@ -1024,6 +1025,7 @@ public class AddPostFragment extends Fragment {
     public void onPause() {
         super.onPause();
         binding.mapView.onPause();
+
     }
 
     @Override

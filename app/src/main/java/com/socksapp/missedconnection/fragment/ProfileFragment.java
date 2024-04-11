@@ -33,6 +33,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
@@ -102,7 +104,7 @@ public class ProfileFragment extends Fragment {
 
         imageData = null;
 
-        setProfile();
+        setProfile(view);
         registerLauncher(view);
 
         binding.profileImage.setOnClickListener(this::setImage);
@@ -346,7 +348,7 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void setProfile(){
+    private void setProfile(View view){
 
         String name = nameShared.getString("name","");
         String imageUrl = imageUrlShared.getString("imageUrl","");
@@ -360,7 +362,14 @@ public class ProfileFragment extends Fragment {
         }
         if(!imageUrl.isEmpty()){
             myImageUrl = imageUrl;
-            Picasso.get().load(imageUrl).into(binding.profileImage);
+//            Picasso.get().load(imageUrl).into(binding.profileImage);
+
+            Glide.with(view.getContext())
+                .load(imageUrl)
+                .apply(new RequestOptions()
+                .error(R.drawable.person_active_96)
+                .centerCrop())
+                .into(binding.profileImage);
         }else {
             binding.profileImage.setImageResource(R.drawable.icon_person);
         }

@@ -10,6 +10,7 @@
     <color name="gray">#808080</color>
     <color name="gray_with_alpha">#50808080</color>
     <color name="tp">#00000000</color>
+    <color name="buttonBg">#1d9cf0</color>
 
     <color name="hint_color_dark">#878787</color>
     <color name="text_input_selection_color_dark">#424242</color>

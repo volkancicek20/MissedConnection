@@ -3,22 +3,22 @@
 
     <item
         android:id="@+id/navHome"
-        android:icon="@drawable/icon_home"
+        android:icon="@drawable/home_selector"
         android:title="Anasayfa" />
     <item
         android:id="@+id/navFind"
-        android:icon="@drawable/icon_search"
+        android:icon="@drawable/search_selector"
         android:title="Bul" />
     <item
         android:id="@+id/navAdd"
-        android:icon="@drawable/icon_add"
+        android:icon="@drawable/add_selector"
         android:title="Ekle" />
     <item
         android:id="@+id/navProfile"
-        android:icon="@drawable/icon_person"
+        android:icon="@drawable/person_selector"
         android:title="Profil" />
     <item
         android:id="@+id/navMessage"
-        android:icon="@drawable/icon_mail"
+        android:icon="@drawable/mail_selector"
         android:title="Mesajlar" />
 </menu>

@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -165,7 +167,14 @@ public class PostAdapter extends RecyclerView.Adapter {
             imageView = holder.recyclerPostBinding.recyclerProfileImage;
             imageView.setImageResource(R.drawable.icon_person);
         }else {
-            Picasso.get().load(imageUrl).into(holder.recyclerPostBinding.recyclerProfileImage);
+//            Picasso.get().load(imageUrl).into(holder.recyclerPostBinding.recyclerProfileImage);
+
+            Glide.with(context)
+                .load(imageUrl)
+                .apply(new RequestOptions()
+                .error(R.drawable.person_active_96)
+                .centerCrop())
+                .into(holder.recyclerPostBinding.recyclerProfileImage);
         }
 
         String location = city;
