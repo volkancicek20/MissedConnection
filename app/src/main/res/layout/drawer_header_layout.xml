@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="180dp"
-    android:background="#807B7B">
+    android:background="#000000">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/drawer_image"
@@ -13,7 +13,8 @@
         android:layout_height="80dp"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="10dp"
-        android:src="@drawable/icon_person"
+        android:background="@drawable/icon_person"
+        android:backgroundTint="@color/white"
         app:layout_constraintBottom_toTopOf="@+id/drawer_user_name"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -24,9 +25,18 @@
         android:layout_marginBottom="20dp"
         android:text=""
         android:textSize="12sp"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/drawer_image"
         app:layout_constraintStart_toStartOf="@id/drawer_image" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray_with_alpha"
+        android:layout_marginHorizontal="25dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

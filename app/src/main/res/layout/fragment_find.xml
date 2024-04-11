@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="#000000"
     tools:context=".fragment.FindFragment">
 
     <ScrollView
@@ -26,16 +26,23 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:hint="İl"
-                android:textColorHint="@color/black"
+                android:textColorHint="@color/text_input_title_change"
+                app:hintTextColor="@color/text_input_title_change"
+                app:boxStrokeWidthFocused="1dp"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeColor="@color/text_input_stroke_change"
+                app:endIconTint="@color/text_input_icon_tint_change"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                style="@style/CustomTextInputLayout.Dark">
 
                 <AutoCompleteTextView
                     android:id="@+id/city_complete_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
                     android:inputType="none"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -46,16 +53,23 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:hint="İlçe"
-                android:textColorHint="@color/black"
+                android:textColorHint="@color/text_input_title_change"
+                app:hintTextColor="@color/text_input_title_change"
+                app:boxStrokeWidthFocused="1dp"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeColor="@color/text_input_stroke_change"
+                app:endIconTint="@color/text_input_icon_tint_change"
                 app:layout_constraintTop_toBottomOf="@id/city_text_input"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+                style="@style/CustomTextInputLayout.Dark">
 
                 <AutoCompleteTextView
                     android:id="@+id/district_complete_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
                     android:inputType="none"/>
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -74,7 +88,7 @@
                     android:id="@+id/mapView_constraint_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
+                    android:background="@drawable/bg_map_card_view"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/place_text_input"
@@ -86,6 +100,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="16dp"
                         android:background="@drawable/icon_down_arrow"
+                        android:backgroundTint="@color/gray"
                         app:layout_constraintTop_toTopOf="@id/google_map_text_view"
                         app:layout_constraintBottom_toBottomOf="@id/google_map_text_view"
                         app:layout_constraintStart_toStartOf="parent"/>
@@ -95,7 +110,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Konum Seç"
-                        android:textColor="@color/black"
+                        android:textColor="@color/gray"
                         android:textSize="14sp"
                         android:textStyle="normal"
                         android:layout_marginTop="16dp"
@@ -108,9 +123,9 @@
                     <com.google.android.gms.maps.MapView
                         android:id="@+id/mapView"
                         android:layout_width="match_parent"
-                        android:layout_height="100dp"
+                        android:layout_height="150dp"
                         android:layout_margin="16dp"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         app:layout_constraintTop_toBottomOf="@id/google_map_text_view"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -130,22 +145,25 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
                 android:hint="Mekan"
+                android:textColorHint="@color/text_input_title_change"
+                app:hintTextColor="@color/text_input_title_change"
+                app:boxStrokeWidthFocused="1dp"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeColor="@color/text_input_stroke_change"
                 app:helperText="Ör: AVM,Park,Kafe vb. isimleri"
-                android:textColorHint="@color/black"
-                app:counterTextColor="@color/white"
-                app:hintTextColor="@color/black"
+                app:helperTextTextColor="@color/gray"
                 app:layout_constraintTop_toBottomOf="@id/map_card_view"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/CustomTextInputLayout.Dark2"
                 >
                 <EditText
                     android:id="@+id/place"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:textColorHint="@color/black"
+                    android:textColor="@color/white"
+                    android:textSize="14sp"
+                    android:textColorHint="@color/gray"
                     />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -164,7 +182,7 @@
                     android:id="@+id/date_title_constraint_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
+                    android:background="@drawable/bg_map_card_view"
                     app:layout_constraintTop_toBottomOf="@id/date_card_view"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
@@ -175,6 +193,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="16dp"
                         android:background="@drawable/icon_down_arrow"
+                        android:backgroundTint="@color/gray"
                         app:layout_constraintTop_toTopOf="@id/date_title_text"
                         app:layout_constraintBottom_toBottomOf="@id/date_title_text"
                         app:layout_constraintStart_toStartOf="parent"/>
@@ -184,7 +203,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tarih Seçimi"
-                        android:textColor="@color/black"
+                        android:textColor="@color/gray"
                         android:textSize="14sp"
                         android:textStyle="normal"
                         android:layout_marginTop="16dp"
@@ -214,7 +233,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:text="Tarih Aralığı"
-                                android:textColor="@color/black"
+                                android:textColor="@color/gray"
                                 android:textSize="14sp"
                                 android:layout_gravity="center"
                                 />
@@ -228,6 +247,8 @@
                                 android:inputType="date"
                                 android:gravity="center"
                                 android:textSize="12sp"
+                                android:textColor="@color/white"
+                                android:textColorHint="@color/gray"
                                 android:maxLength="10"
                                 android:layout_gravity="center"
                                 android:layout_marginStart="16dp"
@@ -241,6 +262,7 @@
                                 android:layout_marginEnd="8dp"
                                 android:layout_marginBottom="16dp"
                                 android:text="-"
+                                android:textColor="@color/gray"
                                 android:textSize="20sp"
                                 android:textStyle="bold" />
 
@@ -253,6 +275,8 @@
                                 android:inputType="date"
                                 android:gravity="center"
                                 android:textSize="12sp"
+                                android:textColor="@color/white"
+                                android:textColorHint="@color/gray"
                                 android:maxLength="10"
                                 android:layout_gravity="center"
                                 android:layout_marginTop="16dp"
@@ -272,7 +296,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="16dp"
                                 android:text="Saat Aralığı"
-                                android:textColor="@color/black"
+                                android:textColor="@color/gray"
                                 android:textSize="14sp"
                                 android:layout_gravity="center"
                                 />
@@ -282,6 +306,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="12sp"
+                                android:textColor="@color/white"
+                                android:textColorHint="@color/gray"
                                 android:layout_weight="1"
                                 android:hint="SS:DD"
                                 android:inputType="time"
@@ -299,6 +325,7 @@
                                 android:layout_marginEnd="8dp"
                                 android:layout_marginBottom="16dp"
                                 android:text="-"
+                                android:textColor="@color/gray"
                                 android:textSize="20sp"
                                 android:textStyle="bold" />
 
@@ -307,6 +334,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="12sp"
+                                android:textColor="@color/white"
+                                android:textColorHint="@color/gray"
                                 android:layout_weight="1"
                                 android:hint="SS:DD"
                                 android:inputType="time"

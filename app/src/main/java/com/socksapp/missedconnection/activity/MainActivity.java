@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     public BottomNavigationView bottomNavigationView;
     public DrawerLayout drawerLayout;
     public NavigationView navigationView;
-    public ImageButton buttonDrawerToggle;
+    public ImageView buttonDrawerToggle;
     private ImageView headerImage;
     private TextView headerName;
     public View headerView,includedLayout;

@@ -8,13 +8,14 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#808080</color>
+    <color name="gray_with_alpha">#50808080</color>
     <color name="tp">#00000000</color>
 
     <color name="hint_color_dark">#878787</color>
     <color name="text_input_selection_color_dark">#424242</color>
     <color name="dark_background_color">#000000</color>
 
-    <color name="app_theme">#009dff</color>
+    <color name="app_theme">#000000</color>
     <color name="app_theme_light">#f6fbff</color>
     <color name="edit_text_border">#03A9F4</color>
     <color name="edit_text_background">#f6fbff</color>

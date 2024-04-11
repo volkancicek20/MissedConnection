@@ -7,6 +7,16 @@
     android:layout_height="wrap_content"
     android:background="@drawable/bottom_sheet_dialog_bg">
 
+    <View
+        android:layout_width="35dp"
+        android:layout_height="4dp"
+        android:background="@drawable/bg_line"
+        android:alpha="0.5"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="20dp"
+        />
+
     <LinearLayout
         android:id="@+id/layoutMap"
         android:layout_width="match_parent"
@@ -17,7 +27,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_google_map"
+            android:src="@drawable/icon_google_map_2"
             android:layout_gravity="center"
             android:gravity="center"
             />
@@ -29,7 +39,7 @@
             android:textStyle="normal"
             android:textSize="18sp"
             android:text="Haritada göster"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:layout_gravity="center"
             android:gravity="center"/>
 
@@ -45,7 +55,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/icon_bookmark"
+            android:src="@drawable/icon_bookmark_white"
             android:layout_gravity="center"
             android:gravity="center"
             />
@@ -57,7 +67,7 @@
             android:textStyle="normal"
             android:textSize="18sp"
             android:text="Kaydet"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:layout_gravity="center"
             android:gravity="center"/>
 
@@ -84,7 +94,7 @@
             android:textStyle="normal"
             android:textSize="18sp"
             android:text="Mesaj gönder"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:layout_gravity="center"
             android:gravity="center"/>
 
@@ -93,8 +103,8 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/black"
-        android:layout_marginStart="50dp"
+        android:background="@color/gray"
+        android:layout_marginHorizontal="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
@@ -120,7 +130,7 @@
             android:textStyle="normal"
             android:textSize="18sp"
             android:text="Bildir"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:layout_gravity="center"
             android:gravity="center"/>
 

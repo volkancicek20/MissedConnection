@@ -51,14 +51,16 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:dividerInsetStart="60dp"
-        android:background="#FFFFFF"
-        app:itemIconTint="@color/black"
+        app:dividerInsetStart="25dp"
+        app:dividerInsetEnd="25dp"
+        android:background="@color/black"
+        app:itemIconTint="@color/white"
         app:itemTextAppearanceActiveBoldEnabled="false"
-        app:itemTextColor="@color/black"
+        app:itemTextColor="@color/white"
         app:itemBackground="@color/tp"
         app:headerLayout="@layout/drawer_header_layout"
         app:menu="@menu/menu_drawer"
+        android:theme="@style/NavigationViewTheme"
         />
 
 
