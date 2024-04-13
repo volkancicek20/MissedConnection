@@ -109,13 +109,37 @@ public class ProfileFragment extends Fragment {
 
         binding.profileImage.setOnClickListener(this::setImage);
 
-        binding.saveProfile.setOnClickListener(this::saveProfile);
+        binding.editProfileLinearLayout.setOnClickListener(v ->{
 
-        binding.nameTextInputLayout.setEndIconOnClickListener(v ->{
-            binding.nameEdittext.setEnabled(true);
-            binding.nameEdittext.requestFocus();
-            binding.nameTextInputLayout.setEndIconVisible(false);
         });
+
+        binding.myPostLinearLayout.setOnClickListener(v ->{
+            MyPostFragment myFragment = new MyPostFragment();
+            FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        });
+
+        binding.bookmarkLinearLayout.setOnClickListener(v ->{
+            SavedPostFragment myFragment = new SavedPostFragment();
+            FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        });
+
+        binding.accountSettingsLinearLayout.setOnClickListener(v ->{
+
+        });
+
+//        binding.saveProfile.setOnClickListener(this::saveProfile);
+
+//        binding.nameTextInputLayout.setEndIconOnClickListener(v ->{
+//            binding.nameEdittext.setEnabled(true);
+//            binding.nameEdittext.requestFocus();
+//            binding.nameTextInputLayout.setEndIconVisible(false);
+//        });
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -140,14 +164,14 @@ public class ProfileFragment extends Fragment {
 
     private void saveProfile(View view){
 
-        String nameString = binding.nameEdittext.getText().toString();
-
-        boolean nameCheck;
-
-        nameCheck = !nameString.isEmpty();
-
-
-        uploadProfile(view,nameString,nameCheck);
+//        String nameString = binding.nameEdittext.getText().toString();
+//
+//        boolean nameCheck;
+//
+//        nameCheck = !nameString.isEmpty();
+//
+//
+//        uploadProfile(view,nameString,nameCheck);
 
     }
 
@@ -243,10 +267,10 @@ public class ProfileFragment extends Fragment {
             editor.putString("name",uploadName);
             editor.apply();
 
-            binding.nameEdittext.setEnabled(false);
-            binding.nameEdittext.setText("");
-            binding.nameEdittext.setHint(uploadName);
-            binding.nameTextInputLayout.setEndIconVisible(true);
+//            binding.nameEdittext.setEnabled(false);
+//            binding.nameEdittext.setText("");
+//            binding.nameEdittext.setHint(uploadName);
+//            binding.nameTextInputLayout.setEndIconVisible(true);
         }
 
         SharedPreferences.Editor editor = imageUrlShared.edit();
@@ -262,10 +286,10 @@ public class ProfileFragment extends Fragment {
             editor.putString("name",uploadName);
             editor.apply();
 
-            binding.nameEdittext.setEnabled(false);
-            binding.nameEdittext.setText("");
-            binding.nameEdittext.setHint(uploadName);
-            binding.nameTextInputLayout.setEndIconVisible(true);
+//            binding.nameEdittext.setEnabled(false);
+//            binding.nameEdittext.setText("");
+//            binding.nameEdittext.setHint(uploadName);
+//            binding.nameTextInputLayout.setEndIconVisible(true);
         }
     }
 
@@ -355,10 +379,11 @@ public class ProfileFragment extends Fragment {
 
         if(!name.isEmpty()){
             myUserName = name;
-            binding.nameEdittext.setHint(name);
-            binding.nameEdittext.setEnabled(false);
+            binding.profileName.setText(name);
+//            binding.nameEdittext.setHint(name);
+//            binding.nameEdittext.setEnabled(false);
         }else {
-            binding.nameTextInputLayout.setEndIconVisible(false);
+//            binding.nameTextInputLayout.setEndIconVisible(false);
         }
         if(!imageUrl.isEmpty()){
             myImageUrl = imageUrl;

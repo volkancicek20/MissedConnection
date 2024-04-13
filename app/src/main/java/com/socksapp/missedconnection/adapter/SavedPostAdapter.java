@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -22,25 +21,25 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.RecyclerEmptyPostBinding;
+import com.socksapp.missedconnection.databinding.RecyclerEmptySavedPostBinding;
 import com.socksapp.missedconnection.databinding.RecyclerPostBinding;
-import com.socksapp.missedconnection.databinding.RecyclerviewPostBinding;
+import com.socksapp.missedconnection.databinding.RecyclerSavedPostBinding;
 import com.socksapp.missedconnection.fragment.MainFragment;
+import com.socksapp.missedconnection.fragment.SavedPostFragment;
 import com.socksapp.missedconnection.model.FindPost;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public class PostAdapter extends RecyclerView.Adapter {
+public class SavedPostAdapter extends RecyclerView.Adapter {
 
     private FirebaseAuth auth;
     private FirebaseUser user;
     private FirebaseFirestore firebaseFirestore;
     public ArrayList<FindPost> arrayList;
     public Context context;
-    public MainFragment fragment;
+    public SavedPostFragment fragment;
 
-    public PostAdapter(ArrayList<FindPost> arrayList,Context context,MainFragment fragment) {
+    public SavedPostAdapter(ArrayList<FindPost> arrayList, Context context, SavedPostFragment fragment) {
         this.arrayList = arrayList;
         this.context = context;
         this.fragment = fragment;
@@ -66,11 +65,11 @@ public class PostAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType){
             case LAYOUT_ONE:
-                RecyclerPostBinding recyclerPostBinding = RecyclerPostBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
-                return new PostHolder(recyclerPostBinding);
+                RecyclerSavedPostBinding recyclerSavedPostBinding = RecyclerSavedPostBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+                return new SavedPostHolder(recyclerSavedPostBinding);
             case LAYOUT_EMPTY:
-                 RecyclerEmptyPostBinding recyclerViewEmptyPostBinding = RecyclerEmptyPostBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
-                return new PostEmptyHolder(recyclerViewEmptyPostBinding);
+                RecyclerEmptySavedPostBinding recyclerEmptySavedPostBinding = RecyclerEmptySavedPostBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+                return new SavedPostEmptyHolder(recyclerEmptySavedPostBinding);
             default:
                 return null;
 
@@ -92,7 +91,7 @@ public class PostAdapter extends RecyclerView.Adapter {
         switch (holder.getItemViewType()) {
             case LAYOUT_ONE:
 
-                PostHolder postHolder = (PostHolder) holder;
+                SavedPostHolder savedPostHolder = (SavedPostHolder) holder;
 
                 imageUrl = arrayList.get(position).imageUrl;
                 name = arrayList.get(position).name;
@@ -112,10 +111,10 @@ public class PostAdapter extends RecyclerView.Adapter {
                 documentReference = arrayList.get(position).documentReference;
 
 
-                getShow(imageUrl,name,city,district,place,explain,timestamp,postHolder);
+                getShow(imageUrl,name,city,district,place,explain,timestamp,savedPostHolder);
 
-                ((PostHolder) holder).recyclerPostBinding.verticalMenu.setOnClickListener(v ->{
-                    fragment.dialogShow(v,mail,name,lat,lng,radius,documentReference);
+                ((SavedPostHolder) holder).recyclerSavedPostBinding.removeSavedMenu.setOnClickListener(v ->{
+                    fragment.removeSaved(v,documentReference,holder.getAdapterPosition());
                 });
 
                 break;
@@ -131,26 +130,28 @@ public class PostAdapter extends RecyclerView.Adapter {
         return arrayList.size();
     }
 
-    private static class PostHolder extends RecyclerView.ViewHolder {
-        RecyclerPostBinding recyclerPostBinding;
-        public PostHolder(RecyclerPostBinding recyclerPostBinding) {
-            super(recyclerPostBinding.getRoot());
-            this.recyclerPostBinding = recyclerPostBinding;
+    public static class SavedPostHolder extends RecyclerView.ViewHolder {
+        RecyclerSavedPostBinding recyclerSavedPostBinding;
+        public SavedPostHolder(RecyclerSavedPostBinding recyclerSavedPostBinding) {
+            super(recyclerSavedPostBinding.getRoot());
+            this.recyclerSavedPostBinding = recyclerSavedPostBinding;
         }
     }
 
-    private static class PostEmptyHolder extends RecyclerView.ViewHolder {
-        RecyclerEmptyPostBinding recyclerViewEmptyPostBinding;
-        public PostEmptyHolder(RecyclerEmptyPostBinding recyclerViewEmptyPostBinding) {
-            super(recyclerViewEmptyPostBinding.getRoot());
-            this.recyclerViewEmptyPostBinding = recyclerViewEmptyPostBinding;
+    public static class SavedPostEmptyHolder extends RecyclerView.ViewHolder {
+
+        RecyclerEmptySavedPostBinding recyclerEmptySavedPostBinding;
+        public SavedPostEmptyHolder(RecyclerEmptySavedPostBinding recyclerEmptySavedPostBinding) {
+            super(recyclerEmptySavedPostBinding.getRoot());
+            this.recyclerEmptySavedPostBinding = recyclerEmptySavedPostBinding;
         }
     }
 
-    public void getShow(String imageUrl,String name,String city,String district,String place,String explain,Timestamp timestamp,PostHolder holder){
+    public void getShow(String imageUrl, String name, String city, String district, String place, String explain, Timestamp timestamp, SavedPostAdapter.SavedPostHolder holder){
+
         if(imageUrl.isEmpty()){
             ImageView imageView;
-            imageView = holder.recyclerPostBinding.recyclerProfileImage;
+            imageView = holder.recyclerSavedPostBinding.recyclerProfileImage;
             imageView.setImageResource(R.drawable.icon_person);
         }else {
 
@@ -159,7 +160,7 @@ public class PostAdapter extends RecyclerView.Adapter {
                 .apply(new RequestOptions()
                 .error(R.drawable.person_active_96)
                 .centerCrop())
-                .into(holder.recyclerPostBinding.recyclerProfileImage);
+                .into(holder.recyclerSavedPostBinding.recyclerProfileImage);
         }
 
         String location = city;
@@ -167,14 +168,14 @@ public class PostAdapter extends RecyclerView.Adapter {
             location = location + "/" + district;
         }
 
-        holder.recyclerPostBinding.recyclerCityAndDistrict.setText(location);
-        holder.recyclerPostBinding.recyclerName.setText(name);
-        holder.recyclerPostBinding.recyclerExplain.setText(explain);
+        holder.recyclerSavedPostBinding.recyclerCityAndDistrict.setText(location);
+        holder.recyclerSavedPostBinding.recyclerName.setText(name);
+        holder.recyclerSavedPostBinding.recyclerExplain.setText(explain);
 
         if(place != null){
-            holder.recyclerPostBinding.recyclerPlace.setText(place);
+            holder.recyclerSavedPostBinding.recyclerPlace.setText(place);
         }else {
-            holder.recyclerPostBinding.placeIcon.setVisibility(View.GONE);
+            holder.recyclerSavedPostBinding.placeIcon.setVisibility(View.GONE);
         }
 
         long secondsElapsed = (Timestamp.now().getSeconds() - timestamp.getSeconds());
@@ -196,7 +197,7 @@ public class PostAdapter extends RecyclerView.Adapter {
             elapsedTime = "• " + secondsElapsed + " saniye önce";
         }
 
-        holder.recyclerPostBinding.timestampTime.setText(elapsedTime);
+        holder.recyclerSavedPostBinding.timestampTime.setText(elapsedTime);
 
     }
 }

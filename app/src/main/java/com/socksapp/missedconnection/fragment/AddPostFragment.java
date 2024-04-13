@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -13,12 +14,15 @@ import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.Pair;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,6 +114,7 @@ public class AddPostFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         binding.mapView.onCreate(savedInstanceState);
 
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
@@ -221,6 +226,31 @@ public class AddPostFragment extends Fragment {
                 goToMainFragment(view);
             }
         });
+
+        binding.explain.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                int maxLength = 250;
+                int currentLength = s.length();
+                ColorStateList red,gray;
+                red = AppCompatResources.getColorStateList(view.getContext(),R.color.red);
+                gray = AppCompatResources.getColorStateList(view.getContext(),R.color.gray_with_alpha);
+
+                if (currentLength == maxLength) {
+                    binding.explainTextInput.setCounterTextColor(red);
+                } else {
+                    binding.explainTextInput.setCounterTextColor(gray);
+                }
+            }
+        });
     }
 
     private void goToMainFragment(View v){
@@ -291,6 +321,7 @@ public class AddPostFragment extends Fragment {
                     post.put("timestamp",new Date());
                     post.put("name",myUserName);
                     post.put("imageUrl",myImageUrl);
+                    post.put("mail",userMail);
 
                     firestore.collection("post"+city).add(post).addOnSuccessListener(documentReference -> {
                         showToastShort("Eklendi");

@@ -14,9 +14,7 @@ public class RefDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Tablo oluşturma sorgusu
-        String CREATE_TABLE = "CREATE TABLE refs (ref TEXT)";
-        db.execSQL(CREATE_TABLE);
+        db.execSQL("CREATE TABLE refs (ref TEXT PRIMARY KEY, mail TEXT)");
     }
 
     @Override

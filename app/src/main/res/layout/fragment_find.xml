@@ -125,7 +125,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_margin="16dp"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         app:layout_constraintTop_toBottomOf="@id/google_map_text_view"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -164,6 +164,7 @@
                     android:textColor="@color/white"
                     android:textSize="14sp"
                     android:textColorHint="@color/gray"
+                    android:textCursorDrawable="@drawable/edittext_cursor_color"
                     />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -252,7 +253,8 @@
                                 android:maxLength="10"
                                 android:layout_gravity="center"
                                 android:layout_marginStart="16dp"
-                                android:layout_marginEnd="8dp"/>
+                                android:layout_marginEnd="8dp"
+                                android:textCursorDrawable="@drawable/edittext_cursor_color"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -282,7 +284,8 @@
                                 android:layout_marginTop="16dp"
                                 android:layout_marginBottom="16dp"
                                 android:layout_marginEnd="16dp"
-                                android:layout_marginStart="8dp"/>
+                                android:layout_marginStart="8dp"
+                                android:textCursorDrawable="@drawable/edittext_cursor_color"/>
 
                         </LinearLayout>
 
@@ -315,7 +318,8 @@
                                 android:maxLength="5"
                                 android:layout_gravity="center"
                                 android:layout_marginStart="16dp"
-                                android:layout_marginEnd="8dp"/>
+                                android:layout_marginEnd="8dp"
+                                android:textCursorDrawable="@drawable/edittext_cursor_color"/>
 
                             <TextView
                                 android:layout_width="wrap_content"
@@ -345,7 +349,8 @@
                                 android:layout_marginTop="16dp"
                                 android:layout_marginBottom="16dp"
                                 android:layout_marginEnd="16dp"
-                                android:layout_marginStart="8dp"/>
+                                android:layout_marginStart="8dp"
+                                android:textCursorDrawable="@drawable/edittext_cursor_color"/>
 
                         </LinearLayout>
 

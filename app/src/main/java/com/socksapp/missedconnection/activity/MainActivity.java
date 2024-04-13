@@ -6,6 +6,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
+import androidx.fragment.app.FragmentManager;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,6 +36,7 @@ import com.socksapp.missedconnection.fragment.FindFragment;
 import com.socksapp.missedconnection.fragment.MainFragment;
 import com.socksapp.missedconnection.fragment.MessageFragment;
 import com.socksapp.missedconnection.fragment.ProfileFragment;
+import com.socksapp.missedconnection.fragment.SavedPostFragment;
 import com.socksapp.missedconnection.fragment.SettingsFragment;
 import com.socksapp.missedconnection.myclass.RefDataAccess;
 import com.squareup.picasso.Picasso;
@@ -58,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView headerName;
     public View headerView,includedLayout;
     public RefDataAccess refDataAccess;
-    public boolean active_map;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        active_map = true;
+//        MapsInitializer.initialize(this);
 
         bottomNavigationView = binding.bottomNavView;
 
@@ -105,6 +107,10 @@ public class MainActivity extends AppCompatActivity {
                 buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
                 bottomNavigationView.setVisibility(View.VISIBLE);
                 getSupportFragmentManager().popBackStack();
+            } else if (currentFragment instanceof SavedPostFragment) {
+                buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
+                bottomNavigationView.setVisibility(View.VISIBLE);
+                getSupportFragmentManager().popBackStack();
             } else {
                 drawerLayout.open();
             }
@@ -121,8 +127,14 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
                 if(item.getItemId() == R.id.nav_drawer_home){
-                    bottomNavigationView.setSelectedItemId(R.id.navHome);
-                    loadFragment(MainFragment.class);
+                    Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView2);
+                    if (currentFragment instanceof MainFragment) {
+                        drawerLayout.closeDrawers();
+                    }else {
+                        System.out.println("fragment: "+currentFragment);
+                        bottomNavigationView.setSelectedItemId(R.id.navHome);
+                        loadFragment(MainFragment.class);
+                    }
                 } else if (item.getItemId() == R.id.nav_drawer_setting) {
                     loadFragment(SettingsFragment.class);
                 } else if (item.getItemId() == R.id.nav_drawer_logout) {
@@ -148,7 +160,14 @@ public class MainActivity extends AppCompatActivity {
                 int itemId = item.getItemId();
 
                 if(itemId == R.id.navHome){
-                    loadFragment(MainFragment.class);
+
+                    Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView2);
+                    if (currentFragment instanceof MainFragment) {
+
+                    }else {
+                        loadFragment(MainFragment.class);
+                    }
+
                 } else if (itemId == R.id.navFind) {
                     loadFragment(FindFragment.class);
                 } else if (itemId == R.id.navAdd) {
@@ -222,7 +241,6 @@ public class MainActivity extends AppCompatActivity {
                         editor.apply();
                     }
                     if(imageUrl != null && !imageUrl.isEmpty()){
-//                        Picasso.get().load(imageUrl).into(headerImage);
 
                         Glide.with(this)
                             .load(imageUrl)
@@ -248,7 +266,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if(!imageUrlShared.getString("imageUrl","").isEmpty()){
-//                Picasso.get().load(imageUrlShared.getString("imageUrl","")).into(headerImage);
 
                 Glide.with(this)
                     .load(imageUrlShared.getString("imageUrl",""))

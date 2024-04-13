@@ -17,6 +17,10 @@ import android.widget.Toast;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentSettingsBinding;
+import com.socksapp.missedconnection.model.RefItem;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SettingsFragment extends Fragment {
 
@@ -44,6 +48,7 @@ public class SettingsFragment extends Fragment {
         mainActivity.bottomNavigationView.setVisibility(View.GONE);
         mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
 
+
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -53,6 +58,9 @@ public class SettingsFragment extends Fragment {
             }
         });
     }
+
+
+
 
     @Override
     public void onAttach(@NonNull Context context) {

@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.socksapp.missedconnection.model.RefItem;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,9 +27,10 @@ public class RefDataAccess {
         dbHelper.close();
     }
 
-    public long insertRef(String ref) {
+    public long insertRef(String ref, String mail) {
         ContentValues values = new ContentValues();
         values.put("ref", ref);
+        values.put("mail", mail);
         return database.insert("refs", null, values);
     }
 
@@ -35,14 +38,16 @@ public class RefDataAccess {
         database.delete("refs", "ref=?", new String[]{ref});
     }
 
-    public List<String> getAllRefs() {
-        List<String> refList = new ArrayList<>();
+    public List<RefItem> getAllRefs() {
+        List<RefItem> refList = new ArrayList<>();
 
-        try (Cursor cursor = database.query("refs", new String[]{"ref"}, null, null, null, null, null)) {
+        try (Cursor cursor = database.query("refs", new String[]{"ref", "mail"}, null, null, null, null, null)) {
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     String ref = cursor.getString(cursor.getColumnIndexOrThrow("ref"));
-                    refList.add(ref);
+                    String mail = cursor.getString(cursor.getColumnIndexOrThrow("mail"));
+                    RefItem item = new RefItem(ref, mail);
+                    refList.add(item);
                 } while (cursor.moveToNext());
             }
         } catch (SQLException e) {
@@ -51,6 +56,7 @@ public class RefDataAccess {
 
         return refList;
     }
+
 
     public void deleteAllData() {
         database.delete("refs", null, null);

@@ -1,6 +1,5 @@
 package com.socksapp.missedconnection.fragment;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,34 +7,21 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.denzcoskun.imageslider.ImageSlider;
-import com.denzcoskun.imageslider.constants.ScaleTypes;
-import com.denzcoskun.imageslider.models.SlideModel;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -46,35 +32,32 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
+import com.socksapp.missedconnection.adapter.MyPostAdapter;
 import com.socksapp.missedconnection.adapter.PostAdapter;
-import com.socksapp.missedconnection.databinding.FragmentFindBinding;
-import com.socksapp.missedconnection.databinding.FragmentMainBinding;
+import com.socksapp.missedconnection.databinding.FragmentMyPostBinding;
 import com.socksapp.missedconnection.model.FindPost;
-import com.socksapp.missedconnection.myclass.RefDataAccess;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-public class MainFragment extends Fragment {
+public class MyPostFragment extends Fragment {
 
-    private FragmentMainBinding binding;
+    private FragmentMyPostBinding binding;
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
     private FirebaseUser user;
-    private SharedPreferences nameShared,imageUrlShared;
     private String userMail;
     private MainActivity mainActivity;
-    public PostAdapter postAdapter;
+    private SharedPreferences nameShared,imageUrlShared;
+    public MyPostAdapter myPostAdapter;
     public ArrayList<FindPost> postArrayList;
-    public MainFragment() {
+
+    public MyPostFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -87,7 +70,7 @@ public class MainFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentMainBinding.inflate(inflater,container,false);
+        binding = FragmentMyPostBinding.inflate(inflater,container,false);
         return binding.getRoot();
     }
 
@@ -95,30 +78,19 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
-        mainActivity.includedLayout.setVisibility(View.VISIBLE);
-        mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-
         userMail = user.getEmail();
 
-        binding.recyclerViewMain.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        postAdapter = new PostAdapter(postArrayList,view.getContext(),MainFragment.this);
-        binding.recyclerViewMain.setAdapter(postAdapter);
+        binding.recyclerViewMyPost.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        myPostAdapter = new MyPostAdapter(postArrayList,view.getContext(),MyPostFragment.this);
+        binding.recyclerViewMyPost.setAdapter(myPostAdapter);
         postArrayList.clear();
         getData();
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                shutdown(view);
-            }
-        });
-
     }
 
-    public void dialogShow(View view, String mail, String name, Double lat, Double lng, int radius, DocumentReference documentReference){
+    public void dialogShow(View view,String city, Double lat, Double lng, int radius, DocumentReference documentReference,int position){
         final Dialog dialog = new Dialog(view.getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.bottom_sheet_layout);
+        dialog.setContentView(R.layout.bottom_sheet_layout_2);
 
         LinearLayout map = dialog.findViewById(R.id.layoutMap);
 
@@ -142,37 +114,27 @@ public class MainFragment extends Fragment {
             fragmentTransaction.commit();
         });
 
-        LinearLayout save = dialog.findViewById(R.id.layoutSave);
-        LinearLayout message = dialog.findViewById(R.id.layoutMessage);
-        LinearLayout report = dialog.findViewById(R.id.layoutReport);
+        LinearLayout delete = dialog.findViewById(R.id.layoutDelete);
 
-        save.setOnClickListener(v ->{
+        delete.setOnClickListener(v ->{
 
-            mainActivity.refDataAccess.insertRef(documentReference.getId(),mail);
-            Toast.makeText(view.getContext(), "Kaydedildi", Toast.LENGTH_SHORT).show();
-            dialog.dismiss();
+            WriteBatch batch = firestore.batch();
 
-//            WriteBatch batch = firestore.batch();
-//
-//            batch.set(firestore.collection(userMail).document(documentReference.getId()), data);
-//
-//            batch.commit()
-//                .addOnSuccessListener(aVoid -> {
-//                    mainActivity.refDataAccess.insertRef(city,documentReference.getId());
-//                    Toast.makeText(view.getContext(), "Kaydedildi", Toast.LENGTH_SHORT).show();
-//                    dialog.dismiss();
-//                })
-//                .addOnFailureListener(e -> {
-//
-//                });
-        });
+            batch.delete(firestore.collection(userMail).document(documentReference.getId()));
+            batch.delete(firestore.collection("post"+city).document(documentReference.getId()));
 
-        message.setOnClickListener(v ->{
+            batch.commit()
+                .addOnSuccessListener(aVoid -> {
+                    mainActivity.refDataAccess.deleteRef(documentReference.getId());
+                    myPostAdapter.notifyItemRemoved(position);
+                    postArrayList.remove(position);
+                    myPostAdapter.notifyDataSetChanged();
+                    Toast.makeText(view.getContext(), "Silindi", Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                })
+                .addOnFailureListener(e -> {
 
-        });
-
-        report.setOnClickListener(v ->{
-
+                });
         });
 
         if(dialog.getWindow() != null){
@@ -185,13 +147,13 @@ public class MainFragment extends Fragment {
     }
 
     private void getData(){
-        firestore.collection("post"+"İstanbul").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        firestore.collection(userMail).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-                    String imageUrl = querySnapshot.getString("imageUrl");
-                    String name = querySnapshot.getString("name");
-                    String mail = querySnapshot.getString("mail");
+//                    String imageUrl = querySnapshot.getString("imageUrl");
+//                    String name = querySnapshot.getString("name");
+//                    String mail = querySnapshot.getString("mail");
                     String city = querySnapshot.getString("city");
                     String district = querySnapshot.getString("district");
                     String time1 = querySnapshot.getString("time1");
@@ -212,9 +174,9 @@ public class MainFragment extends Fragment {
 
                     FindPost post = new FindPost();
                     post.viewType = 1;
-                    post.imageUrl = imageUrl;
-                    post.name = name;
-                    post.mail = mail;
+                    post.imageUrl = imageUrlShared.getString("imageUrl","");
+                    post.name = nameShared.getString("name","");
+                    post.mail = userMail;
                     post.city = city;
                     post.district = district;
                     post.time1 = time1;
@@ -230,25 +192,11 @@ public class MainFragment extends Fragment {
                     post.documentReference = documentReference;
 
                     postArrayList.add(post);
-                    postAdapter.notifyDataSetChanged();
-
+                    myPostAdapter.notifyDataSetChanged();
                 }
             }
         });
     }
-
-    private void shutdown(View v){
-        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-        builder.setMessage("Uygulamadan çıkış yapılsın mı?");
-        builder.setPositiveButton("Çık", (dialog, which) -> {
-            System.exit(0);
-        });
-        builder.setNegativeButton("Hayır", (dialog, which) -> {
-
-        });
-        builder.show();
-    }
-
 
     @Override
     public void onAttach(@NonNull Context context) {

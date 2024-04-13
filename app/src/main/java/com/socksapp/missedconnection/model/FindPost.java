@@ -9,6 +9,7 @@ public class FindPost {
     public int viewType;
     public String imageUrl;
     public String name;
+    public String mail;
     public String city;
     public String district;
     public String place;
@@ -25,6 +26,14 @@ public class FindPost {
 
     public FindPost (){
 
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public DocumentReference getDocumentReference() {
