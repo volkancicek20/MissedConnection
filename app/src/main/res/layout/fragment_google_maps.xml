@@ -30,7 +30,8 @@
         android:background="@drawable/edit_map_search_view"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/SearchViewStyle"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/saveLocation"
@@ -49,6 +50,11 @@
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"
+        android:background="@android:color/transparent"
+        app:trackColor="@color/red"
+        app:thumbColor="@color/white"
+        app:thumbStrokeColor="@color/red"
+        app:thumbStrokeWidth="1dp"
         android:valueFrom="50"
         android:valueTo="200"
         android:value="100"

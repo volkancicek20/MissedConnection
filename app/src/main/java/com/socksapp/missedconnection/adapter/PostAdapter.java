@@ -4,15 +4,18 @@ import static com.socksapp.missedconnection.model.FindPost.LAYOUT_EMPTY;
 import static com.socksapp.missedconnection.model.FindPost.LAYOUT_ONE;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.Timestamp;
@@ -23,13 +26,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.RecyclerEmptyPostBinding;
 import com.socksapp.missedconnection.databinding.RecyclerPostBinding;
-import com.socksapp.missedconnection.databinding.RecyclerviewPostBinding;
 import com.socksapp.missedconnection.fragment.MainFragment;
 import com.socksapp.missedconnection.model.FindPost;
-import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
-import java.util.HashMap;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostAdapter extends RecyclerView.Adapter {
 
@@ -111,6 +111,15 @@ public class PostAdapter extends RecyclerView.Adapter {
                 timestamp = arrayList.get(position).timestamp;
                 documentReference = arrayList.get(position).documentReference;
 
+                postHolder.recyclerPostBinding.baseConstraint.setClickable(true);
+
+                if(place.isEmpty()){
+                    postHolder.recyclerPostBinding.placeIcon.setVisibility(View.GONE);
+                }
+
+                postHolder.recyclerPostBinding.recyclerProfileImage.setOnClickListener(v ->{
+                    getImageShow(v,imageUrl);
+                });
 
                 getShow(imageUrl,name,city,district,place,explain,timestamp,postHolder);
 
@@ -151,9 +160,8 @@ public class PostAdapter extends RecyclerView.Adapter {
         if(imageUrl.isEmpty()){
             ImageView imageView;
             imageView = holder.recyclerPostBinding.recyclerProfileImage;
-            imageView.setImageResource(R.drawable.icon_person);
+            imageView.setImageResource(R.drawable.person_active_96);
         }else {
-
             Glide.with(context)
                 .load(imageUrl)
                 .apply(new RequestOptions()
@@ -198,5 +206,26 @@ public class PostAdapter extends RecyclerView.Adapter {
 
         holder.recyclerPostBinding.timestampTime.setText(elapsedTime);
 
+    }
+
+    private void getImageShow(View view,String imageUrl){
+        LayoutInflater inflater = LayoutInflater.from(view.getContext());
+        View popupView = inflater.inflate(R.layout.show_image, null);
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        CircleImageView imageView = popupView.findViewById(R.id.show_image);
+
+        Glide.with(view.getContext())
+            .load(imageUrl)
+            .apply(new RequestOptions()
+            .error(R.drawable.person_active_96)
+            .centerCrop())
+            .into(imageView);
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 }

@@ -13,6 +13,8 @@
     <color name="tp">#00000000</color>
     <color name="buttonBg">#1d9cf0</color>
 
+    <color name="shimmer_color">#BFBDBD</color>
+
     <color name="hint_color_dark">#878787</color>
     <color name="text_input_selection_color_dark">#424242</color>
     <color name="dark_background_color">#000000</color>

@@ -4,21 +4,21 @@
     <item
         android:id="@+id/navHome"
         android:icon="@drawable/home_selector"
-        android:title="Anasayfa" />
+        android:title="" />
     <item
         android:id="@+id/navFind"
         android:icon="@drawable/search_selector"
-        android:title="Bul" />
+        android:title="" />
     <item
         android:id="@+id/navAdd"
         android:icon="@drawable/add_selector"
-        android:title="Ekle" />
+        android:title="" />
     <item
         android:id="@+id/navProfile"
         android:icon="@drawable/person_selector"
-        android:title="Profil" />
+        android:title="" />
     <item
         android:id="@+id/navMessage"
         android:icon="@drawable/mail_selector"
-        android:title="Mesajlar" />
+        android:title="" />
 </menu>

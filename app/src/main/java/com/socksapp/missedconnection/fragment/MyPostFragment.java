@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -80,11 +81,25 @@ public class MyPostFragment extends Fragment {
 
         userMail = user.getEmail();
 
+        mainActivity.bottomNavigationView.setVisibility(View.GONE);
+        mainActivity.includedLayout.setVisibility(View.VISIBLE);
+        mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
+
         binding.recyclerViewMyPost.setLayoutManager(new LinearLayoutManager(view.getContext()));
         myPostAdapter = new MyPostAdapter(postArrayList,view.getContext(),MyPostFragment.this);
         binding.recyclerViewMyPost.setAdapter(myPostAdapter);
         postArrayList.clear();
+
         getData();
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
+                mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+                requireActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
     }
 
     public void dialogShow(View view,String city, Double lat, Double lng, int radius, DocumentReference documentReference,int position){

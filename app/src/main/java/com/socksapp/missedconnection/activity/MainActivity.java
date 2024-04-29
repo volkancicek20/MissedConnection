@@ -6,8 +6,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
-import androidx.fragment.app.FragmentManager;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,14 +14,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,17 +25,17 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.ActivityMainBinding;
+import com.socksapp.missedconnection.fragment.AccountSettingFragment;
 import com.socksapp.missedconnection.fragment.AddPostFragment;
+import com.socksapp.missedconnection.fragment.EditProfileFragment;
 import com.socksapp.missedconnection.fragment.FindFragment;
 import com.socksapp.missedconnection.fragment.MainFragment;
 import com.socksapp.missedconnection.fragment.MessageFragment;
+import com.socksapp.missedconnection.fragment.MyPostFragment;
 import com.socksapp.missedconnection.fragment.ProfileFragment;
 import com.socksapp.missedconnection.fragment.SavedPostFragment;
 import com.socksapp.missedconnection.fragment.SettingsFragment;
 import com.socksapp.missedconnection.myclass.RefDataAccess;
-import com.squareup.picasso.Picasso;
-
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     public BottomNavigationView bottomNavigationView;
     public DrawerLayout drawerLayout;
     public NavigationView navigationView;
+    public View bottomViewLine;
     public ImageView buttonDrawerToggle;
     private ImageView headerImage;
     private TextView headerName;
@@ -68,34 +63,22 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-//        MapsInitializer.initialize(this);
+        fragmentContainerView = findViewById(R.id.fragmentContainerView2);
 
         bottomNavigationView = binding.bottomNavView;
+
+        bottomViewLine = binding.bottomViewLine;
+
+        includedLayout = findViewById(R.id.content);
 
         bottomNavigationView.setItemIconTintList(null);
 
         refDataAccess = new RefDataAccess(this);
         refDataAccess.open();
 
-////        refDataAccess.insertRef("Volkan");
-////        refDataAccess.insertRef("Okan");
-////        refDataAccess.insertRef("Ahmet");
-////        refDataAccess.insertRef("Mehmet");
-//
-//        refDataAccess.deleteRef("Okan");
-////
-//        List<String> namesList = refDataAccess.getAllRefs();
-//        StringBuilder stringBuilder = new StringBuilder();
-//        for (String name : namesList) {
-//            stringBuilder.append(name).append("\n");
-//        }
-//
-//        Toast.makeText(this,stringBuilder.toString(),Toast.LENGTH_LONG).show();
-
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-
 
         drawerLayout = binding.drawerLayout;
         navigationView = binding.navView;
@@ -111,12 +94,22 @@ public class MainActivity extends AppCompatActivity {
                 buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
                 bottomNavigationView.setVisibility(View.VISIBLE);
                 getSupportFragmentManager().popBackStack();
+            }else if (currentFragment instanceof MyPostFragment) {
+                buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
+                bottomNavigationView.setVisibility(View.VISIBLE);
+                getSupportFragmentManager().popBackStack();
+            }else if (currentFragment instanceof EditProfileFragment) {
+                buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
+                bottomNavigationView.setVisibility(View.VISIBLE);
+                getSupportFragmentManager().popBackStack();
+            }else if (currentFragment instanceof AccountSettingFragment) {
+                buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
+                bottomNavigationView.setVisibility(View.VISIBLE);
+                getSupportFragmentManager().popBackStack();
             } else {
                 drawerLayout.open();
             }
         });
-
-        includedLayout = findViewById(R.id.content);
 
         headerView = navigationView.getHeaderView(0);
         headerImage = headerView.findViewById(R.id.drawer_image);
@@ -150,8 +143,6 @@ public class MainActivity extends AppCompatActivity {
         nameShared = getSharedPreferences("Name", Context.MODE_PRIVATE);
         imageUrlShared = getSharedPreferences("ImageUrl", Context.MODE_PRIVATE);
         userDone = getSharedPreferences("UserDone", Context.MODE_PRIVATE);
-
-        fragmentContainerView = findViewById(R.id.fragmentContainerView2);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override

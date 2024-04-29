@@ -110,10 +110,15 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
                 timestamp = arrayList.get(position).timestamp;
                 documentReference = arrayList.get(position).documentReference;
 
+                savedPostHolder.recyclerSavedPostBinding.baseConstraint.setClickable(true);
+
+                if(place.isEmpty()){
+                    savedPostHolder.recyclerSavedPostBinding.placeIcon.setVisibility(View.GONE);
+                }
 
                 getShow(imageUrl,name,city,district,place,explain,timestamp,savedPostHolder);
 
-                ((SavedPostHolder) holder).recyclerSavedPostBinding.removeSavedMenu.setOnClickListener(v ->{
+                savedPostHolder.recyclerSavedPostBinding.removeSavedMenu.setOnClickListener(v ->{
                     fragment.removeSaved(v,documentReference,holder.getAdapterPosition());
                 });
 

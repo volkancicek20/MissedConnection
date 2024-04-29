@@ -24,10 +24,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.provider.MediaStore;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,17 +45,15 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
-import com.socksapp.missedconnection.databinding.FragmentProfileBinding;
-import com.squareup.picasso.Picasso;
+import com.socksapp.missedconnection.databinding.FragmentEditProfileBinding;
 
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 
-public class ProfileFragment extends Fragment {
+public class EditProfileFragment extends Fragment {
 
-    private FragmentProfileBinding binding;
+    private FragmentEditProfileBinding binding;
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
     private FirebaseUser user;
@@ -70,8 +66,7 @@ public class ProfileFragment extends Fragment {
     private Uri imageData;
     private String myUserName,myImageUrl,userMail;
     private MainActivity mainActivity;
-
-    public ProfileFragment() {
+    public EditProfileFragment() {
         // Required empty public constructor
     }
 
@@ -86,12 +81,11 @@ public class ProfileFragment extends Fragment {
 
         nameShared = requireActivity().getSharedPreferences("Name",Context.MODE_PRIVATE);
         imageUrlShared = requireActivity().getSharedPreferences("ImageUrl",Context.MODE_PRIVATE);
-
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        binding = FragmentProfileBinding.inflate(inflater,container,false);
+        binding = FragmentEditProfileBinding.inflate(inflater,container,false);
         return binding.getRoot();
     }
 
@@ -99,7 +93,8 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+        mainActivity.bottomNavigationView.setVisibility(View.GONE);
+        mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
 
         userMail = user.getEmail();
 
@@ -108,84 +103,32 @@ public class ProfileFragment extends Fragment {
         setProfile(view);
         registerLauncher(view);
 
-//        binding.profileImage.setOnClickListener(this::setImage);
+        binding.profileImage.setOnClickListener(this::setImage);
 
-//        binding.saveProfile.setOnClickListener(this::saveProfile);
+        binding.saveProfile.setOnClickListener(this::saveProfile);
 
-//        binding.nameTextInputLayout.setEndIconOnClickListener(v ->{
-//            binding.nameEdittext.setEnabled(true);
-//            binding.nameEdittext.requestFocus();
-//            binding.nameTextInputLayout.setEndIconVisible(false);
-//        });
-
-        binding.editProfileLinearLayout.setOnClickListener(this::goToEditProfileFragment);
-        binding.myPostLinearLayout.setOnClickListener(this::goToMyPostFragment);
-        binding.bookmarkLinearLayout.setOnClickListener(this::goToSavedPostFragment);
-        binding.accountSettingsLinearLayout.setOnClickListener(this::goToAccountSettingFragment);
+        binding.nameTextInputLayout.setEndIconOnClickListener(v ->{
+            binding.nameEdittext.setEnabled(true);
+            binding.nameEdittext.requestFocus();
+            binding.nameTextInputLayout.setEndIconVisible(false);
+        });
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                goToMainFragment(view);
+                mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
+                mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+                requireActivity().getSupportFragmentManager().popBackStack();
             }
         });
+
     }
-
-    private void goToEditProfileFragment(View v){
-        EditProfileFragment fragment = new EditProfileFragment();
-        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
-
-    private void goToMyPostFragment(View v){
-        MyPostFragment fragment = new MyPostFragment();
-        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
-
-    private void goToSavedPostFragment(View v){
-        SavedPostFragment fragment = new SavedPostFragment();
-        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
-
-    private void goToAccountSettingFragment(View v){
-        AccountSettingFragment fragment = new AccountSettingFragment();
-        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
-
-    private void goToMainFragment(View v){
-
-        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
-
-        MainFragment fragment = new MainFragment();
-        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
-
 
     private void saveProfile(View view){
-
-//        String nameString = binding.nameEdittext.getText().toString();
-//
-//        boolean nameCheck;
-//
-//        nameCheck = !nameString.isEmpty();
-//
-//
-//        uploadProfile(view,nameString,nameCheck);
-
+        String nameString = binding.nameEdittext.getText().toString();
+        boolean nameCheck;
+        nameCheck = !nameString.isEmpty();
+        uploadProfile(view,nameString,nameCheck);
     }
 
     private void uploadProfile(View view, String uploadName,boolean nameCheck) {
@@ -212,29 +155,29 @@ public class ProfileFragment extends Fragment {
             }
 
             storageReference.child("userProfilePhoto").child(userMail).putFile(imageData)
-                .addOnSuccessListener(taskSnapshot -> {
-                    Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
-                    downloadUrlTask.addOnCompleteListener(task -> {
-                        String imageUrl = task.getResult().toString();
+                    .addOnSuccessListener(taskSnapshot -> {
+                        Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
+                        downloadUrlTask.addOnCompleteListener(task -> {
+                            String imageUrl = task.getResult().toString();
 
-                        batch.update(usersRef, "imageUrl", imageUrl);
+                            batch.update(usersRef, "imageUrl", imageUrl);
 
-                        batch.commit()
-                            .addOnSuccessListener(aVoid -> {
-                                progressDialog.dismiss();
-                                updateProfile(nameCheck,uploadName,imageUrl);
-                                showToastShort("Profiliniz kaydedildi");
-                            })
-                            .addOnFailureListener(e -> {
-                                progressDialog.dismiss();
-                                showErrorMessage(view.getContext(), e.getLocalizedMessage());
-                            });
+                            batch.commit()
+                                .addOnSuccessListener(aVoid -> {
+                                    progressDialog.dismiss();
+                                    updateProfile(nameCheck,uploadName,imageUrl);
+                                    showToastShort("Profiliniz kaydedildi");
+                                })
+                                .addOnFailureListener(e -> {
+                                    progressDialog.dismiss();
+                                    showErrorMessage(view.getContext(), e.getLocalizedMessage());
+                                });
+                        });
+                    })
+                    .addOnFailureListener(e -> {
+                        progressDialog.dismiss();
+                        showErrorMessage(view.getContext(), e.getLocalizedMessage());
                     });
-                })
-                .addOnFailureListener(e -> {
-                    progressDialog.dismiss();
-                    showErrorMessage(view.getContext(), e.getLocalizedMessage());
-                });
 
         } else {
 
@@ -270,7 +213,6 @@ public class ProfileFragment extends Fragment {
             }else {
                 progressDialog.dismiss();
             }
-
         }
     }
 
@@ -280,10 +222,10 @@ public class ProfileFragment extends Fragment {
             editor.putString("name",uploadName);
             editor.apply();
 
-//            binding.nameEdittext.setEnabled(false);
-//            binding.nameEdittext.setText("");
-//            binding.nameEdittext.setHint(uploadName);
-//            binding.nameTextInputLayout.setEndIconVisible(true);
+            binding.nameEdittext.setEnabled(false);
+            binding.nameEdittext.setText("");
+            binding.nameEdittext.setHint(uploadName);
+            binding.nameTextInputLayout.setEndIconVisible(true);
         }
 
         SharedPreferences.Editor editor = imageUrlShared.edit();
@@ -299,10 +241,10 @@ public class ProfileFragment extends Fragment {
             editor.putString("name",uploadName);
             editor.apply();
 
-//            binding.nameEdittext.setEnabled(false);
-//            binding.nameEdittext.setText("");
-//            binding.nameEdittext.setHint(uploadName);
-//            binding.nameTextInputLayout.setEndIconVisible(true);
+            binding.nameEdittext.setEnabled(false);
+            binding.nameEdittext.setText("");
+            binding.nameEdittext.setHint(uploadName);
+            binding.nameTextInputLayout.setEndIconVisible(true);
         }
     }
 
@@ -392,15 +334,13 @@ public class ProfileFragment extends Fragment {
 
         if(!name.isEmpty()){
             myUserName = name;
-            binding.profileName.setText(name);
-//            binding.nameEdittext.setHint(name);
-//            binding.nameEdittext.setEnabled(false);
+            binding.nameEdittext.setHint(name);
+            binding.nameEdittext.setEnabled(false);
         }else {
-//            binding.nameTextInputLayout.setEndIconVisible(false);
+            binding.nameTextInputLayout.setEndIconVisible(false);
         }
         if(!imageUrl.isEmpty()){
             myImageUrl = imageUrl;
-//            Picasso.get().load(imageUrl).into(binding.profileImage);
 
             Glide.with(view.getContext())
                 .load(imageUrl)

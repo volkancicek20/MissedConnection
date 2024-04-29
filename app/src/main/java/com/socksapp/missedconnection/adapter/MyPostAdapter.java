@@ -2,17 +2,13 @@ package com.socksapp.missedconnection.adapter;
 
 import static com.socksapp.missedconnection.model.FindPost.LAYOUT_EMPTY;
 import static com.socksapp.missedconnection.model.FindPost.LAYOUT_ONE;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.Timestamp;
@@ -22,16 +18,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.RecyclerEmptyMyPostBinding;
-import com.socksapp.missedconnection.databinding.RecyclerEmptyPostBinding;
 import com.socksapp.missedconnection.databinding.RecyclerPostBinding;
-import com.socksapp.missedconnection.databinding.RecyclerviewPostBinding;
-import com.socksapp.missedconnection.fragment.MainFragment;
 import com.socksapp.missedconnection.fragment.MyPostFragment;
 import com.socksapp.missedconnection.model.FindPost;
-import com.squareup.picasso.Picasso;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MyPostAdapter extends RecyclerView.Adapter {
 
@@ -113,6 +103,11 @@ public class MyPostAdapter extends RecyclerView.Adapter {
                 timestamp = arrayList.get(position).timestamp;
                 documentReference = arrayList.get(position).documentReference;
 
+                myPostHolder.recyclerPostBinding.baseConstraint.setClickable(true);
+
+                if(place.isEmpty()){
+                    myPostHolder.recyclerPostBinding.placeIcon.setVisibility(View.GONE);
+                }
 
                 getShow(imageUrl,name,city,district,place,explain,timestamp,myPostHolder);
 

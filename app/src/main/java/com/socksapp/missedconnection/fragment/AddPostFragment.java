@@ -50,6 +50,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
@@ -137,7 +138,7 @@ public class AddPostFragment extends Fragment {
             selectDistrict(selectedCity);
         });
 
-        binding.dateTitleConstraintLayout.setOnTouchListener((v, event) -> {
+        binding.topDatePicker.setOnTouchListener((v, event) -> {
             int checkVisible = binding.visibleDatePicker.getVisibility();
             if(checkVisible == View.GONE){
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
@@ -147,7 +148,7 @@ public class AddPostFragment extends Fragment {
             return false;
         });
 
-        binding.mapViewConstraintLayout.setOnTouchListener((v, event) -> {
+        binding.topMapLinear.setOnTouchListener((v, event) -> {
             int checkVisible = binding.mapView.getVisibility();
             if(checkVisible == View.GONE){
                 binding.mapView.setVisibility(View.VISIBLE);
@@ -238,16 +239,21 @@ public class AddPostFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
-                int maxLength = 250;
+                int maxLength = 500;
                 int currentLength = s.length();
-                ColorStateList red,gray;
+                ColorStateList red,gray,white;
                 red = AppCompatResources.getColorStateList(view.getContext(),R.color.red);
                 gray = AppCompatResources.getColorStateList(view.getContext(),R.color.gray_with_alpha);
+                white = AppCompatResources.getColorStateList(view.getContext(),R.color.white);
 
                 if (currentLength == maxLength) {
                     binding.explainTextInput.setCounterTextColor(red);
                 } else {
-                    binding.explainTextInput.setCounterTextColor(gray);
+                    if(currentLength > 0){
+                        binding.explainTextInput.setCounterTextColor(white);
+                    }else {
+                        binding.explainTextInput.setCounterTextColor(gray);
+                    }
                 }
             }
         });
@@ -278,7 +284,7 @@ public class AddPostFragment extends Fragment {
         String explain = binding.explain.getText().toString();
 
         boolean checkCity,checkDistrict,checkPlace,checkDate1,checkDate2,checkTime1,checkTime2,checkExplain;
-
+        boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
         checkCity = !city.isEmpty();
         checkDistrict = !district.isEmpty();
         checkPlace = !place.isEmpty();
@@ -288,79 +294,148 @@ public class AddPostFragment extends Fragment {
         checkTime2 = !time2.isEmpty();
         checkExplain = !explain.isEmpty();
 
-        if(checkCity && checkDistrict && checkPlace && checkDate1 && checkDate2 && checkTime1 && checkTime2 && checkExplain){
-            boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
+        if(checkCity && checkDistrict && checkExplain){
 
-            checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
-            checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
-
-            checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
-            checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
-
-            if(checkFormatDate1 && checkFormatDate2 && checkFormatTime1 && checkFormatTime2){
-
-                boolean checkComparesDate,checkComparesTime;
-
-                checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
-                checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
-
-                if(checkComparesDate && checkComparesTime){
-
-                    HashMap<String,Object> post = new HashMap<>();
-                    post.put("city",city);
-                    post.put("district",district);
+            if(!checkDate1 && !checkDate2 && !checkTime1 && !checkTime2){
+                HashMap<String,Object> post = new HashMap<>();
+                post.put("city",city);
+                post.put("district",district);
+                if(checkPlace){
                     post.put("place",place);
-                    post.put("date1",date1);
-                    post.put("time1",time1);
-                    post.put("time2",time2);
-                    post.put("date2",date2);
-                    post.put("lat",latitude);
-                    post.put("lng",longitude);
-                    post.put("radius",radius);
-                    post.put("explain",explain);
-                    post.put("timestamp",new Date());
-                    post.put("name",myUserName);
-                    post.put("imageUrl",myImageUrl);
-                    post.put("mail",userMail);
-
-                    firestore.collection("post"+city).add(post).addOnSuccessListener(documentReference -> {
-                        showToastShort("Eklendi");
-                    }).addOnFailureListener(e -> {
-                        showToastShort(e.getLocalizedMessage());
-                    });
                 }else {
-                    if(!checkComparesDate){
-                        binding.dateEditText1.setError("2. girdiğiniz tarihten büyük olamaz");
+                    post.put("place","");
+                }
+                post.put("date1","");
+                post.put("time1","");
+                post.put("time2","");
+                post.put("date2","");
+                post.put("lat",latitude);
+                post.put("lng",longitude);
+                post.put("radius",radius);
+                post.put("explain",explain);
+                post.put("timestamp",new Date());
+                post.put("name",myUserName);
+                post.put("imageUrl",myImageUrl);
+                post.put("mail",userMail);
+
+                WriteBatch batch = firestore.batch();
+
+                DocumentReference newPostRef = firestore.collection("post" + city).document();
+                batch.set(newPostRef, post);
+
+                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                batch.set(newPostRef2, post);
+
+                batch.commit().addOnSuccessListener(aVoid -> {
+                    showToastShort("Eklendi");
+                }).addOnFailureListener(e -> {
+                    showToastShort(e.getLocalizedMessage());
+                });
+            }else {
+                if(checkDate1 && checkDate2 && checkTime1 && checkTime2){
+                    checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
+                    checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
+
+                    checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
+                    checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
+
+                    if(checkFormatDate1 && checkFormatDate2 && checkFormatTime1 && checkFormatTime2){
+
+                        boolean checkComparesDate,checkComparesTime;
+
+                        checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
+                        checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
+
+                        if(checkComparesDate && checkComparesTime){
+                            HashMap<String,Object> post = new HashMap<>();
+                            post.put("city",city);
+                            post.put("district",district);
+                            if(checkPlace){
+                                post.put("place",place);
+                            }else {
+                                post.put("place","");
+                            }
+                            post.put("date1",date1);
+                            post.put("time1",time1);
+                            post.put("time2",time2);
+                            post.put("date2",date2);
+                            post.put("lat",latitude);
+                            post.put("lng",longitude);
+                            post.put("radius",radius);
+                            post.put("explain",explain);
+                            post.put("timestamp",new Date());
+                            post.put("name",myUserName);
+                            post.put("imageUrl",myImageUrl);
+                            post.put("mail",userMail);
+
+                            WriteBatch batch = firestore.batch();
+
+                            DocumentReference newPostRef = firestore.collection("post" + city).document();
+                            batch.set(newPostRef, post);
+
+                            DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                            batch.set(newPostRef2, post);
+
+                            batch.commit().addOnSuccessListener(aVoid -> {
+                                showToastShort("Eklendi");
+                            }).addOnFailureListener(e -> {
+                                showToastShort(e.getLocalizedMessage());
+                            });
+                        }else {
+                            if(!checkComparesDate){
+                                binding.dateEditText1.setError("2. girdiğiniz tarihten büyük olamaz");
+                            }else {
+                                binding.dateEditText1.setError(null);
+                            }
+                            if(!checkComparesTime){
+                                binding.timeEditText1.setError("2. girdiğiniz saatten büyük olamaz");
+                            }else {
+                                binding.timeEditText1.setError(null);
+                            }
+                        }
+                    }else {
+                        if(!checkFormatDate1){
+                            binding.dateEditText1.setError("Uygun formatta tarih giriniz");
+                        }else {
+                            binding.dateEditText1.setError(null);
+                        }
+                        if(!checkFormatDate2){
+                            binding.dateEditText2.setError("Uygun formatta tarih giriniz");
+                        }else {
+                            binding.dateEditText2.setError(null);
+                        }
+                        if(!checkFormatTime1){
+                            binding.timeEditText1.setError("Uygun formatta saat giriniz");
+                        }else {
+                            binding.timeEditText1.setError(null);
+                        }
+                        if(!checkFormatTime2){
+                            binding.timeEditText2.setError("Uygun formatta saat giriniz");
+                        }else {
+                            binding.timeEditText2.setError(null);
+                        }
+                    }
+                }else {
+                    if(!checkDate1){
+                        binding.dateEditText1.setError("Tarihi giriniz");
                     }else {
                         binding.dateEditText1.setError(null);
                     }
-                    if(!checkComparesTime){
-                        binding.timeEditText1.setError("2. girdiğiniz saatten büyük olamaz");
+                    if(!checkDate2){
+                        binding.dateEditText2.setError("Tarihi giriniz");
+                    }else {
+                        binding.dateEditText2.setError(null);
+                    }
+                    if(!checkTime1){
+                        binding.timeEditText1.setError("Saati giriniz");
                     }else {
                         binding.timeEditText1.setError(null);
                     }
-                }
-
-            }else {
-                if(!checkFormatDate1){
-                    binding.dateEditText1.setError("Uygun formatta tarih giriniz");
-                }else {
-                    binding.dateEditText1.setError(null);
-                }
-                if(!checkFormatDate2){
-                    binding.dateEditText2.setError("Uygun formatta tarih giriniz");
-                }else {
-                    binding.dateEditText2.setError(null);
-                }
-                if(!checkFormatTime1){
-                    binding.timeEditText1.setError("Uygun formatta saat giriniz");
-                }else {
-                    binding.timeEditText1.setError(null);
-                }
-                if(!checkFormatTime2){
-                    binding.timeEditText2.setError("Uygun formatta saat giriniz");
-                }else {
-                    binding.timeEditText2.setError(null);
+                    if(!checkTime2){
+                        binding.timeEditText2.setError("Saati giriniz");
+                    }else {
+                        binding.timeEditText2.setError(null);
+                    }
                 }
             }
 
@@ -379,33 +454,6 @@ public class AddPostFragment extends Fragment {
                 binding.districtTextInput.setError(null);
                 binding.districtTextInput.setErrorIconDrawable(null);
             }
-            if(!checkPlace){
-                binding.placeTextInput.setError("Yeri belirtiniz");
-                binding.placeTextInput.setErrorIconDrawable(R.drawable.icon_error);
-            }else {
-                binding.placeTextInput.setError(null);
-                binding.placeTextInput.setErrorIconDrawable(null);
-            }
-            if(!checkDate1){
-                binding.dateEditText1.setError("Tarihi giriniz");
-            }else {
-                binding.dateEditText1.setError(null);
-            }
-            if(!checkDate2){
-                binding.dateEditText2.setError("Tarihi giriniz");
-            }else {
-                binding.dateEditText2.setError(null);
-            }
-            if(!checkTime1){
-                binding.timeEditText1.setError("Saati giriniz");
-            }else {
-                binding.timeEditText1.setError(null);
-            }
-            if(!checkTime2){
-                binding.timeEditText2.setError("Saati giriniz");
-            }else {
-                binding.timeEditText2.setError(null);
-            }
             if(!checkExplain){
                 binding.explainTextInput.setError("Detay boş bırakılamaz");
                 binding.explainTextInput.setErrorIconDrawable(R.drawable.icon_error);
@@ -413,7 +461,13 @@ public class AddPostFragment extends Fragment {
                 binding.explainTextInput.setError(null);
                 binding.explainTextInput.setErrorIconDrawable(null);
             }
-
+//            if(!checkPlace){
+//                binding.placeTextInput.setError("Yeri belirtiniz");
+//                binding.placeTextInput.setErrorIconDrawable(R.drawable.icon_error);
+//            }else {
+//                binding.placeTextInput.setError(null);
+//                binding.placeTextInput.setErrorIconDrawable(null);
+//            }
         }
 
     }
@@ -448,7 +502,6 @@ public class AddPostFragment extends Fragment {
             mYear = calendar.get(Calendar.YEAR);
             mMonth = calendar.get(Calendar.MONTH);
             mDay = calendar.get(Calendar.DAY_OF_MONTH);
-
             datePickerDialog = new DatePickerDialog(view.getContext(), new DatePickerDialog.OnDateSetListener() {
                 @Override
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {

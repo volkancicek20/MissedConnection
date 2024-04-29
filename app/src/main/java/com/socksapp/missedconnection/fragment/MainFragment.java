@@ -11,12 +11,14 @@ import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,6 +26,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -33,6 +37,7 @@ import android.widget.Toast;
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -67,6 +72,7 @@ public class MainFragment extends Fragment {
     private MainActivity mainActivity;
     public PostAdapter postAdapter;
     public ArrayList<FindPost> postArrayList;
+    private static final int SCROLL_THRESHOLD = 200;
     public MainFragment() {
         // Required empty public constructor
     }
@@ -98,6 +104,11 @@ public class MainFragment extends Fragment {
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
         mainActivity.includedLayout.setVisibility(View.VISIBLE);
         mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mainActivity.fragmentContainerView.getLayoutParams();
+        layoutParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
+        mainActivity.fragmentContainerView.setLayoutParams(layoutParams);
+
+        binding.shimmerLayout.startShimmer();
 
         userMail = user.getEmail();
 
@@ -106,14 +117,54 @@ public class MainFragment extends Fragment {
         binding.recyclerViewMain.setAdapter(postAdapter);
         postArrayList.clear();
         getData();
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+
+        final int[] totalScrolledDistance = {0};
+
+        binding.recyclerViewMain.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void handleOnBackPressed() {
-                shutdown(view);
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                totalScrolledDistance[0] += dy;
+
+                if (dy > 0 && totalScrolledDistance[0] >= SCROLL_THRESHOLD) {
+                    animateBottomNavigationView(false);
+
+                    totalScrolledDistance[0] = 0;
+                }
+
+                if (dy < 0 && totalScrolledDistance[0] <= -SCROLL_THRESHOLD) {
+                    animateBottomNavigationView(true);
+
+                    totalScrolledDistance[0] = 0;
+                }
             }
         });
 
     }
+
+    private void animateBottomNavigationView(boolean isVisible) {
+        if (isVisible) {
+            mainActivity.bottomNavigationView.animate()
+                .translationY(0)
+                .setDuration(100)
+                .setInterpolator(new DecelerateInterpolator())
+                    .withStartAction(() -> {
+                        mainActivity.bottomViewLine.setVisibility(View.VISIBLE);
+                        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+                    });
+        } else {
+            mainActivity.bottomNavigationView.animate()
+                .translationY(mainActivity.bottomNavigationView.getHeight())
+                .setDuration(100)
+                .setInterpolator(new DecelerateInterpolator())
+                .withEndAction(() -> {
+                    mainActivity.bottomViewLine.setVisibility(View.GONE);
+                    mainActivity.bottomNavigationView.setVisibility(View.GONE);
+                });
+        }
+    }
+
 
     public void dialogShow(View view, String mail, String name, Double lat, Double lng, int radius, DocumentReference documentReference){
         final Dialog dialog = new Dialog(view.getContext());
@@ -147,24 +198,9 @@ public class MainFragment extends Fragment {
         LinearLayout report = dialog.findViewById(R.id.layoutReport);
 
         save.setOnClickListener(v ->{
-
             mainActivity.refDataAccess.insertRef(documentReference.getId(),mail);
             Toast.makeText(view.getContext(), "Kaydedildi", Toast.LENGTH_SHORT).show();
             dialog.dismiss();
-
-//            WriteBatch batch = firestore.batch();
-//
-//            batch.set(firestore.collection(userMail).document(documentReference.getId()), data);
-//
-//            batch.commit()
-//                .addOnSuccessListener(aVoid -> {
-//                    mainActivity.refDataAccess.insertRef(city,documentReference.getId());
-//                    Toast.makeText(view.getContext(), "Kaydedildi", Toast.LENGTH_SHORT).show();
-//                    dialog.dismiss();
-//                })
-//                .addOnFailureListener(e -> {
-//
-//                });
         });
 
         message.setOnClickListener(v ->{
@@ -185,70 +221,59 @@ public class MainFragment extends Fragment {
     }
 
     private void getData(){
-        firestore.collection("post"+"İstanbul").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-                    String imageUrl = querySnapshot.getString("imageUrl");
-                    String name = querySnapshot.getString("name");
-                    String mail = querySnapshot.getString("mail");
-                    String city = querySnapshot.getString("city");
-                    String district = querySnapshot.getString("district");
-                    String time1 = querySnapshot.getString("time1");
-                    String time2 = querySnapshot.getString("time2");
-                    String date1 = querySnapshot.getString("date1");
-                    String date2 = querySnapshot.getString("date2");
-                    String place = querySnapshot.getString("place");
-                    String explain = querySnapshot.getString("explain");
-                    Double lat = querySnapshot.getDouble("lat");
-                    Double lng = querySnapshot.getDouble("lng");
-                    Long x = querySnapshot.getLong("radius");
-                    int radius = 0;
-                    if(x != null){
-                        radius = x.intValue();
-                    }
-                    Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                    DocumentReference documentReference = querySnapshot.getReference();
-
-                    FindPost post = new FindPost();
-                    post.viewType = 1;
-                    post.imageUrl = imageUrl;
-                    post.name = name;
-                    post.mail = mail;
-                    post.city = city;
-                    post.district = district;
-                    post.time1 = time1;
-                    post.time2 = time2;
-                    post.date1 = date1;
-                    post.date2 = date2;
-                    post.place = place;
-                    post.explain = explain;
-                    post.timestamp = timestamp;
-                    post.lat = lat;
-                    post.lng = lng;
-                    post.radius = radius;
-                    post.documentReference = documentReference;
-
-                    postArrayList.add(post);
-                    postAdapter.notifyDataSetChanged();
-
+        firestore.collection("post"+"İstanbul").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if(!queryDocumentSnapshots.isEmpty()){
+                binding.shimmerLayout.stopShimmer();
+                binding.shimmerLayout.setVisibility(View.GONE);
+                binding.recyclerViewMain.setVisibility(View.VISIBLE);
+            }
+            for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+                String imageUrl = querySnapshot.getString("imageUrl");
+                String name = querySnapshot.getString("name");
+                String mail = querySnapshot.getString("mail");
+                String city = querySnapshot.getString("city");
+                String district = querySnapshot.getString("district");
+                String time1 = querySnapshot.getString("time1");
+                String time2 = querySnapshot.getString("time2");
+                String date1 = querySnapshot.getString("date1");
+                String date2 = querySnapshot.getString("date2");
+                String place = querySnapshot.getString("place");
+                String explain = querySnapshot.getString("explain");
+                Double lat = querySnapshot.getDouble("lat");
+                Double lng = querySnapshot.getDouble("lng");
+                Long x = querySnapshot.getLong("radius");
+                int radius = 0;
+                if(x != null){
+                    radius = x.intValue();
                 }
+                Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                DocumentReference documentReference = querySnapshot.getReference();
+
+                FindPost post = new FindPost();
+                post.viewType = 1;
+                post.imageUrl = imageUrl;
+                post.name = name;
+                post.mail = mail;
+                post.city = city;
+                post.district = district;
+                post.time1 = time1;
+                post.time2 = time2;
+                post.date1 = date1;
+                post.date2 = date2;
+                post.place = place;
+                post.explain = explain;
+                post.timestamp = timestamp;
+                post.lat = lat;
+                post.lng = lng;
+                post.radius = radius;
+                post.documentReference = documentReference;
+
+                postArrayList.add(post);
+                postAdapter.notifyDataSetChanged();
+
             }
         });
     }
-
-    private void shutdown(View v){
-        AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-        builder.setMessage("Uygulamadan çıkış yapılsın mı?");
-        builder.setPositiveButton("Çık", (dialog, which) -> {
-            System.exit(0);
-        });
-        builder.setNegativeButton("Hayır", (dialog, which) -> {
-
-        });
-        builder.show();
-    }
-
 
     @Override
     public void onAttach(@NonNull Context context) {

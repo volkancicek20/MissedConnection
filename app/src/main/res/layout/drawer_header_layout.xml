@@ -26,6 +26,7 @@
         android:text=""
         android:textSize="12sp"
         android:textColor="@color/white"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/drawer_image"
         app:layout_constraintStart_toStartOf="@id/drawer_image" />
