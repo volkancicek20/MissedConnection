@@ -53,8 +53,10 @@ import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentFindBinding;
@@ -101,7 +103,7 @@ public class FindFragment extends Fragment {
 
         lat = 0.0;
         lng = 0.0;
-        rad = 100;
+        rad = 0;
 
         nameShared = requireActivity().getSharedPreferences("Name",Context.MODE_PRIVATE);
         imageUrlShared = requireActivity().getSharedPreferences("ImageUrl",Context.MODE_PRIVATE);
@@ -251,6 +253,7 @@ public class FindFragment extends Fragment {
         String time2 = binding.timeEditText2.getText().toString();
 
         boolean checkCity,checkDistrict,checkPlace,checkDate1,checkDate2,checkTime1,checkTime2;
+        boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
 
         checkCity = !city.isEmpty();
         checkDistrict = !district.isEmpty();
@@ -261,46 +264,28 @@ public class FindFragment extends Fragment {
         checkTime2 = !time2.isEmpty();
 
         if(checkCity){
+            if(!checkDate1 && !checkDate2 && !checkTime1 && !checkTime2){
+                Bundle args = new Bundle();
+                args.putString("city", city);
+                args.putString("district", district);
+                args.putString("place", place);
+                args.putInt("radius", radius);
+                args.putDouble("latitude", latitude);
+                args.putDouble("longitude", longitude);
+                args.putString("date1", date1);
+                args.putString("date2", date2);
+                args.putString("time1", time1);
+                args.putString("time2", time2);
 
-            boolean checkBothDate,checkBothTime;
-
-            checkBothDate = !(checkDate1 == checkDate2);
-
-            checkBothTime = !(checkTime1 == checkTime2);
-
-            if(checkBothDate || checkBothTime){
-
-                if(checkBothDate){
-                    if(checkDate1){
-                        binding.dateEditText1.setError("Tarihi giriniz");
-                    }else {
-                        binding.dateEditText1.setError(null);
-                    }
-                    if(checkDate2){
-                        binding.dateEditText2.setError("Tarihi giriniz");
-                    }else {
-                        binding.dateEditText2.setError(null);
-                    }
-                }
-                if(checkBothTime){
-                    if(checkTime1){
-                        binding.timeEditText1.setError("Saati giriniz");
-                    }else {
-                        binding.timeEditText1.setError(null);
-                    }
-                    if(checkTime2){
-                        binding.timeEditText2.setError("Saati giriniz");
-                    }else {
-                        binding.timeEditText2.setError(null);
-                    }
-                }
-
-            }else {
-
-                if(checkDate1 && checkTime1){
-
-                    boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
-
+                MainFragment mainFragment = new MainFragment();
+                mainFragment.setArguments(args);
+                FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+            else {
+                if(checkDate1 && checkDate2 && checkTime1 && checkTime2){
                     checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
                     checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
 
@@ -315,20 +300,24 @@ public class FindFragment extends Fragment {
                         checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
 
                         if(checkComparesDate && checkComparesTime){
+                            Bundle args = new Bundle();
+                            args.putString("city", city);
+                            args.putString("district", district);
+                            args.putString("place", place);
+                            args.putInt("radius", radius);
+                            args.putDouble("latitude", latitude);
+                            args.putDouble("longitude", longitude);
+                            args.putString("date1", date1);
+                            args.putString("date2", date2);
+                            args.putString("time1", time1);
+                            args.putString("time2", time2);
 
-                            firestore.collection("post"+city)
-                                .get()
-                                .addOnSuccessListener(queryDocumentSnapshots -> {
-                                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                                        Toast.makeText(v.getContext(),"Bulundu",Toast.LENGTH_SHORT).show();
-                                        // Belge verilerini al
-//                                        Map<String, Object> postData = document.getData();
-                                        // İşlemleri burada yap
-                                    }
-                                })
-                                .addOnFailureListener(e -> {
-                                    // Hata durumunda yapılacak işlemler
-                                });
+                            MainFragment mainFragment = new MainFragment();
+                            mainFragment.setArguments(args);
+                            FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                            fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
+                            fragmentTransaction.addToBackStack(null);
+                            fragmentTransaction.commit();
                         }else {
                             if(!checkComparesDate){
                                 binding.dateEditText1.setError("2. girdiğiniz tarihten büyük olamaz");
@@ -341,7 +330,6 @@ public class FindFragment extends Fragment {
                                 binding.timeEditText1.setError(null);
                             }
                         }
-
                     }else {
                         if(!checkFormatDate1){
                             binding.dateEditText1.setError("Uygun formatta tarih giriniz");
@@ -365,25 +353,28 @@ public class FindFragment extends Fragment {
                         }
                     }
                 }else {
-
-                    firestore.collection("post"+city)
-                        .get()
-                        .addOnSuccessListener(queryDocumentSnapshots -> {
-                            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                                Toast.makeText(v.getContext(),"Bulundu",Toast.LENGTH_SHORT).show();
-                                // Belge verilerini al
-//                                Map<String, Object> postData = document.getData();
-                                // İşlemleri burada yap
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            // Hata durumunda yapılacak işlemler
-                        });
-
+                    if(!checkDate1){
+                        binding.dateEditText1.setError("Tarihi giriniz");
+                    }else {
+                        binding.dateEditText1.setError(null);
+                    }
+                    if(!checkDate2){
+                        binding.dateEditText2.setError("Tarihi giriniz");
+                    }else {
+                        binding.dateEditText2.setError(null);
+                    }
+                    if(!checkTime1){
+                        binding.timeEditText1.setError("Saati giriniz");
+                    }else {
+                        binding.timeEditText1.setError(null);
+                    }
+                    if(!checkTime2){
+                        binding.timeEditText2.setError("Saati giriniz");
+                    }else {
+                        binding.timeEditText2.setError(null);
+                    }
                 }
-
             }
-
         }else {
             if(!checkCity){
                 binding.cityTextInput.setError("İl boş bırakılamaz");

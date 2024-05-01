@@ -285,6 +285,7 @@ public class AddPostFragment extends Fragment {
 
         boolean checkCity,checkDistrict,checkPlace,checkDate1,checkDate2,checkTime1,checkTime2,checkExplain;
         boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
+
         checkCity = !city.isEmpty();
         checkDistrict = !district.isEmpty();
         checkPlace = !place.isEmpty();
@@ -331,7 +332,8 @@ public class AddPostFragment extends Fragment {
                 }).addOnFailureListener(e -> {
                     showToastShort(e.getLocalizedMessage());
                 });
-            }else {
+            }
+            else {
                 if(checkDate1 && checkDate2 && checkTime1 && checkTime2){
                     checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
                     checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
