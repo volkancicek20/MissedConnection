@@ -1,46 +1,30 @@
 package com.socksapp.missedconnection.fragment;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.denzcoskun.imageslider.ImageSlider;
-import com.denzcoskun.imageslider.constants.ScaleTypes;
-import com.denzcoskun.imageslider.models.SlideModel;
-import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -49,18 +33,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.WriteBatch;
+import com.google.maps.model.LatLng;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.PostAdapter;
-import com.socksapp.missedconnection.databinding.FragmentFindBinding;
 import com.socksapp.missedconnection.databinding.FragmentMainBinding;
 import com.socksapp.missedconnection.model.FindPost;
-import com.socksapp.missedconnection.myclass.RefDataAccess;
-import com.squareup.picasso.Picasso;
-
+import com.socksapp.missedconnection.myclass.PointFilter;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class MainFragment extends Fragment {
 
@@ -245,12 +225,6 @@ public class MainFragment extends Fragment {
         checkField = radiusFind != 0 && latFind != 0 && lngFind != 0;
 
         if(checkDistrict && checkPlace && checkDateAndTime && checkField){
-
-        }else if (checkDistrict && checkPlace && checkField) {
-
-        }else if (checkDistrict && checkDateAndTime && checkField) {
-
-        } else if (checkDistrict && checkPlace && checkDateAndTime) {
             postArrayList.clear();
             String collection = "post" + cityFind;
             Query query = firestore.collection(collection)
@@ -259,21 +233,479 @@ public class MainFragment extends Fragment {
                     .whereLessThanOrEqualTo("date2",date1Find)
                     .whereGreaterThanOrEqualTo("date1",date2Find);
 
-        } else if (checkDistrict && checkPlace) {
+            query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                if(!queryDocumentSnapshots.isEmpty()){
+                    binding.shimmerLayout.stopShimmer();
+                    binding.shimmerLayout.setVisibility(View.GONE);
+                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                }
+                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+
+                    double lat = 0,lng = 0;
+                    Double latX = querySnapshot.getDouble("lat");
+                    Double lngY = querySnapshot.getDouble("lng");
+                    if(latX != null && lngY != null){
+                        lat = latX;
+                        lng = lngY;
+                    }
+                    Long x = querySnapshot.getLong("radius");
+                    int radius = 0;
+                    if(x != null){
+                        radius = x.intValue();
+                    }
+
+                    boolean check = lat != 0 && lng != 0 && radius != 0;
+
+                    if(check){
+                        String imageUrl = querySnapshot.getString("imageUrl");
+                        String name = querySnapshot.getString("name");
+                        String mail = querySnapshot.getString("mail");
+                        String city = querySnapshot.getString("city");
+                        String district = querySnapshot.getString("district");
+                        String time1 = querySnapshot.getString("time1");
+                        String time2 = querySnapshot.getString("time2");
+                        String date1 = querySnapshot.getString("date1");
+                        String date2 = querySnapshot.getString("date2");
+                        String place = querySnapshot.getString("place");
+                        String explain = querySnapshot.getString("explain");
+                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                        DocumentReference documentReference = querySnapshot.getReference();
+
+                        FindPost post = new FindPost();
+                        post.viewType = 1;
+                        post.imageUrl = imageUrl;
+                        post.name = name;
+                        post.mail = mail;
+                        post.city = city;
+                        post.district = district;
+                        post.time1 = time1;
+                        post.time2 = time2;
+                        post.date1 = date1;
+                        post.date2 = date2;
+                        post.place = place;
+                        post.explain = explain;
+                        post.timestamp = timestamp;
+                        post.lat = lat;
+                        post.lng = lng;
+                        post.radius = radius;
+                        post.documentReference = documentReference;
+
+                        postArrayList.add(post);
+                        postAdapter.notifyDataSetChanged();
+                    }
+                }
+            }).addOnFailureListener(e -> {
+
+            });
+        }
+        else if (checkDistrict && checkPlace && checkField) {
             postArrayList.clear();
             String collection = "post" + cityFind;
             Query query = firestore.collection(collection)
                     .whereEqualTo("district", districtFind)
-                    .whereEqualTo("place",placeFind);
+                    .whereEqualTo("place", placeFind);
 
-        }else if (checkDistrict && checkDateAndTime) {
+            query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                if(!queryDocumentSnapshots.isEmpty()){
+                    binding.shimmerLayout.stopShimmer();
+                    binding.shimmerLayout.setVisibility(View.GONE);
+                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                }
+                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+
+                    double lat = 0,lng = 0;
+                    Double latX = querySnapshot.getDouble("lat");
+                    Double lngY = querySnapshot.getDouble("lng");
+                    if(latX != null && lngY != null){
+                        lat = latX;
+                        lng = lngY;
+                    }
+                    Long x = querySnapshot.getLong("radius");
+                    int radius = 0;
+                    if(x != null){
+                        radius = x.intValue();
+                    }
+
+                    boolean check = lat != 0 && lng != 0 && radius != 0;
+
+                    if(check){
+                        String imageUrl = querySnapshot.getString("imageUrl");
+                        String name = querySnapshot.getString("name");
+                        String mail = querySnapshot.getString("mail");
+                        String city = querySnapshot.getString("city");
+                        String district = querySnapshot.getString("district");
+                        String time1 = querySnapshot.getString("time1");
+                        String time2 = querySnapshot.getString("time2");
+                        String date1 = querySnapshot.getString("date1");
+                        String date2 = querySnapshot.getString("date2");
+                        String place = querySnapshot.getString("place");
+                        String explain = querySnapshot.getString("explain");
+                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                        DocumentReference documentReference = querySnapshot.getReference();
+
+                        FindPost post = new FindPost();
+                        post.viewType = 1;
+                        post.imageUrl = imageUrl;
+                        post.name = name;
+                        post.mail = mail;
+                        post.city = city;
+                        post.district = district;
+                        post.time1 = time1;
+                        post.time2 = time2;
+                        post.date1 = date1;
+                        post.date2 = date2;
+                        post.place = place;
+                        post.explain = explain;
+                        post.timestamp = timestamp;
+                        post.lat = lat;
+                        post.lng = lng;
+                        post.radius = radius;
+                        post.documentReference = documentReference;
+
+                        postArrayList.add(post);
+                        postAdapter.notifyDataSetChanged();
+                    }
+                }
+            }).addOnFailureListener(e -> {
+
+            });
+        }
+        else if (checkDistrict && checkDateAndTime && checkField) {
             postArrayList.clear();
             String collection = "post" + cityFind;
             Query query = firestore.collection(collection)
                     .whereEqualTo("district", districtFind)
                     .whereLessThanOrEqualTo("date2",date1Find)
                     .whereGreaterThanOrEqualTo("date1",date2Find);
-        } else if (checkDistrict) {
+
+            query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                if(!queryDocumentSnapshots.isEmpty()){
+                    binding.shimmerLayout.stopShimmer();
+                    binding.shimmerLayout.setVisibility(View.GONE);
+                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                }
+                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+
+                    double lat = 0,lng = 0;
+                    Double latX = querySnapshot.getDouble("lat");
+                    Double lngY = querySnapshot.getDouble("lng");
+                    if(latX != null && lngY != null){
+                        lat = latX;
+                        lng = lngY;
+                    }
+                    Long x = querySnapshot.getLong("radius");
+                    int radius = 0;
+                    if(x != null){
+                        radius = x.intValue();
+                    }
+
+                    boolean check = lat != 0 && lng != 0 && radius != 0;
+
+                    if(check){
+                        String imageUrl = querySnapshot.getString("imageUrl");
+                        String name = querySnapshot.getString("name");
+                        String mail = querySnapshot.getString("mail");
+                        String city = querySnapshot.getString("city");
+                        String district = querySnapshot.getString("district");
+                        String time1 = querySnapshot.getString("time1");
+                        String time2 = querySnapshot.getString("time2");
+                        String date1 = querySnapshot.getString("date1");
+                        String date2 = querySnapshot.getString("date2");
+                        String place = querySnapshot.getString("place");
+                        String explain = querySnapshot.getString("explain");
+                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                        DocumentReference documentReference = querySnapshot.getReference();
+
+                        FindPost post = new FindPost();
+                        post.viewType = 1;
+                        post.imageUrl = imageUrl;
+                        post.name = name;
+                        post.mail = mail;
+                        post.city = city;
+                        post.district = district;
+                        post.time1 = time1;
+                        post.time2 = time2;
+                        post.date1 = date1;
+                        post.date2 = date2;
+                        post.place = place;
+                        post.explain = explain;
+                        post.timestamp = timestamp;
+                        post.lat = lat;
+                        post.lng = lng;
+                        post.radius = radius;
+                        post.documentReference = documentReference;
+
+                        postArrayList.add(post);
+                        postAdapter.notifyDataSetChanged();
+                    }
+                }
+            }).addOnFailureListener(e -> {
+
+            });
+        }
+        else if (checkDistrict && checkPlace && checkDateAndTime) {
+            postArrayList.clear();
+            String collection = "post" + cityFind;
+            Query query = firestore.collection(collection)
+                    .whereEqualTo("district", districtFind)
+                    .whereEqualTo("place",placeFind)
+                    .whereLessThanOrEqualTo("date2",date1Find)
+                    .whereGreaterThanOrEqualTo("date1",date2Find);
+
+            query.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if(!queryDocumentSnapshots.isEmpty()){
+                        binding.shimmerLayout.stopShimmer();
+                        binding.shimmerLayout.setVisibility(View.GONE);
+                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                    }
+                    for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+                        String imageUrl = querySnapshot.getString("imageUrl");
+                        String name = querySnapshot.getString("name");
+                        String mail = querySnapshot.getString("mail");
+                        String city = querySnapshot.getString("city");
+                        String district = querySnapshot.getString("district");
+                        String time1 = querySnapshot.getString("time1");
+                        String time2 = querySnapshot.getString("time2");
+                        String date1 = querySnapshot.getString("date1");
+                        String date2 = querySnapshot.getString("date2");
+                        String place = querySnapshot.getString("place");
+                        String explain = querySnapshot.getString("explain");
+                        Double lat = querySnapshot.getDouble("lat");
+                        Double lng = querySnapshot.getDouble("lng");
+                        Long x = querySnapshot.getLong("radius");
+                        int radius = 0;
+                        if(x != null){
+                            radius = x.intValue();
+                        }
+                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                        DocumentReference documentReference = querySnapshot.getReference();
+
+                        FindPost post = new FindPost();
+                        post.viewType = 1;
+                        post.imageUrl = imageUrl;
+                        post.name = name;
+                        post.mail = mail;
+                        post.city = city;
+                        post.district = district;
+                        post.time1 = time1;
+                        post.time2 = time2;
+                        post.date1 = date1;
+                        post.date2 = date2;
+                        post.place = place;
+                        post.explain = explain;
+                        post.timestamp = timestamp;
+                        post.lat = lat;
+                        post.lng = lng;
+                        post.radius = radius;
+                        post.documentReference = documentReference;
+
+                        postArrayList.add(post);
+                        postAdapter.notifyDataSetChanged();
+                    }
+                }).addOnFailureListener(e -> {
+
+                });
+        }
+        else if (checkDistrict && checkPlace) {
+            postArrayList.clear();
+            String collection = "post" + cityFind;
+            Query query = firestore.collection(collection)
+                    .whereEqualTo("district", districtFind)
+                    .whereEqualTo("place", placeFind);
+
+            query.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if(!queryDocumentSnapshots.isEmpty()){
+                        binding.shimmerLayout.stopShimmer();
+                        binding.shimmerLayout.setVisibility(View.GONE);
+                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                    }
+                    for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+                        String imageUrl = querySnapshot.getString("imageUrl");
+                        String name = querySnapshot.getString("name");
+                        String mail = querySnapshot.getString("mail");
+                        String city = querySnapshot.getString("city");
+                        String district = querySnapshot.getString("district");
+                        String time1 = querySnapshot.getString("time1");
+                        String time2 = querySnapshot.getString("time2");
+                        String date1 = querySnapshot.getString("date1");
+                        String date2 = querySnapshot.getString("date2");
+                        String place = querySnapshot.getString("place");
+                        String explain = querySnapshot.getString("explain");
+                        Double lat = querySnapshot.getDouble("lat");
+                        Double lng = querySnapshot.getDouble("lng");
+                        Long x = querySnapshot.getLong("radius");
+                        int radius = 0;
+                        if(x != null){
+                            radius = x.intValue();
+                        }
+                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                        DocumentReference documentReference = querySnapshot.getReference();
+
+                        FindPost post = new FindPost();
+                        post.viewType = 1;
+                        post.imageUrl = imageUrl;
+                        post.name = name;
+                        post.mail = mail;
+                        post.city = city;
+                        post.district = district;
+                        post.time1 = time1;
+                        post.time2 = time2;
+                        post.date1 = date1;
+                        post.date2 = date2;
+                        post.place = place;
+                        post.explain = explain;
+                        post.timestamp = timestamp;
+                        post.lat = lat;
+                        post.lng = lng;
+                        post.radius = radius;
+                        post.documentReference = documentReference;
+
+                        postArrayList.add(post);
+                        postAdapter.notifyDataSetChanged();
+                    }
+                }).addOnFailureListener(e -> {
+
+                });
+        }
+        else if (checkDistrict && checkDateAndTime) {
+            postArrayList.clear();
+            String collection = "post" + cityFind;
+            Query query = firestore.collection(collection)
+                    .whereEqualTo("district", districtFind)
+                    .whereLessThanOrEqualTo("date2",date1Find)
+                    .whereGreaterThanOrEqualTo("date1",date2Find);
+
+            query.get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        if(!queryDocumentSnapshots.isEmpty()){
+                            binding.shimmerLayout.stopShimmer();
+                            binding.shimmerLayout.setVisibility(View.GONE);
+                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                        }
+                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+                            String imageUrl = querySnapshot.getString("imageUrl");
+                            String name = querySnapshot.getString("name");
+                            String mail = querySnapshot.getString("mail");
+                            String city = querySnapshot.getString("city");
+                            String district = querySnapshot.getString("district");
+                            String time1 = querySnapshot.getString("time1");
+                            String time2 = querySnapshot.getString("time2");
+                            String date1 = querySnapshot.getString("date1");
+                            String date2 = querySnapshot.getString("date2");
+                            String place = querySnapshot.getString("place");
+                            String explain = querySnapshot.getString("explain");
+                            Double lat = querySnapshot.getDouble("lat");
+                            Double lng = querySnapshot.getDouble("lng");
+                            Long x = querySnapshot.getLong("radius");
+                            int radius = 0;
+                            if(x != null){
+                                radius = x.intValue();
+                            }
+                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                            DocumentReference documentReference = querySnapshot.getReference();
+
+                            FindPost post = new FindPost();
+                            post.viewType = 1;
+                            post.imageUrl = imageUrl;
+                            post.name = name;
+                            post.mail = mail;
+                            post.city = city;
+                            post.district = district;
+                            post.time1 = time1;
+                            post.time2 = time2;
+                            post.date1 = date1;
+                            post.date2 = date2;
+                            post.place = place;
+                            post.explain = explain;
+                            post.timestamp = timestamp;
+                            post.lat = lat;
+                            post.lng = lng;
+                            post.radius = radius;
+                            post.documentReference = documentReference;
+
+                            postArrayList.add(post);
+                            postAdapter.notifyDataSetChanged();
+
+                        }
+                    }).addOnFailureListener(e -> {
+
+                    });
+        }
+        else if (checkDistrict && checkField) {
+            postArrayList.clear();
+            String collection = "post" + cityFind;
+            Query query = firestore.collection(collection)
+                    .whereEqualTo("district", districtFind);
+
+            query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                if(!queryDocumentSnapshots.isEmpty()){
+                    binding.shimmerLayout.stopShimmer();
+                    binding.shimmerLayout.setVisibility(View.GONE);
+                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                }
+                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+
+                    double lat = 0,lng = 0;
+                    Double latX = querySnapshot.getDouble("lat");
+                    Double lngY = querySnapshot.getDouble("lng");
+                    if(latX != null && lngY != null){
+                        lat = latX;
+                        lng = lngY;
+                    }
+                    Long x = querySnapshot.getLong("radius");
+                    int radius = 0;
+                    if(x != null){
+                        radius = x.intValue();
+                    }
+
+                    boolean check = lat != 0 && lng != 0 && radius != 0;
+
+                    if(check){
+                        String imageUrl = querySnapshot.getString("imageUrl");
+                        String name = querySnapshot.getString("name");
+                        String mail = querySnapshot.getString("mail");
+                        String city = querySnapshot.getString("city");
+                        String district = querySnapshot.getString("district");
+                        String time1 = querySnapshot.getString("time1");
+                        String time2 = querySnapshot.getString("time2");
+                        String date1 = querySnapshot.getString("date1");
+                        String date2 = querySnapshot.getString("date2");
+                        String place = querySnapshot.getString("place");
+                        String explain = querySnapshot.getString("explain");
+                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                        DocumentReference documentReference = querySnapshot.getReference();
+
+                        FindPost post = new FindPost();
+                        post.viewType = 1;
+                        post.imageUrl = imageUrl;
+                        post.name = name;
+                        post.mail = mail;
+                        post.city = city;
+                        post.district = district;
+                        post.time1 = time1;
+                        post.time2 = time2;
+                        post.date1 = date1;
+                        post.date2 = date2;
+                        post.place = place;
+                        post.explain = explain;
+                        post.timestamp = timestamp;
+                        post.lat = lat;
+                        post.lng = lng;
+                        post.radius = radius;
+                        post.documentReference = documentReference;
+
+                        postArrayList.add(post);
+                        postAdapter.notifyDataSetChanged();
+                    }
+                }
+            }).addOnFailureListener(e -> {
+
+            });
+
+        }
+        else if (checkDistrict) {
             postArrayList.clear();
             String collection = "post" + cityFind;
             Query query = firestore.collection(collection)
@@ -331,8 +763,11 @@ public class MainFragment extends Fragment {
                         postAdapter.notifyDataSetChanged();
 
                     }
+                }).addOnFailureListener(e -> {
+
                 });
-        }else {
+        }
+        else {
             postArrayList.clear();
             String collection = "post" + cityFind;
             Query query = firestore.collection(collection);
@@ -389,9 +824,10 @@ public class MainFragment extends Fragment {
                         postAdapter.notifyDataSetChanged();
 
                     }
+                }).addOnFailureListener(e -> {
+
                 });
         }
-
 
     }
 

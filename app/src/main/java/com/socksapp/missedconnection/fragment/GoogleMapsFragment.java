@@ -185,7 +185,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
 
                 CircleOptions circleOptions = new CircleOptions();
                 circleOptions.center(latLng);
-                circleOptions.radius(100);
+                circleOptions.radius(radius);
                 circleOptions.strokeColor(Color.BLACK);
                 circleOptions.fillColor(0x30ff0000);
                 circleOptions.strokeWidth(2);
