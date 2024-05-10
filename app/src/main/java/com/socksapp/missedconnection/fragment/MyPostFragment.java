@@ -102,7 +102,7 @@ public class MyPostFragment extends Fragment {
         });
     }
 
-    public void dialogShow(View view,String city, Double lat, Double lng, int radius, DocumentReference documentReference,int position){
+    public void dialogShow(View view,String city, Double lat, Double lng, double radius, DocumentReference documentReference,int position){
         final Dialog dialog = new Dialog(view.getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.bottom_sheet_layout_2);
@@ -120,7 +120,7 @@ public class MyPostFragment extends Fragment {
             args.putString("fragment_type", "main");
             args.putDouble("fragment_lat", lat);
             args.putDouble("fragment_lng", lng);
-            args.putInt("fragment_radius", radius);
+            args.putDouble("fragment_radius", radius);
             GoogleMapsFragment myFragment = new GoogleMapsFragment();
             myFragment.setArguments(args);
             FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
@@ -171,18 +171,18 @@ public class MyPostFragment extends Fragment {
 //                    String mail = querySnapshot.getString("mail");
                     String city = querySnapshot.getString("city");
                     String district = querySnapshot.getString("district");
-                    String time1 = querySnapshot.getString("time1");
-                    String time2 = querySnapshot.getString("time2");
-                    String date1 = querySnapshot.getString("date1");
-                    String date2 = querySnapshot.getString("date2");
+                    Timestamp time1 = querySnapshot.getTimestamp("time1");
+                    Timestamp time2 = querySnapshot.getTimestamp("time2");
+                    Timestamp date1 = querySnapshot.getTimestamp("date1");
+                    Timestamp date2 = querySnapshot.getTimestamp("date2");
                     String place = querySnapshot.getString("place");
                     String explain = querySnapshot.getString("explain");
                     Double lat = querySnapshot.getDouble("lat");
                     Double lng = querySnapshot.getDouble("lng");
                     Long x = querySnapshot.getLong("radius");
-                    int radius = 0;
+                    double radius = 0;
                     if(x != null){
-                        radius = x.intValue();
+                        radius = x;
                     }
                     Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
                     DocumentReference documentReference = querySnapshot.getReference();

@@ -82,9 +82,10 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        String imageUrl,name,mail,city,district,place,date1,date2,time1,time2,explain;
+        String imageUrl,name,mail,city,district,place,explain;
         double lat,lng;
-        int radius;
+        double radius;
+        Timestamp date1,date2,time1,time2;
         DocumentReference documentReference;
         Timestamp timestamp;
 

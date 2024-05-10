@@ -46,6 +46,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -77,7 +78,7 @@ public class AddPostFragment extends Fragment {
     private ArrayAdapter<String> cityAdapter,districtAdapter;
     private AutoCompleteTextView cityCompleteTextView,districtCompleteTextView;
     public static Double lat,lng;
-    public static int rad;
+    public static Double rad;
     private SharedPreferences nameShared,imageUrlShared;
     private String myUserName,myImageUrl,userMail;
     private DatePickerDialog datePickerDialog,datePickerDialog2;
@@ -98,7 +99,7 @@ public class AddPostFragment extends Fragment {
 
         lat = 0.0;
         lng = 0.0;
-        rad = 100;
+        rad = 100.0;
 
         nameShared = requireActivity().getSharedPreferences("Name",Context.MODE_PRIVATE);
         imageUrlShared = requireActivity().getSharedPreferences("ImageUrl",Context.MODE_PRIVATE);
@@ -273,7 +274,7 @@ public class AddPostFragment extends Fragment {
     private void addData(View v){
         Double latitude = lat;
         Double longitude = lng;
-        int radius = rad;
+        Double radius = rad;
         String city = binding.cityCompleteText.getText().toString();
         String district = binding.districtCompleteText.getText().toString();
         String place = binding.place.getText().toString();
@@ -349,40 +350,67 @@ public class AddPostFragment extends Fragment {
                         checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
 
                         if(checkComparesDate && checkComparesTime){
-                            HashMap<String,Object> post = new HashMap<>();
-                            post.put("city",city);
-                            post.put("district",district);
-                            if(checkPlace){
-                                post.put("place",place);
-                            }else {
-                                post.put("place","");
+
+                            try {
+
+                                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy");
+                                Date date_1 = formatter_date.parse(date1);
+                                Date date_2 = formatter_date.parse(date2);
+
+                                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm");
+                                Date time_1 = formatter_time.parse(time1);
+                                Date time_2 = formatter_time.parse(time2);
+
+                                if(date_1 != null && date_2 != null && time_1 != null && time_2 != null){
+
+                                    Timestamp date1_timestamp = new Timestamp(date_1);
+                                    Timestamp date2_timestamp = new Timestamp(date_2);
+                                    Timestamp time1_timestamp = new Timestamp(time_1);
+                                    Timestamp time2_timestamp = new Timestamp(time_2);
+
+                                    HashMap<String,Object> post = new HashMap<>();
+                                    post.put("city",city);
+                                    post.put("district",district);
+                                    if(checkPlace){
+                                        post.put("place",place);
+                                    }else {
+                                        post.put("place","");
+                                    }
+                                    post.put("date1",date1_timestamp);
+                                    post.put("time1",time1_timestamp);
+                                    post.put("time2",time2_timestamp);
+                                    post.put("date2",date2_timestamp);
+                                    post.put("lat",latitude);
+                                    post.put("lng",longitude);
+                                    post.put("radius",radius);
+                                    post.put("explain",explain);
+                                    post.put("timestamp",new Date());
+                                    post.put("name",myUserName);
+                                    post.put("imageUrl",myImageUrl);
+                                    post.put("mail",userMail);
+
+                                    WriteBatch batch = firestore.batch();
+
+                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                    batch.set(newPostRef, post);
+
+                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                    batch.set(newPostRef2, post);
+
+                                    batch.commit().addOnSuccessListener(aVoid -> {
+                                        showToastShort("Eklendi");
+                                    }).addOnFailureListener(e -> {
+                                        showToastShort(e.getLocalizedMessage());
+                                    });
+
+                                }else {
+
+                                }
+
+                            }catch (Exception e){
+                                e.printStackTrace();
                             }
-                            post.put("date1",date1);
-                            post.put("time1",time1);
-                            post.put("time2",time2);
-                            post.put("date2",date2);
-                            post.put("lat",latitude);
-                            post.put("lng",longitude);
-                            post.put("radius",radius);
-                            post.put("explain",explain);
-                            post.put("timestamp",new Date());
-                            post.put("name",myUserName);
-                            post.put("imageUrl",myImageUrl);
-                            post.put("mail",userMail);
 
-                            WriteBatch batch = firestore.batch();
-
-                            DocumentReference newPostRef = firestore.collection("post" + city).document();
-                            batch.set(newPostRef, post);
-
-                            DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
-                            batch.set(newPostRef2, post);
-
-                            batch.commit().addOnSuccessListener(aVoid -> {
-                                showToastShort("Eklendi");
-                            }).addOnFailureListener(e -> {
-                                showToastShort(e.getLocalizedMessage());
-                            });
                         }else {
                             if(!checkComparesDate){
                                 binding.dateEditText1.setError("2. girdiğiniz tarihten büyük olamaz");

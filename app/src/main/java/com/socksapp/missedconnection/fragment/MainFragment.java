@@ -23,8 +23,6 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -32,15 +30,16 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.maps.model.LatLng;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.PostAdapter;
 import com.socksapp.missedconnection.databinding.FragmentMainBinding;
 import com.socksapp.missedconnection.model.FindPost;
-import com.socksapp.missedconnection.myclass.PointFilter;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainFragment extends Fragment {
 
@@ -100,16 +99,16 @@ public class MainFragment extends Fragment {
 
         Bundle args = getArguments();
         if (args != null) {
-            String city = args.getString("city");
-            String district = args.getString("district");
-            String place = args.getString("place");
-            int radius = args.getInt("radius");
+            String city = args.getString("city","");
+            String district = args.getString("district","");
+            String place = args.getString("place","");
+            double radius = args.getDouble("radius");
             double latitude = args.getDouble("latitude");
             double longitude = args.getDouble("longitude");
-            String date1 = args.getString("date1");
-            String date2 = args.getString("date2");
-            String time1 = args.getString("time1");
-            String time2 = args.getString("time2");
+            String date1 = args.getString("date1","");
+            String date2 = args.getString("date2","");
+            String time1 = args.getString("time1","");
+            String time2 = args.getString("time2","");
 
             getData(city,district,place,date1,date2,time1,time2,radius,latitude,longitude);
         }else {
@@ -163,7 +162,7 @@ public class MainFragment extends Fragment {
         }
     }
 
-    public void dialogShow(View view, String mail, String name, Double lat, Double lng, int radius, DocumentReference documentReference){
+    public void dialogShow(View view, String mail, String name, Double lat, Double lng, double radius, DocumentReference documentReference){
         final Dialog dialog = new Dialog(view.getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.bottom_sheet_layout);
@@ -181,7 +180,7 @@ public class MainFragment extends Fragment {
             args.putString("fragment_type", "main");
             args.putDouble("fragment_lat", lat);
             args.putDouble("fragment_lng", lng);
-            args.putInt("fragment_radius", radius);
+            args.putDouble("fragment_radius", radius);
             GoogleMapsFragment myFragment = new GoogleMapsFragment();
             myFragment.setArguments(args);
             FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
@@ -217,7 +216,7 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private void getData(String cityFind,String districtFind,String placeFind,String date1Find,String date2Find,String time1Find,String time2Find,int radiusFind,double latFind,double lngFind){
+    private void getData(String cityFind,String districtFind,String placeFind,String date1Find,String date2Find,String time1Find,String time2Find,double radiusFind,double latFind,double lngFind){
         boolean checkDistrict,checkPlace,checkDateAndTime,checkField;
         checkDistrict = !districtFind.isEmpty();
         checkPlace = !placeFind.isEmpty();
@@ -228,10 +227,10 @@ public class MainFragment extends Fragment {
             postArrayList.clear();
             String collection = "post" + cityFind;
             Query query = firestore.collection(collection)
-                    .whereEqualTo("district", districtFind)
-                    .whereEqualTo("place",placeFind)
-                    .whereLessThanOrEqualTo("date2",date1Find)
-                    .whereGreaterThanOrEqualTo("date1",date2Find);
+                .whereEqualTo("district", districtFind)
+                .whereEqualTo("place",placeFind)
+                .whereLessThanOrEqualTo("date2",date1Find)
+                .whereGreaterThanOrEqualTo("date1",date2Find);
 
             query.get().addOnSuccessListener(queryDocumentSnapshots -> {
                 if(!queryDocumentSnapshots.isEmpty()){
@@ -242,56 +241,62 @@ public class MainFragment extends Fragment {
                 for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
 
                     double lat = 0,lng = 0;
-                    Double latX = querySnapshot.getDouble("lat");
-                    Double lngY = querySnapshot.getDouble("lng");
-                    if(latX != null && lngY != null){
-                        lat = latX;
-                        lng = lngY;
-                    }
+                    double radius = 0;
+                    Double lat_x = querySnapshot.getDouble("lat");
+                    Double lng_y = querySnapshot.getDouble("lng");
                     Long x = querySnapshot.getLong("radius");
-                    int radius = 0;
-                    if(x != null){
-                        radius = x.intValue();
+                    if(lat_x != null && lng_y != null && x != null){
+                        lat = lat_x;
+                        lng = lng_y;
+                        radius = x;
                     }
 
                     boolean check = lat != 0 && lng != 0 && radius != 0;
 
                     if(check){
-                        String imageUrl = querySnapshot.getString("imageUrl");
-                        String name = querySnapshot.getString("name");
-                        String mail = querySnapshot.getString("mail");
-                        String city = querySnapshot.getString("city");
-                        String district = querySnapshot.getString("district");
-                        String time1 = querySnapshot.getString("time1");
-                        String time2 = querySnapshot.getString("time2");
-                        String date1 = querySnapshot.getString("date1");
-                        String date2 = querySnapshot.getString("date2");
-                        String place = querySnapshot.getString("place");
-                        String explain = querySnapshot.getString("explain");
-                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                        DocumentReference documentReference = querySnapshot.getReference();
 
-                        FindPost post = new FindPost();
-                        post.viewType = 1;
-                        post.imageUrl = imageUrl;
-                        post.name = name;
-                        post.mail = mail;
-                        post.city = city;
-                        post.district = district;
-                        post.time1 = time1;
-                        post.time2 = time2;
-                        post.date1 = date1;
-                        post.date2 = date2;
-                        post.place = place;
-                        post.explain = explain;
-                        post.timestamp = timestamp;
-                        post.lat = lat;
-                        post.lng = lng;
-                        post.radius = radius;
-                        post.documentReference = documentReference;
+                        double distance = CalculationByDistance(latFind,lngFind,lat,lng);
+                        double radiusSum = radiusFind/1000 + radius/1000;
+                        boolean isIntersecting = distance <= radiusSum;
+                        if (isIntersecting) {
+                            String imageUrl = querySnapshot.getString("imageUrl");
+                            String name = querySnapshot.getString("name");
+                            String mail = querySnapshot.getString("mail");
+                            String city = querySnapshot.getString("city");
+                            String district = querySnapshot.getString("district");
+                            Timestamp time1 = querySnapshot.getTimestamp("time1");
+                            Timestamp time2 = querySnapshot.getTimestamp("time2");
+                            Timestamp date1 = querySnapshot.getTimestamp("date1");
+                            Timestamp date2 = querySnapshot.getTimestamp("date2");
+                            String place = querySnapshot.getString("place");
+                            String explain = querySnapshot.getString("explain");
+                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                            DocumentReference documentReference = querySnapshot.getReference();
 
-                        postArrayList.add(post);
-                        postAdapter.notifyDataSetChanged();
+                            FindPost post = new FindPost();
+                            post.viewType = 1;
+                            post.imageUrl = imageUrl;
+                            post.name = name;
+                            post.mail = mail;
+                            post.city = city;
+                            post.district = district;
+                            post.time1 = time1;
+                            post.time2 = time2;
+                            post.date1 = date1;
+                            post.date2 = date2;
+                            post.place = place;
+                            post.explain = explain;
+                            post.timestamp = timestamp;
+                            post.lat = lat;
+                            post.lng = lng;
+                            post.radius = radius;
+                            post.documentReference = documentReference;
+
+                            postArrayList.add(post);
+                            postAdapter.notifyDataSetChanged();
+                        } else {
+                            //kesişmiyor
+                        }
                     }
                 }
             }).addOnFailureListener(e -> {
@@ -314,56 +319,62 @@ public class MainFragment extends Fragment {
                 for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
 
                     double lat = 0,lng = 0;
-                    Double latX = querySnapshot.getDouble("lat");
-                    Double lngY = querySnapshot.getDouble("lng");
-                    if(latX != null && lngY != null){
-                        lat = latX;
-                        lng = lngY;
-                    }
+                    double radius = 0;
+                    Double lat_x = querySnapshot.getDouble("lat");
+                    Double lng_y = querySnapshot.getDouble("lng");
                     Long x = querySnapshot.getLong("radius");
-                    int radius = 0;
-                    if(x != null){
-                        radius = x.intValue();
+                    if(lat_x != null && lng_y != null && x != null){
+                        lat = lat_x;
+                        lng = lng_y;
+                        radius = x;
                     }
 
                     boolean check = lat != 0 && lng != 0 && radius != 0;
 
                     if(check){
-                        String imageUrl = querySnapshot.getString("imageUrl");
-                        String name = querySnapshot.getString("name");
-                        String mail = querySnapshot.getString("mail");
-                        String city = querySnapshot.getString("city");
-                        String district = querySnapshot.getString("district");
-                        String time1 = querySnapshot.getString("time1");
-                        String time2 = querySnapshot.getString("time2");
-                        String date1 = querySnapshot.getString("date1");
-                        String date2 = querySnapshot.getString("date2");
-                        String place = querySnapshot.getString("place");
-                        String explain = querySnapshot.getString("explain");
-                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                        DocumentReference documentReference = querySnapshot.getReference();
 
-                        FindPost post = new FindPost();
-                        post.viewType = 1;
-                        post.imageUrl = imageUrl;
-                        post.name = name;
-                        post.mail = mail;
-                        post.city = city;
-                        post.district = district;
-                        post.time1 = time1;
-                        post.time2 = time2;
-                        post.date1 = date1;
-                        post.date2 = date2;
-                        post.place = place;
-                        post.explain = explain;
-                        post.timestamp = timestamp;
-                        post.lat = lat;
-                        post.lng = lng;
-                        post.radius = radius;
-                        post.documentReference = documentReference;
+                        double distance = CalculationByDistance(latFind,lngFind,lat,lng);
+                        double radiusSum = radiusFind/1000 + radius/1000;
+                        boolean isIntersecting = distance <= radiusSum;
+                        if (isIntersecting) {
+                            String imageUrl = querySnapshot.getString("imageUrl");
+                            String name = querySnapshot.getString("name");
+                            String mail = querySnapshot.getString("mail");
+                            String city = querySnapshot.getString("city");
+                            String district = querySnapshot.getString("district");
+                            Timestamp time1 = querySnapshot.getTimestamp("time1");
+                            Timestamp time2 = querySnapshot.getTimestamp("time2");
+                            Timestamp date1 = querySnapshot.getTimestamp("date1");
+                            Timestamp date2 = querySnapshot.getTimestamp("date2");
+                            String place = querySnapshot.getString("place");
+                            String explain = querySnapshot.getString("explain");
+                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                            DocumentReference documentReference = querySnapshot.getReference();
 
-                        postArrayList.add(post);
-                        postAdapter.notifyDataSetChanged();
+                            FindPost post = new FindPost();
+                            post.viewType = 1;
+                            post.imageUrl = imageUrl;
+                            post.name = name;
+                            post.mail = mail;
+                            post.city = city;
+                            post.district = district;
+                            post.time1 = time1;
+                            post.time2 = time2;
+                            post.date1 = date1;
+                            post.date2 = date2;
+                            post.place = place;
+                            post.explain = explain;
+                            post.timestamp = timestamp;
+                            post.lat = lat;
+                            post.lng = lng;
+                            post.radius = radius;
+                            post.documentReference = documentReference;
+
+                            postArrayList.add(post);
+                            postAdapter.notifyDataSetChanged();
+                        } else {
+                            //kesişmiyor
+                        }
                     }
                 }
             }).addOnFailureListener(e -> {
@@ -387,56 +398,62 @@ public class MainFragment extends Fragment {
                 for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
 
                     double lat = 0,lng = 0;
-                    Double latX = querySnapshot.getDouble("lat");
-                    Double lngY = querySnapshot.getDouble("lng");
-                    if(latX != null && lngY != null){
-                        lat = latX;
-                        lng = lngY;
-                    }
+                    double radius = 0;
+                    Double lat_x = querySnapshot.getDouble("lat");
+                    Double lng_y = querySnapshot.getDouble("lng");
                     Long x = querySnapshot.getLong("radius");
-                    int radius = 0;
-                    if(x != null){
-                        radius = x.intValue();
+                    if(lat_x != null && lng_y != null && x != null){
+                        lat = lat_x;
+                        lng = lng_y;
+                        radius = x;
                     }
 
                     boolean check = lat != 0 && lng != 0 && radius != 0;
 
                     if(check){
-                        String imageUrl = querySnapshot.getString("imageUrl");
-                        String name = querySnapshot.getString("name");
-                        String mail = querySnapshot.getString("mail");
-                        String city = querySnapshot.getString("city");
-                        String district = querySnapshot.getString("district");
-                        String time1 = querySnapshot.getString("time1");
-                        String time2 = querySnapshot.getString("time2");
-                        String date1 = querySnapshot.getString("date1");
-                        String date2 = querySnapshot.getString("date2");
-                        String place = querySnapshot.getString("place");
-                        String explain = querySnapshot.getString("explain");
-                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                        DocumentReference documentReference = querySnapshot.getReference();
 
-                        FindPost post = new FindPost();
-                        post.viewType = 1;
-                        post.imageUrl = imageUrl;
-                        post.name = name;
-                        post.mail = mail;
-                        post.city = city;
-                        post.district = district;
-                        post.time1 = time1;
-                        post.time2 = time2;
-                        post.date1 = date1;
-                        post.date2 = date2;
-                        post.place = place;
-                        post.explain = explain;
-                        post.timestamp = timestamp;
-                        post.lat = lat;
-                        post.lng = lng;
-                        post.radius = radius;
-                        post.documentReference = documentReference;
+                        double distance = CalculationByDistance(latFind,lngFind,lat,lng);
+                        double radiusSum = radiusFind/1000 + radius/1000;
+                        boolean isIntersecting = distance <= radiusSum;
+                        if (isIntersecting) {
+                            String imageUrl = querySnapshot.getString("imageUrl");
+                            String name = querySnapshot.getString("name");
+                            String mail = querySnapshot.getString("mail");
+                            String city = querySnapshot.getString("city");
+                            String district = querySnapshot.getString("district");
+                            Timestamp time1 = querySnapshot.getTimestamp("time1");
+                            Timestamp time2 = querySnapshot.getTimestamp("time2");
+                            Timestamp date1 = querySnapshot.getTimestamp("date1");
+                            Timestamp date2 = querySnapshot.getTimestamp("date2");
+                            String place = querySnapshot.getString("place");
+                            String explain = querySnapshot.getString("explain");
+                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                            DocumentReference documentReference = querySnapshot.getReference();
 
-                        postArrayList.add(post);
-                        postAdapter.notifyDataSetChanged();
+                            FindPost post = new FindPost();
+                            post.viewType = 1;
+                            post.imageUrl = imageUrl;
+                            post.name = name;
+                            post.mail = mail;
+                            post.city = city;
+                            post.district = district;
+                            post.time1 = time1;
+                            post.time2 = time2;
+                            post.date1 = date1;
+                            post.date2 = date2;
+                            post.place = place;
+                            post.explain = explain;
+                            post.timestamp = timestamp;
+                            post.lat = lat;
+                            post.lng = lng;
+                            post.radius = radius;
+                            post.documentReference = documentReference;
+
+                            postArrayList.add(post);
+                            postAdapter.notifyDataSetChanged();
+                        } else {
+                            //kesişmiyor
+                        }
                     }
                 }
             }).addOnFailureListener(e -> {
@@ -465,18 +482,18 @@ public class MainFragment extends Fragment {
                         String mail = querySnapshot.getString("mail");
                         String city = querySnapshot.getString("city");
                         String district = querySnapshot.getString("district");
-                        String time1 = querySnapshot.getString("time1");
-                        String time2 = querySnapshot.getString("time2");
-                        String date1 = querySnapshot.getString("date1");
-                        String date2 = querySnapshot.getString("date2");
+                        Timestamp time1 = querySnapshot.getTimestamp("time1");
+                        Timestamp time2 = querySnapshot.getTimestamp("time2");
+                        Timestamp date1 = querySnapshot.getTimestamp("date1");
+                        Timestamp date2 = querySnapshot.getTimestamp("date2");
                         String place = querySnapshot.getString("place");
                         String explain = querySnapshot.getString("explain");
                         Double lat = querySnapshot.getDouble("lat");
                         Double lng = querySnapshot.getDouble("lng");
                         Long x = querySnapshot.getLong("radius");
-                        int radius = 0;
+                        double radius = 0;
                         if(x != null){
-                            radius = x.intValue();
+                            radius = x;
                         }
                         Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
                         DocumentReference documentReference = querySnapshot.getReference();
@@ -527,18 +544,18 @@ public class MainFragment extends Fragment {
                         String mail = querySnapshot.getString("mail");
                         String city = querySnapshot.getString("city");
                         String district = querySnapshot.getString("district");
-                        String time1 = querySnapshot.getString("time1");
-                        String time2 = querySnapshot.getString("time2");
-                        String date1 = querySnapshot.getString("date1");
-                        String date2 = querySnapshot.getString("date2");
+                        Timestamp time1 = querySnapshot.getTimestamp("time1");
+                        Timestamp time2 = querySnapshot.getTimestamp("time2");
+                        Timestamp date1 = querySnapshot.getTimestamp("date1");
+                        Timestamp date2 = querySnapshot.getTimestamp("date2");
                         String place = querySnapshot.getString("place");
                         String explain = querySnapshot.getString("explain");
                         Double lat = querySnapshot.getDouble("lat");
                         Double lng = querySnapshot.getDouble("lng");
                         Long x = querySnapshot.getLong("radius");
-                        int radius = 0;
+                        double radius = 0;
                         if(x != null){
-                            radius = x.intValue();
+                            radius = x;
                         }
                         Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
                         DocumentReference documentReference = querySnapshot.getReference();
@@ -572,10 +589,11 @@ public class MainFragment extends Fragment {
         else if (checkDistrict && checkDateAndTime) {
             postArrayList.clear();
             String collection = "post" + cityFind;
+
             Query query = firestore.collection(collection)
                     .whereEqualTo("district", districtFind)
-                    .whereLessThanOrEqualTo("date2",date1Find)
-                    .whereGreaterThanOrEqualTo("date1",date2Find);
+                    .whereLessThanOrEqualTo("date1",date2Find)
+                    .whereGreaterThanOrEqualTo("date2",date1Find);
 
             query.get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -590,18 +608,18 @@ public class MainFragment extends Fragment {
                             String mail = querySnapshot.getString("mail");
                             String city = querySnapshot.getString("city");
                             String district = querySnapshot.getString("district");
-                            String time1 = querySnapshot.getString("time1");
-                            String time2 = querySnapshot.getString("time2");
-                            String date1 = querySnapshot.getString("date1");
-                            String date2 = querySnapshot.getString("date2");
+                            Timestamp time1 = querySnapshot.getTimestamp("time1");
+                            Timestamp time2 = querySnapshot.getTimestamp("time2");
+                            Timestamp date1 = querySnapshot.getTimestamp("date1");
+                            Timestamp date2 = querySnapshot.getTimestamp("date2");
                             String place = querySnapshot.getString("place");
                             String explain = querySnapshot.getString("explain");
                             Double lat = querySnapshot.getDouble("lat");
                             Double lng = querySnapshot.getDouble("lng");
                             Long x = querySnapshot.getLong("radius");
-                            int radius = 0;
+                            double radius = 0;
                             if(x != null){
-                                radius = x.intValue();
+                                radius = x;
                             }
                             Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
                             DocumentReference documentReference = querySnapshot.getReference();
@@ -648,56 +666,62 @@ public class MainFragment extends Fragment {
                 for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
 
                     double lat = 0,lng = 0;
-                    Double latX = querySnapshot.getDouble("lat");
-                    Double lngY = querySnapshot.getDouble("lng");
-                    if(latX != null && lngY != null){
-                        lat = latX;
-                        lng = lngY;
-                    }
+                    double radius = 0;
+                    Double lat_x = querySnapshot.getDouble("lat");
+                    Double lng_y = querySnapshot.getDouble("lng");
                     Long x = querySnapshot.getLong("radius");
-                    int radius = 0;
-                    if(x != null){
-                        radius = x.intValue();
+                    if(lat_x != null && lng_y != null && x != null){
+                        lat = lat_x;
+                        lng = lng_y;
+                        radius = x;
                     }
 
                     boolean check = lat != 0 && lng != 0 && radius != 0;
 
                     if(check){
-                        String imageUrl = querySnapshot.getString("imageUrl");
-                        String name = querySnapshot.getString("name");
-                        String mail = querySnapshot.getString("mail");
-                        String city = querySnapshot.getString("city");
-                        String district = querySnapshot.getString("district");
-                        String time1 = querySnapshot.getString("time1");
-                        String time2 = querySnapshot.getString("time2");
-                        String date1 = querySnapshot.getString("date1");
-                        String date2 = querySnapshot.getString("date2");
-                        String place = querySnapshot.getString("place");
-                        String explain = querySnapshot.getString("explain");
-                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                        DocumentReference documentReference = querySnapshot.getReference();
 
-                        FindPost post = new FindPost();
-                        post.viewType = 1;
-                        post.imageUrl = imageUrl;
-                        post.name = name;
-                        post.mail = mail;
-                        post.city = city;
-                        post.district = district;
-                        post.time1 = time1;
-                        post.time2 = time2;
-                        post.date1 = date1;
-                        post.date2 = date2;
-                        post.place = place;
-                        post.explain = explain;
-                        post.timestamp = timestamp;
-                        post.lat = lat;
-                        post.lng = lng;
-                        post.radius = radius;
-                        post.documentReference = documentReference;
+                        double distance = CalculationByDistance(latFind,lngFind,lat,lng);
+                        double radiusSum = radiusFind/1000 + radius/1000;
+                        boolean isIntersecting = distance <= radiusSum;
+                        if (isIntersecting) {
+                            String imageUrl = querySnapshot.getString("imageUrl");
+                            String name = querySnapshot.getString("name");
+                            String mail = querySnapshot.getString("mail");
+                            String city = querySnapshot.getString("city");
+                            String district = querySnapshot.getString("district");
+                            Timestamp time1 = querySnapshot.getTimestamp("time1");
+                            Timestamp time2 = querySnapshot.getTimestamp("time2");
+                            Timestamp date1 = querySnapshot.getTimestamp("date1");
+                            Timestamp date2 = querySnapshot.getTimestamp("date2");
+                            String place = querySnapshot.getString("place");
+                            String explain = querySnapshot.getString("explain");
+                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                            DocumentReference documentReference = querySnapshot.getReference();
 
-                        postArrayList.add(post);
-                        postAdapter.notifyDataSetChanged();
+                            FindPost post = new FindPost();
+                            post.viewType = 1;
+                            post.imageUrl = imageUrl;
+                            post.name = name;
+                            post.mail = mail;
+                            post.city = city;
+                            post.district = district;
+                            post.time1 = time1;
+                            post.time2 = time2;
+                            post.date1 = date1;
+                            post.date2 = date2;
+                            post.place = place;
+                            post.explain = explain;
+                            post.timestamp = timestamp;
+                            post.lat = lat;
+                            post.lng = lng;
+                            post.radius = radius;
+                            post.documentReference = documentReference;
+
+                            postArrayList.add(post);
+                            postAdapter.notifyDataSetChanged();
+                        } else {
+                            //kesişmiyor
+                        }
                     }
                 }
             }).addOnFailureListener(e -> {
@@ -724,18 +748,18 @@ public class MainFragment extends Fragment {
                         String mail = querySnapshot.getString("mail");
                         String city = querySnapshot.getString("city");
                         String district = querySnapshot.getString("district");
-                        String time1 = querySnapshot.getString("time1");
-                        String time2 = querySnapshot.getString("time2");
-                        String date1 = querySnapshot.getString("date1");
-                        String date2 = querySnapshot.getString("date2");
+                        Timestamp time1 = querySnapshot.getTimestamp("time1");
+                        Timestamp time2 = querySnapshot.getTimestamp("time2");
+                        Timestamp date1 = querySnapshot.getTimestamp("date1");
+                        Timestamp date2 = querySnapshot.getTimestamp("date2");
                         String place = querySnapshot.getString("place");
                         String explain = querySnapshot.getString("explain");
                         Double lat = querySnapshot.getDouble("lat");
                         Double lng = querySnapshot.getDouble("lng");
                         Long x = querySnapshot.getLong("radius");
-                        int radius = 0;
+                        double radius = 0;
                         if(x != null){
-                            radius = x.intValue();
+                            radius = x;
                         }
                         Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
                         DocumentReference documentReference = querySnapshot.getReference();
@@ -785,18 +809,18 @@ public class MainFragment extends Fragment {
                         String mail = querySnapshot.getString("mail");
                         String city = querySnapshot.getString("city");
                         String district = querySnapshot.getString("district");
-                        String time1 = querySnapshot.getString("time1");
-                        String time2 = querySnapshot.getString("time2");
-                        String date1 = querySnapshot.getString("date1");
-                        String date2 = querySnapshot.getString("date2");
+                        Timestamp time1 = querySnapshot.getTimestamp("time1");
+                        Timestamp time2 = querySnapshot.getTimestamp("time2");
+                        Timestamp date1 = querySnapshot.getTimestamp("date1");
+                        Timestamp date2 = querySnapshot.getTimestamp("date2");
                         String place = querySnapshot.getString("place");
                         String explain = querySnapshot.getString("explain");
                         Double lat = querySnapshot.getDouble("lat");
                         Double lng = querySnapshot.getDouble("lng");
                         Long x = querySnapshot.getLong("radius");
-                        int radius = 0;
+                        double radius = 0;
                         if(x != null){
-                            radius = x.intValue();
+                            radius = x;
                         }
                         Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
                         DocumentReference documentReference = querySnapshot.getReference();
@@ -844,18 +868,18 @@ public class MainFragment extends Fragment {
                 String mail = querySnapshot.getString("mail");
                 String city = querySnapshot.getString("city");
                 String district = querySnapshot.getString("district");
-                String time1 = querySnapshot.getString("time1");
-                String time2 = querySnapshot.getString("time2");
-                String date1 = querySnapshot.getString("date1");
-                String date2 = querySnapshot.getString("date2");
+                Timestamp time1 = querySnapshot.getTimestamp("time1");
+                Timestamp time2 = querySnapshot.getTimestamp("time2");
+                Timestamp date1 = querySnapshot.getTimestamp("date1");
+                Timestamp date2 = querySnapshot.getTimestamp("date2");
                 String place = querySnapshot.getString("place");
                 String explain = querySnapshot.getString("explain");
                 Double lat = querySnapshot.getDouble("lat");
                 Double lng = querySnapshot.getDouble("lng");
                 Long x = querySnapshot.getLong("radius");
-                int radius = 0;
+                double radius = 0;
                 if(x != null){
-                    radius = x.intValue();
+                    radius = x;
                 }
                 Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
                 DocumentReference documentReference = querySnapshot.getReference();
@@ -884,6 +908,24 @@ public class MainFragment extends Fragment {
 
             }
         });
+    }
+
+    public double CalculationByDistance(double initialLat, double initialLong,
+                                        double finalLat, double finalLong){
+        int R = 6371;
+        double dLat = toRadians(finalLat-initialLat);
+        double dLon = toRadians(finalLong-initialLong);
+        initialLat = toRadians(initialLat);
+        finalLat = toRadians(finalLat);
+
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(initialLat) * Math.cos(finalLat);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    public double toRadians(double deg) {
+        return deg * (Math.PI/180);
     }
 
     @Override

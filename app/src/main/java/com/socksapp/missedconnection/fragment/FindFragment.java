@@ -84,7 +84,7 @@ public class FindFragment extends Fragment {
     private SharedPreferences nameShared,imageUrlShared;
     private String myUserName,myImageUrl,userMail;
     public static Double lat,lng;
-    public static int rad;
+    public static Double rad;
     private DatePickerDialog datePickerDialog,datePickerDialog2;
     private TimePickerDialog timePickerDialog,timePickerDialog2;
     private int mYear,mMonth,mDay;
@@ -103,7 +103,7 @@ public class FindFragment extends Fragment {
 
         lat = 0.0;
         lng = 0.0;
-        rad = 0;
+        rad = 0.0;
 
         nameShared = requireActivity().getSharedPreferences("Name",Context.MODE_PRIVATE);
         imageUrlShared = requireActivity().getSharedPreferences("ImageUrl",Context.MODE_PRIVATE);
@@ -223,13 +223,13 @@ public class FindFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                goToMainFragment(view);
+                goToMainFragment();
             }
         });
 
     }
 
-    private void goToMainFragment(View v){
+    private void goToMainFragment(){
 
         mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
 
@@ -243,7 +243,7 @@ public class FindFragment extends Fragment {
     private void findData(View v){
         Double latitude = lat;
         Double longitude = lng;
-        int radius = rad;
+        Double radius = rad;
         String city = binding.cityCompleteText.getText().toString();
         String district = binding.districtCompleteText.getText().toString();
         String place = binding.place.getText().toString();
@@ -269,7 +269,7 @@ public class FindFragment extends Fragment {
                 args.putString("city", city);
                 args.putString("district", district);
                 args.putString("place", place);
-                args.putInt("radius", radius);
+                args.putDouble("radius", radius);
                 args.putDouble("latitude", latitude);
                 args.putDouble("longitude", longitude);
                 args.putString("date1", date1);
@@ -304,7 +304,7 @@ public class FindFragment extends Fragment {
                             args.putString("city", city);
                             args.putString("district", district);
                             args.putString("place", place);
-                            args.putInt("radius", radius);
+                            args.putDouble("radius", radius);
                             args.putDouble("latitude", latitude);
                             args.putDouble("longitude", longitude);
                             args.putString("date1", date1);

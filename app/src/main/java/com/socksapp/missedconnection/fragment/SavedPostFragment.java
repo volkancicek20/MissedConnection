@@ -119,18 +119,18 @@ public class SavedPostFragment extends Fragment {
                         String name = querySnapshot.getString("name");
                         String city = querySnapshot.getString("city");
                         String district = querySnapshot.getString("district");
-                        String time1 = querySnapshot.getString("time1");
-                        String time2 = querySnapshot.getString("time2");
-                        String date1 = querySnapshot.getString("date1");
-                        String date2 = querySnapshot.getString("date2");
+                        Timestamp time1 = querySnapshot.getTimestamp("time1");
+                        Timestamp time2 = querySnapshot.getTimestamp("time2");
+                        Timestamp date1 = querySnapshot.getTimestamp("date1");
+                        Timestamp date2 = querySnapshot.getTimestamp("date2");
                         String place = querySnapshot.getString("place");
                         String explain = querySnapshot.getString("explain");
                         Double lat = querySnapshot.getDouble("lat");
                         Double lng = querySnapshot.getDouble("lng");
                         Long x = querySnapshot.getLong("radius");
-                        int radius = 0;
+                        double radius = 0;
                         if(x != null){
-                            radius = x.intValue();
+                            radius = x;
                         }
                         Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
                         DocumentReference documentReference = querySnapshot.getReference();

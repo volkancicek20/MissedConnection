@@ -232,7 +232,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-    private void saveLocationWithRadius(LatLng center, int radius) {
+    private void saveLocationWithRadius(LatLng center, double radius) {
 
         if(type.equals("find_post")){
             FindFragment.rad = radius;

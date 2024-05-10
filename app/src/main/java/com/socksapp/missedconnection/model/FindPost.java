@@ -14,42 +14,18 @@ public class FindPost {
     public String district;
     public String place;
     public String explain;
-    public String date1;
-    public String date2;
-    public String time1;
-    public String time2;
+    public Timestamp date1;
+    public Timestamp date2;
+    public Timestamp time1;
+    public Timestamp time2;
     public Double lat;
     public Double lng;
-    public int radius;
+    public Double radius;
     public Timestamp timestamp;
     public DocumentReference documentReference;
 
     public FindPost (){
 
-    }
-
-    public String getMail() {
-        return mail;
-    }
-
-    public void setMail(String mail) {
-        this.mail = mail;
-    }
-
-    public DocumentReference getDocumentReference() {
-        return documentReference;
-    }
-
-    public void setDocumentReference(DocumentReference documentReference) {
-        this.documentReference = documentReference;
-    }
-
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
     }
 
     public int getViewType() {
@@ -74,6 +50,14 @@ public class FindPost {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getMail() {
+        return mail;
+    }
+
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public String getCity() {
@@ -108,35 +92,35 @@ public class FindPost {
         this.explain = explain;
     }
 
-    public String getDate1() {
+    public Timestamp getDate1() {
         return date1;
     }
 
-    public void setDate1(String date1) {
+    public void setDate1(Timestamp date1) {
         this.date1 = date1;
     }
 
-    public String getDate2() {
+    public Timestamp getDate2() {
         return date2;
     }
 
-    public void setDate2(String date2) {
+    public void setDate2(Timestamp date2) {
         this.date2 = date2;
     }
 
-    public String getTime1() {
+    public Timestamp getTime1() {
         return time1;
     }
 
-    public void setTime1(String time1) {
+    public void setTime1(Timestamp time1) {
         this.time1 = time1;
     }
 
-    public String getTime2() {
+    public Timestamp getTime2() {
         return time2;
     }
 
-    public void setTime2(String time2) {
+    public void setTime2(Timestamp time2) {
         this.time2 = time2;
     }
 
@@ -156,11 +140,27 @@ public class FindPost {
         this.lng = lng;
     }
 
-    public int getRadius() {
+    public Double getRadius() {
         return radius;
     }
 
-    public void setRadius(int radius) {
+    public void setRadius(Double radius) {
         this.radius = radius;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public DocumentReference getDocumentReference() {
+        return documentReference;
+    }
+
+    public void setDocumentReference(DocumentReference documentReference) {
+        this.documentReference = documentReference;
     }
 }
