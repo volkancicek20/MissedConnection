@@ -85,7 +85,7 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         String imageUrl,name,mail,city,district,place,explain;
         double lat,lng;
         double radius;
-        Timestamp date1,date2,time1,time2;
+        long date1,date2,time1,time2;
         DocumentReference documentReference;
         Timestamp timestamp;
 

@@ -14,10 +14,10 @@ public class FindPost {
     public String district;
     public String place;
     public String explain;
-    public Timestamp date1;
-    public Timestamp date2;
-    public Timestamp time1;
-    public Timestamp time2;
+    public long date1;
+    public long date2;
+    public long time1;
+    public long time2;
     public Double lat;
     public Double lng;
     public Double radius;
@@ -92,35 +92,35 @@ public class FindPost {
         this.explain = explain;
     }
 
-    public Timestamp getDate1() {
+    public long getDate1() {
         return date1;
     }
 
-    public void setDate1(Timestamp date1) {
+    public void setDate1(long date1) {
         this.date1 = date1;
     }
 
-    public Timestamp getDate2() {
+    public long getDate2() {
         return date2;
     }
 
-    public void setDate2(Timestamp date2) {
+    public void setDate2(long date2) {
         this.date2 = date2;
     }
 
-    public Timestamp getTime1() {
+    public long getTime1() {
         return time1;
     }
 
-    public void setTime1(Timestamp time1) {
+    public void setTime1(long time1) {
         this.time1 = time1;
     }
 
-    public Timestamp getTime2() {
+    public long getTime2() {
         return time2;
     }
 
-    public void setTime2(Timestamp time2) {
+    public void setTime2(long time2) {
         this.time2 = time2;
     }
 

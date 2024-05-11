@@ -216,7 +216,7 @@ public class AddPostFragment extends Fragment {
 
         binding.addPost.setOnClickListener(v ->{
             if(!myUserName.isEmpty()){
-                addData(v);
+                addData();
             }else {
                 showToastShort("Profilinizi tamamlayınız");
             }
@@ -271,7 +271,7 @@ public class AddPostFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    private void addData(View v){
+    private void addData(){
         Double latitude = lat;
         Double longitude = lng;
         Double radius = rad;
@@ -284,191 +284,363 @@ public class AddPostFragment extends Fragment {
         String time2 = binding.timeEditText2.getText().toString();
         String explain = binding.explain.getText().toString();
 
-        boolean checkCity,checkDistrict,checkPlace,checkDate1,checkDate2,checkTime1,checkTime2,checkExplain;
+        boolean checkCity = !city.isEmpty();
+        boolean checkDistrict = !district.isEmpty();
+        boolean checkExplain = !explain.isEmpty();
+        boolean checkPlace = !place.isEmpty();
+
+        boolean hasDate1 = !date1.isEmpty();
+        boolean hasTime1 = !time1.isEmpty();
+        boolean hasDate2 = !date2.isEmpty();
+        boolean hasTime2 = !time2.isEmpty();
+
         boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
+        boolean isValid = checkCity && checkDistrict && checkExplain;
 
-        checkCity = !city.isEmpty();
-        checkDistrict = !district.isEmpty();
-        checkPlace = !place.isEmpty();
-        checkDate1 = !date1.isEmpty();
-        checkDate2 = !date2.isEmpty();
-        checkTime1 = !time1.isEmpty();
-        checkTime2 = !time2.isEmpty();
-        checkExplain = !explain.isEmpty();
+        if(isValid){
 
-        if(checkCity && checkDistrict && checkExplain){
+            if(hasDate1 && hasDate2 && hasTime1 && hasTime2){
 
-            if(!checkDate1 && !checkDate2 && !checkTime1 && !checkTime2){
-                HashMap<String,Object> post = new HashMap<>();
-                post.put("city",city);
-                post.put("district",district);
-                if(checkPlace){
-                    post.put("place",place);
-                }else {
-                    post.put("place","");
-                }
-                post.put("date1","");
-                post.put("time1","");
-                post.put("time2","");
-                post.put("date2","");
-                post.put("lat",latitude);
-                post.put("lng",longitude);
-                post.put("radius",radius);
-                post.put("explain",explain);
-                post.put("timestamp",new Date());
-                post.put("name",myUserName);
-                post.put("imageUrl",myImageUrl);
-                post.put("mail",userMail);
+                checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
+                checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
 
-                WriteBatch batch = firestore.batch();
+                checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
+                checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
 
-                DocumentReference newPostRef = firestore.collection("post" + city).document();
-                batch.set(newPostRef, post);
+                if(checkFormatDate1 && checkFormatDate2 && checkFormatTime1 && checkFormatTime2){
+                    boolean checkComparesDate,checkComparesTime;
 
-                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
-                batch.set(newPostRef2, post);
+                    checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
+                    checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
 
-                batch.commit().addOnSuccessListener(aVoid -> {
-                    showToastShort("Eklendi");
-                }).addOnFailureListener(e -> {
-                    showToastShort(e.getLocalizedMessage());
-                });
-            }
-            else {
-                if(checkDate1 && checkDate2 && checkTime1 && checkTime2){
-                    checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
-                    checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
+                    if(checkComparesDate && checkComparesTime){
+                        try {
 
-                    checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
-                    checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
+                            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
+                            Date date_1 = formatter_date.parse(date1);
+                            Date date_2 = formatter_date.parse(date2);
 
-                    if(checkFormatDate1 && checkFormatDate2 && checkFormatTime1 && checkFormatTime2){
+                            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
+                            Date time_1 = formatter_time.parse(time1);
+                            Date time_2 = formatter_time.parse(time2);
 
-                        boolean checkComparesDate,checkComparesTime;
+                            if(date_1 != null && date_2 != null && time_1 != null && time_2 != null){
 
-                        checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
-                        checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
+                                long date1_long = date_1.getTime();
+                                long date2_long = date_2.getTime();
+                                long time1_long = time_1.getTime();
+                                long time2_long = time_2.getTime();
 
-                        if(checkComparesDate && checkComparesTime){
-
-                            try {
-
-                                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy");
-                                Date date_1 = formatter_date.parse(date1);
-                                Date date_2 = formatter_date.parse(date2);
-
-                                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm");
-                                Date time_1 = formatter_time.parse(time1);
-                                Date time_2 = formatter_time.parse(time2);
-
-                                if(date_1 != null && date_2 != null && time_1 != null && time_2 != null){
-
-                                    Timestamp date1_timestamp = new Timestamp(date_1);
-                                    Timestamp date2_timestamp = new Timestamp(date_2);
-                                    Timestamp time1_timestamp = new Timestamp(time_1);
-                                    Timestamp time2_timestamp = new Timestamp(time_2);
-
-                                    HashMap<String,Object> post = new HashMap<>();
-                                    post.put("city",city);
-                                    post.put("district",district);
-                                    if(checkPlace){
-                                        post.put("place",place);
-                                    }else {
-                                        post.put("place","");
-                                    }
-                                    post.put("date1",date1_timestamp);
-                                    post.put("time1",time1_timestamp);
-                                    post.put("time2",time2_timestamp);
-                                    post.put("date2",date2_timestamp);
-                                    post.put("lat",latitude);
-                                    post.put("lng",longitude);
-                                    post.put("radius",radius);
-                                    post.put("explain",explain);
-                                    post.put("timestamp",new Date());
-                                    post.put("name",myUserName);
-                                    post.put("imageUrl",myImageUrl);
-                                    post.put("mail",userMail);
-
-                                    WriteBatch batch = firestore.batch();
-
-                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
-                                    batch.set(newPostRef, post);
-
-                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
-                                    batch.set(newPostRef2, post);
-
-                                    batch.commit().addOnSuccessListener(aVoid -> {
-                                        showToastShort("Eklendi");
-                                    }).addOnFailureListener(e -> {
-                                        showToastShort(e.getLocalizedMessage());
-                                    });
-
+                                HashMap<String,Object> post = new HashMap<>();
+                                post.put("city",city);
+                                post.put("district",district);
+                                if(checkPlace){
+                                    post.put("place",place);
                                 }else {
-
+                                    post.put("place","");
                                 }
+                                post.put("date1",date1_long);
+                                post.put("time1",time1_long);
+                                post.put("time2",time2_long);
+                                post.put("date2",date2_long);
+                                post.put("lat",latitude);
+                                post.put("lng",longitude);
+                                post.put("radius",radius);
+                                post.put("explain",explain);
+                                post.put("timestamp",new Date());
+                                post.put("name",myUserName);
+                                post.put("imageUrl",myImageUrl);
+                                post.put("mail",userMail);
 
-                            }catch (Exception e){
-                                e.printStackTrace();
+                                WriteBatch batch = firestore.batch();
+
+                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                batch.set(newPostRef, post);
+
+                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                batch.set(newPostRef2, post);
+
+                                batch.commit().addOnSuccessListener(aVoid -> {
+                                    showToastShort("Eklendi");
+                                }).addOnFailureListener(e -> {
+                                    showToastShort(e.getLocalizedMessage());
+                                });
+
+                            }else {
+
                             }
 
-                        }else {
-                            if(!checkComparesDate){
-                                binding.dateEditText1.setError("2. girdiğiniz tarihten büyük olamaz");
-                            }else {
-                                binding.dateEditText1.setError(null);
-                            }
-                            if(!checkComparesTime){
-                                binding.timeEditText1.setError("2. girdiğiniz saatten büyük olamaz");
-                            }else {
-                                binding.timeEditText1.setError(null);
-                            }
+                        }catch (Exception e){
+                            e.printStackTrace();
                         }
                     }else {
-                        if(!checkFormatDate1){
-                            binding.dateEditText1.setError("Uygun formatta tarih giriniz");
+                        if(!checkComparesDate){
+                            binding.dateEditText1.setError("2. girdiğiniz tarihten büyük olamaz");
                         }else {
                             binding.dateEditText1.setError(null);
                         }
-                        if(!checkFormatDate2){
-                            binding.dateEditText2.setError("Uygun formatta tarih giriniz");
-                        }else {
-                            binding.dateEditText2.setError(null);
-                        }
-                        if(!checkFormatTime1){
-                            binding.timeEditText1.setError("Uygun formatta saat giriniz");
+                        if(!checkComparesTime){
+                            binding.timeEditText1.setError("2. girdiğiniz saatten büyük olamaz");
                         }else {
                             binding.timeEditText1.setError(null);
                         }
-                        if(!checkFormatTime2){
-                            binding.timeEditText2.setError("Uygun formatta saat giriniz");
-                        }else {
-                            binding.timeEditText2.setError(null);
-                        }
                     }
+
                 }else {
-                    if(!checkDate1){
-                        binding.dateEditText1.setError("Tarihi giriniz");
+                    if(!checkFormatDate1){
+                        binding.dateEditText1.setError("Uygun formatta tarih giriniz");
                     }else {
                         binding.dateEditText1.setError(null);
                     }
-                    if(!checkDate2){
-                        binding.dateEditText2.setError("Tarihi giriniz");
+                    if(!checkFormatDate2){
+                        binding.dateEditText2.setError("Uygun formatta tarih giriniz");
                     }else {
                         binding.dateEditText2.setError(null);
                     }
-                    if(!checkTime1){
-                        binding.timeEditText1.setError("Saati giriniz");
+                    if(!checkFormatTime1){
+                        binding.timeEditText1.setError("Uygun formatta saat giriniz");
                     }else {
                         binding.timeEditText1.setError(null);
                     }
-                    if(!checkTime2){
-                        binding.timeEditText2.setError("Saati giriniz");
+                    if(!checkFormatTime2){
+                        binding.timeEditText2.setError("Uygun formatta saat giriniz");
                     }else {
                         binding.timeEditText2.setError(null);
                     }
                 }
             }
+            else {
 
+                if(!hasDate1 && !hasDate2 && !hasTime1 && !hasTime2){
+                    HashMap<String,Object> post = new HashMap<>();
+                    post.put("city",city);
+                    post.put("district",district);
+                    if(checkPlace){
+                        post.put("place",place);
+                    }else {
+                        post.put("place","");
+                    }
+                    post.put("date1",0);
+                    post.put("time1",0);
+                    post.put("time2",0);
+                    post.put("date2",0);
+                    post.put("lat",latitude);
+                    post.put("lng",longitude);
+                    post.put("radius",radius);
+                    post.put("explain",explain);
+                    post.put("timestamp",new Date());
+                    post.put("name",myUserName);
+                    post.put("imageUrl",myImageUrl);
+                    post.put("mail",userMail);
+
+                    WriteBatch batch = firestore.batch();
+
+                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+                    batch.set(newPostRef, post);
+
+                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                    batch.set(newPostRef2, post);
+
+                    batch.commit().addOnSuccessListener(aVoid -> {
+                        showToastShort("Eklendi");
+                    }).addOnFailureListener(e -> {
+                        showToastShort(e.getLocalizedMessage());
+                    });
+                }else {
+                    if(hasDate1 && hasDate2 && (hasTime1 == hasTime2)){
+                        checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
+                        checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
+
+                        if(checkFormatDate1 && checkFormatDate2){
+                            boolean checkComparesDate;
+
+                            checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
+
+                            if(checkComparesDate){
+                                binding.dateEditText1.setError(null);
+                                try {
+                                    @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
+                                    Date date_1 = formatter_date.parse(date1);
+                                    Date date_2 = formatter_date.parse(date2);
+
+                                    if(date_1 != null && date_2 != null){
+
+                                        long date1_long = date_1.getTime();
+                                        long date2_long = date_2.getTime();
+
+                                        HashMap<String,Object> post = new HashMap<>();
+                                        post.put("city",city);
+                                        post.put("district",district);
+                                        if(checkPlace){
+                                            post.put("place",place);
+                                        }else {
+                                            post.put("place","");
+                                        }
+                                        post.put("date1",date1_long);
+                                        post.put("time1",0);
+                                        post.put("time2",0);
+                                        post.put("date2",date2_long);
+                                        post.put("lat",latitude);
+                                        post.put("lng",longitude);
+                                        post.put("radius",radius);
+                                        post.put("explain",explain);
+                                        post.put("timestamp",new Date());
+                                        post.put("name",myUserName);
+                                        post.put("imageUrl",myImageUrl);
+                                        post.put("mail",userMail);
+
+                                        WriteBatch batch = firestore.batch();
+
+                                        DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                        batch.set(newPostRef, post);
+
+                                        DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                        batch.set(newPostRef2, post);
+
+                                        batch.commit().addOnSuccessListener(aVoid -> {
+                                            showToastShort("Eklendi");
+                                        }).addOnFailureListener(e -> {
+                                            showToastShort(e.getLocalizedMessage());
+                                        });
+
+                                    }else {
+
+                                    }
+
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            }else {
+                                binding.dateEditText1.setError("2. girdiğiniz tarihten büyük olamaz");
+                            }
+                        }else {
+                            if(!checkFormatDate1){
+                                binding.dateEditText1.setError("Uygun formatta tarih giriniz");
+                            }else {
+                                binding.dateEditText1.setError(null);
+                            }
+                            if(!checkFormatDate2){
+                                binding.dateEditText2.setError("Uygun formatta tarih giriniz");
+                            }else {
+                                binding.dateEditText2.setError(null);
+                            }
+                        }
+                    }else {
+                        if(!hasDate1 && !hasDate2){
+                            binding.dateEditText1.setError(null);
+                            binding.dateEditText2.setError(null);
+                        }else {
+                            if(!hasDate1){
+                                binding.dateEditText1.setError("Tarihi giriniz");
+                            }else {
+                                binding.dateEditText1.setError(null);
+                            }
+                            if(!hasDate2){
+                                binding.dateEditText2.setError("Tarihi giriniz");
+                            }else {
+                                binding.dateEditText2.setError(null);
+                            }
+                        }
+                    }
+
+                    if(hasTime1 && hasTime2 && (hasDate1 == hasDate2)){
+                        checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
+                        checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
+
+                        if(checkFormatTime1 && checkFormatTime2){
+                            boolean checkComparesTime;
+
+                            checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
+
+                            if(checkComparesTime){
+                                binding.timeEditText1.setError(null);
+                                try {
+                                    @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
+                                    Date time_1 = formatter_time.parse(time1);
+                                    Date time_2 = formatter_time.parse(time2);
+
+                                    if(time_1 != null && time_2 != null){
+
+                                        long time1_long = time_1.getTime();
+                                        long time2_long = time_2.getTime();
+
+                                        HashMap<String,Object> post = new HashMap<>();
+                                        post.put("city",city);
+                                        post.put("district",district);
+                                        if(checkPlace){
+                                            post.put("place",place);
+                                        }else {
+                                            post.put("place","");
+                                        }
+                                        post.put("date1",0);
+                                        post.put("time1",time1_long);
+                                        post.put("time2",time2_long);
+                                        post.put("date2",0);
+                                        post.put("lat",latitude);
+                                        post.put("lng",longitude);
+                                        post.put("radius",radius);
+                                        post.put("explain",explain);
+                                        post.put("timestamp",new Date());
+                                        post.put("name",myUserName);
+                                        post.put("imageUrl",myImageUrl);
+                                        post.put("mail",userMail);
+
+                                        WriteBatch batch = firestore.batch();
+
+                                        DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                        batch.set(newPostRef, post);
+
+                                        DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                        batch.set(newPostRef2, post);
+
+                                        batch.commit().addOnSuccessListener(aVoid -> {
+                                            showToastShort("Eklendi");
+                                        }).addOnFailureListener(e -> {
+                                            showToastShort(e.getLocalizedMessage());
+                                        });
+
+                                    }else {
+
+                                    }
+
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            }else {
+                                binding.timeEditText1.setError("2. girdiğiniz saatten büyük olamaz");
+                            }
+                        }else {
+                            if(!checkFormatTime1){
+                                binding.timeEditText1.setError("Uygun formatta saat giriniz");
+                            }else {
+                                binding.timeEditText1.setError(null);
+                            }
+                            if(!checkFormatTime2){
+                                binding.timeEditText2.setError("Uygun formatta saat giriniz");
+                            }else {
+                                binding.timeEditText2.setError(null);
+                            }
+                        }
+                    }else {
+                        if(!hasTime1 && !hasDate2){
+                            binding.timeEditText1.setError(null);
+                            binding.timeEditText2.setError(null);
+                        }else {
+                            if(!hasTime1){
+                                binding.timeEditText1.setError("Saati giriniz");
+                            }else {
+                                binding.timeEditText1.setError(null);
+                            }
+                            if(!hasTime2){
+                                binding.timeEditText2.setError("Saati giriniz");
+                            }else {
+                                binding.timeEditText2.setError(null);
+                            }
+                        }
+                    }
+                }
+
+            }
         }else {
             if(!checkCity){
                 binding.cityTextInput.setError("İl boş bırakılamaz");
@@ -491,13 +663,6 @@ public class AddPostFragment extends Fragment {
                 binding.explainTextInput.setError(null);
                 binding.explainTextInput.setErrorIconDrawable(null);
             }
-//            if(!checkPlace){
-//                binding.placeTextInput.setError("Yeri belirtiniz");
-//                binding.placeTextInput.setErrorIconDrawable(R.drawable.icon_error);
-//            }else {
-//                binding.placeTextInput.setError(null);
-//                binding.placeTextInput.setErrorIconDrawable(null);
-//            }
         }
 
     }

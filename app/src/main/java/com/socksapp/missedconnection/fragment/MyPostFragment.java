@@ -171,10 +171,10 @@ public class MyPostFragment extends Fragment {
 //                    String mail = querySnapshot.getString("mail");
                     String city = querySnapshot.getString("city");
                     String district = querySnapshot.getString("district");
-                    Timestamp time1 = querySnapshot.getTimestamp("time1");
-                    Timestamp time2 = querySnapshot.getTimestamp("time2");
-                    Timestamp date1 = querySnapshot.getTimestamp("date1");
-                    Timestamp date2 = querySnapshot.getTimestamp("date2");
+                    Long time1 = querySnapshot.getLong("time1");
+                    Long time2 = querySnapshot.getLong("time2");
+                    Long date1 = querySnapshot.getLong("date1");
+                    Long date2 = querySnapshot.getLong("date2");
                     String place = querySnapshot.getString("place");
                     String explain = querySnapshot.getString("explain");
                     Double lat = querySnapshot.getDouble("lat");
@@ -194,10 +194,26 @@ public class MyPostFragment extends Fragment {
                     post.mail = userMail;
                     post.city = city;
                     post.district = district;
-                    post.time1 = time1;
-                    post.time2 = time2;
-                    post.date1 = date1;
-                    post.date2 = date2;
+                    if (time1 == null) {
+                        post.time1 = 0;
+                    } else {
+                        post.time1 = time1;
+                    }
+                    if (time2 == null) {
+                        post.time2 = 0;
+                    } else {
+                        post.time2 = time2;
+                    }
+                    if (date1 == null) {
+                        post.date1 = 0;
+                    } else {
+                        post.date1 = date1;
+                    }
+                    if (date2 == null) {
+                        post.date2 = 0;
+                    } else {
+                        post.date2 = date2;
+                    }
                     post.place = place;
                     post.explain = explain;
                     post.timestamp = timestamp;
