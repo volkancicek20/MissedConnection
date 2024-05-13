@@ -126,6 +126,10 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
                 break;
             case LAYOUT_EMPTY:
 
+                SavedPostEmptyHolder savedPostEmptyHolder = (SavedPostEmptyHolder) holder;
+
+                savedPostEmptyHolder.recyclerEmptySavedPostBinding.goMain.setOnClickListener(v -> fragment.goMain());
+
                 break;
         }
 

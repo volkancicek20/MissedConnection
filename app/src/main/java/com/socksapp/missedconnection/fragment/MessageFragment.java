@@ -1,5 +1,6 @@
 package com.socksapp.missedconnection.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,11 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.socksapp.missedconnection.R;
+import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentMessageBinding;
 
 public class MessageFragment extends Fragment {
 
     private FragmentMessageBinding binding;
+    private MainActivity mainActivity;
 
     public MessageFragment() {
         // Required empty public constructor
@@ -35,6 +38,16 @@ public class MessageFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
+        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof MainActivity) {
+            mainActivity = (MainActivity) context;
+        }
+    }
 }

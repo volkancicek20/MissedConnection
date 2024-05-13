@@ -99,6 +99,7 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
 
         userMail = user.getEmail();

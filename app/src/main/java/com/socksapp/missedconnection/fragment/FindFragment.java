@@ -122,6 +122,7 @@ public class FindFragment extends Fragment {
 
         binding.mapView.onCreate(savedInstanceState);
 
+        mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
         mainActivity.includedLayout.setVisibility(View.VISIBLE);
         mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);

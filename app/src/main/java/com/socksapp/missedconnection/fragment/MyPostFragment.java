@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +52,7 @@ public class MyPostFragment extends Fragment {
     private SharedPreferences nameShared,imageUrlShared;
     public MyPostAdapter myPostAdapter;
     public ArrayList<FindPost> postArrayList;
+    private Handler handler;
 
     public MyPostFragment() {
         // Required empty public constructor
@@ -79,6 +81,8 @@ public class MyPostFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        binding.shimmerLayout.startShimmer();
+
         userMail = user.getEmail();
 
         mainActivity.bottomNavigationView.setVisibility(View.GONE);
@@ -89,6 +93,8 @@ public class MyPostFragment extends Fragment {
         myPostAdapter = new MyPostAdapter(postArrayList,view.getContext(),MyPostFragment.this);
         binding.recyclerViewMyPost.setAdapter(myPostAdapter);
         postArrayList.clear();
+
+        handler = new Handler();
 
         getData();
 
@@ -162,71 +168,91 @@ public class MyPostFragment extends Fragment {
     }
 
     private void getData(){
-        firestore.collection(userMail).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+        firestore.collection(userMail).get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if(queryDocumentSnapshots.isEmpty()){
+                FindPost post = new FindPost();
+                post.viewType = 2;
+
+                postArrayList.add(post);
+                binding.shimmerLayout.stopShimmer();
+                binding.shimmerLayout.setVisibility(View.GONE);
+                binding.recyclerViewMyPost.setVisibility(View.VISIBLE);
+                myPostAdapter.notifyDataSetChanged();
+
+                return;
+            }
+            for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
 //                    String imageUrl = querySnapshot.getString("imageUrl");
 //                    String name = querySnapshot.getString("name");
 //                    String mail = querySnapshot.getString("mail");
-                    String city = querySnapshot.getString("city");
-                    String district = querySnapshot.getString("district");
-                    Long time1 = querySnapshot.getLong("time1");
-                    Long time2 = querySnapshot.getLong("time2");
-                    Long date1 = querySnapshot.getLong("date1");
-                    Long date2 = querySnapshot.getLong("date2");
-                    String place = querySnapshot.getString("place");
-                    String explain = querySnapshot.getString("explain");
-                    Double lat = querySnapshot.getDouble("lat");
-                    Double lng = querySnapshot.getDouble("lng");
-                    Long x = querySnapshot.getLong("radius");
-                    double radius = 0;
-                    if(x != null){
-                        radius = x;
-                    }
-                    Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                    DocumentReference documentReference = querySnapshot.getReference();
-
-                    FindPost post = new FindPost();
-                    post.viewType = 1;
-                    post.imageUrl = imageUrlShared.getString("imageUrl","");
-                    post.name = nameShared.getString("name","");
-                    post.mail = userMail;
-                    post.city = city;
-                    post.district = district;
-                    if (time1 == null) {
-                        post.time1 = 0;
-                    } else {
-                        post.time1 = time1;
-                    }
-                    if (time2 == null) {
-                        post.time2 = 0;
-                    } else {
-                        post.time2 = time2;
-                    }
-                    if (date1 == null) {
-                        post.date1 = 0;
-                    } else {
-                        post.date1 = date1;
-                    }
-                    if (date2 == null) {
-                        post.date2 = 0;
-                    } else {
-                        post.date2 = date2;
-                    }
-                    post.place = place;
-                    post.explain = explain;
-                    post.timestamp = timestamp;
-                    post.lat = lat;
-                    post.lng = lng;
-                    post.radius = radius;
-                    post.documentReference = documentReference;
-
-                    postArrayList.add(post);
-                    myPostAdapter.notifyDataSetChanged();
+                String city = querySnapshot.getString("city");
+                String district = querySnapshot.getString("district");
+                Long time1 = querySnapshot.getLong("time1");
+                Long time2 = querySnapshot.getLong("time2");
+                Long date1 = querySnapshot.getLong("date1");
+                Long date2 = querySnapshot.getLong("date2");
+                String place = querySnapshot.getString("place");
+                String explain = querySnapshot.getString("explain");
+                Double lat = querySnapshot.getDouble("lat");
+                Double lng = querySnapshot.getDouble("lng");
+                Long x = querySnapshot.getLong("radius");
+                double radius = 0;
+                if(x != null){
+                    radius = x;
                 }
+                Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                DocumentReference documentReference = querySnapshot.getReference();
+
+                FindPost post = new FindPost();
+                post.viewType = 1;
+                post.imageUrl = imageUrlShared.getString("imageUrl","");
+                post.name = nameShared.getString("name","");
+                post.mail = userMail;
+                post.city = city;
+                post.district = district;
+                if (time1 == null) {
+                    post.time1 = 0;
+                } else {
+                    post.time1 = time1;
+                }
+                if (time2 == null) {
+                    post.time2 = 0;
+                } else {
+                    post.time2 = time2;
+                }
+                if (date1 == null) {
+                    post.date1 = 0;
+                } else {
+                    post.date1 = date1;
+                }
+                if (date2 == null) {
+                    post.date2 = 0;
+                } else {
+                    post.date2 = date2;
+                }
+                post.place = place;
+                post.explain = explain;
+                post.timestamp = timestamp;
+                post.lat = lat;
+                post.lng = lng;
+                post.radius = radius;
+                post.documentReference = documentReference;
+
+                postArrayList.add(post);
+                binding.shimmerLayout.stopShimmer();
+                binding.shimmerLayout.setVisibility(View.GONE);
+                binding.recyclerViewMyPost.setVisibility(View.VISIBLE);
+                myPostAdapter.notifyDataSetChanged();
             }
         });
+    }
+
+    public void goAddPost(){
+        AddPostFragment fragment = new AddPostFragment();
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     @Override

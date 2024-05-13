@@ -7,8 +7,10 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +47,7 @@ public class SavedPostFragment extends Fragment {
     private String userMail;
     public SavedPostAdapter savedPostAdapter;
     public ArrayList<FindPost> savedPostArrayList;
+    private Handler handler;
 
     public SavedPostFragment() {
         // Required empty public constructor
@@ -70,6 +73,8 @@ public class SavedPostFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        binding.shimmerLayout.startShimmer();
+
         mainActivity.bottomNavigationView.setVisibility(View.GONE);
         mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
 
@@ -79,6 +84,8 @@ public class SavedPostFragment extends Fragment {
         savedPostAdapter = new SavedPostAdapter(savedPostArrayList,view.getContext(),SavedPostFragment.this);
         binding.recyclerViewSavedPost.setAdapter(savedPostAdapter);
         savedPostArrayList.clear();
+
+        handler = new Handler();
 
         getData();
 
@@ -106,8 +113,13 @@ public class SavedPostFragment extends Fragment {
         if(arrayList.isEmpty()){
             FindPost post = new FindPost();
             post.viewType = 2;
+
             savedPostArrayList.add(post);
+            binding.shimmerLayout.stopShimmer();
+            binding.shimmerLayout.setVisibility(View.GONE);
+            binding.recyclerViewSavedPost.setVisibility(View.VISIBLE);
             savedPostAdapter.notifyDataSetChanged();
+
         }else {
             for (RefItem item : arrayList) {
                 String mail = item.getMail();
@@ -171,6 +183,9 @@ public class SavedPostFragment extends Fragment {
                         post.documentReference = documentReference;
 
                         savedPostArrayList.add(post);
+                        binding.shimmerLayout.stopShimmer();
+                        binding.shimmerLayout.setVisibility(View.GONE);
+                        binding.recyclerViewSavedPost.setVisibility(View.VISIBLE);
                         savedPostAdapter.notifyDataSetChanged();
                     }
                 }).addOnFailureListener(e -> {
@@ -179,6 +194,14 @@ public class SavedPostFragment extends Fragment {
             }
         }
 
+    }
+
+    public void goMain(){
+        MainFragment fragment = new MainFragment();
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     @Override

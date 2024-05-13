@@ -131,6 +131,10 @@ public class PostAdapter extends RecyclerView.Adapter {
                 break;
             case LAYOUT_EMPTY:
 
+                PostEmptyHolder postEmptyHolder = (PostEmptyHolder) holder;
+
+                postEmptyHolder.recyclerViewEmptyPostBinding.goFind.setOnClickListener(v -> fragment.goFind());
+
                 break;
         }
 

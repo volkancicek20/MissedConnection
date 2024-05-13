@@ -119,6 +119,10 @@ public class MyPostAdapter extends RecyclerView.Adapter {
                 break;
             case LAYOUT_EMPTY:
 
+                MyPostEmptyHolder myPostEmptyHolder = (MyPostEmptyHolder) holder;
+
+                myPostEmptyHolder.recyclerEmptyMyPostBinding.goAddPost.setOnClickListener(v -> fragment.goAddPost());
+
                 break;
         }
 

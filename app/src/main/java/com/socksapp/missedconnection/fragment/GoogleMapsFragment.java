@@ -21,11 +21,15 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.material.slider.LabelFormatter;
 import com.google.android.material.slider.Slider;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.maps.android.data.geojson.GeoJsonLayer;
+import com.google.maps.android.data.geojson.GeoJsonPolygonStyle;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentGoogleMapsBinding;
@@ -154,42 +158,62 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
             loadCoordinate();
 
             mMap.setOnMapClickListener(latLng -> {
-                radius = 100;
-                customLatLng = new LatLng(latLng.latitude,latLng.longitude);
-                binding.slider.setValue(100);
-                binding.slider.setVisibility(View.VISIBLE);
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
 
                 try {
                     Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
                     List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                    String streetAddress = "";
+
                     if (addresses != null && addresses.size() > 0) {
-                        Address address = addresses.get(0);
-                        streetAddress = address.getAddressLine(0);
+                        String cityFind = addresses.get(0).getAdminArea();
+                        String districtFind = addresses.get(0).getSubAdminArea();
+
+                        if(city.equals(cityFind) && district.equals(districtFind)){
+                            radius = 100;
+                            customLatLng = new LatLng(latLng.latitude,latLng.longitude);
+                            binding.slider.setValue(100);
+                            binding.slider.setVisibility(View.VISIBLE);
+                            MarkerOptions markerOptions = new MarkerOptions();
+                            markerOptions.position(latLng);
+
+                            try {
+                                geocoder = new Geocoder(requireContext(), Locale.getDefault());
+                                addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+                                String streetAddress = "";
+                                if (addresses != null && addresses.size() > 0) {
+                                    Address address = addresses.get(0);
+                                    streetAddress = address.getAddressLine(0);
+                                }
+                                markerOptions.title(streetAddress);
+                            }catch (Exception e){
+                                markerOptions.title(latLng.latitude + " / " + latLng.longitude);
+                                e.printStackTrace();
+                            }
+
+                            mMap.clear();
+                            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
+                            mMap.addMarker(markerOptions);
+
+                            if (currentCircle != null) {
+                                currentCircle.remove();
+                            }
+
+                            CircleOptions circleOptions = new CircleOptions();
+                            circleOptions.center(latLng);
+                            circleOptions.radius(radius);
+                            circleOptions.strokeColor(Color.BLACK);
+                            circleOptions.fillColor(0x30ff0000);
+                            circleOptions.strokeWidth(2);
+                            currentCircle = mMap.addCircle(circleOptions);
+                        }else {
+                            Toast.makeText(requireContext(),city+","+district+" alanının dışına çıkamazsınız",Toast.LENGTH_SHORT).show();
+                        }
+
+                    } else {
+                        // Coğrafi bilgi bulunamadıysa uygun bir işlem yapın
                     }
-                    markerOptions.title(streetAddress);
-                }catch (Exception e){
-                    markerOptions.title(latLng.latitude + " / " + latLng.longitude);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-                mMap.clear();
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,15));
-                mMap.addMarker(markerOptions);
-
-                if (currentCircle != null) {
-                    currentCircle.remove();
-                }
-
-                CircleOptions circleOptions = new CircleOptions();
-                circleOptions.center(latLng);
-                circleOptions.radius(radius);
-                circleOptions.strokeColor(Color.BLACK);
-                circleOptions.fillColor(0x30ff0000);
-                circleOptions.strokeWidth(2);
-                currentCircle = mMap.addCircle(circleOptions);
             });
         }
 
@@ -221,6 +245,13 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
 
                 LatLng turkey = new LatLng(latitude, longitude);
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(turkey, 13));
+
+                LatLngBounds curScreen = mMap.getProjection()
+                        .getVisibleRegion().latLngBounds;
+                System.out.println("A: "+curScreen.northeast);
+                System.out.println("B: "+curScreen.southwest);
+                System.out.println("C: "+curScreen.getCenter());
+
             } else {
                 System.out.println("No location found for the given address.");
             }

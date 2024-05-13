@@ -29,6 +29,8 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -222,6 +224,9 @@ public class EditProfileFragment extends Fragment {
             editor.putString("name",uploadName);
             editor.apply();
 
+            TextView textView = mainActivity.headerView.findViewById(R.id.drawer_user_name);
+            textView.setText(uploadName);
+
             binding.nameEdittext.setEnabled(false);
             binding.nameEdittext.setText("");
             binding.nameEdittext.setHint(uploadName);
@@ -232,6 +237,14 @@ public class EditProfileFragment extends Fragment {
         editor.putString("imageUrl",uploadImageUrl);
         editor.apply();
 
+        ImageView imageView = mainActivity.headerView.findViewById(R.id.drawer_image);
+        Glide.with(requireActivity())
+            .load(uploadImageUrl)
+            .apply(new RequestOptions()
+            .error(R.drawable.person_active_96)
+            .centerCrop())
+            .into(imageView);
+
         imageData = null;
     }
 
@@ -240,6 +253,9 @@ public class EditProfileFragment extends Fragment {
             SharedPreferences.Editor editor = nameShared.edit();
             editor.putString("name",uploadName);
             editor.apply();
+
+            TextView textView = mainActivity.headerView.findViewById(R.id.drawer_user_name);
+            textView.setText(uploadName);
 
             binding.nameEdittext.setEnabled(false);
             binding.nameEdittext.setText("");

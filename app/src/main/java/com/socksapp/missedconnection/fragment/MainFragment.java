@@ -88,6 +88,7 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
         mainActivity.includedLayout.setVisibility(View.VISIBLE);
         mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
@@ -226,6 +227,7 @@ public class MainFragment extends Fragment {
     }
 
     private void getData(String cityFind,String districtFind,String placeFind,String date1Find,String date2Find,String time1Find,String time2Find,double radiusFind,double latFind,double lngFind){
+
         boolean checkDistrict,checkPlace,checkDate,checkTime,checkField;
         checkDistrict = !districtFind.isEmpty();
         checkPlace = !placeFind.isEmpty();
@@ -233,9 +235,9 @@ public class MainFragment extends Fragment {
         checkTime = !time1Find.isEmpty() && !time2Find.isEmpty();
         checkField = radiusFind != 0 && latFind != 0 && lngFind != 0;
 
+        Query query = null;
+
         if(checkDistrict && checkPlace && checkDate && checkTime && checkField){
-            //halledildi
-            //indexe gerek yok
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -253,117 +255,13 @@ public class MainFragment extends Fragment {
                     long time1_long = time_1.getTime();
                     long time2_long = time_2.getTime();
 
-                    Query query = firestore.collection(collection)
+                    query = firestore.collection(collection)
                         .whereEqualTo("district", districtFind)
                         .whereEqualTo("place",placeFind)
                         .whereLessThanOrEqualTo("date1",date2_long)
                         .whereGreaterThanOrEqualTo("date2",date1_long)
                         .whereLessThanOrEqualTo("time1",time2_long)
                         .whereGreaterThanOrEqualTo("time2",time1_long);
-
-                    query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FindPost post = new FindPost();
-                                    post.viewType = 2;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                }
-                            }, 2000);
-                        }
-                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-
-                            double lat = 0,lng = 0;
-                            double radius = 0;
-                            Double lat_x = querySnapshot.getDouble("lat");
-                            Double lng_y = querySnapshot.getDouble("lng");
-                            Long x = querySnapshot.getLong("radius");
-                            if(lat_x != null && lng_y != null && x != null){
-                                lat = lat_x;
-                                lng = lng_y;
-                                radius = x;
-                            }
-
-                            boolean check = lat != 0 && lng != 0 && radius != 0;
-
-                            if(check){
-
-                                double distance = CalculationByDistance(latFind,lngFind,lat,lng);
-                                double radiusSum = radiusFind/1000 + radius/1000;
-                                boolean isIntersecting = distance <= radiusSum;
-                                if (isIntersecting) {
-                                    String imageUrl = querySnapshot.getString("imageUrl");
-                                    String name = querySnapshot.getString("name");
-                                    String mail = querySnapshot.getString("mail");
-                                    String city = querySnapshot.getString("city");
-                                    String district = querySnapshot.getString("district");
-                                    Long time1 = querySnapshot.getLong("time1");
-                                    Long time2 = querySnapshot.getLong("time2");
-                                    Long date1 = querySnapshot.getLong("date1");
-                                    Long date2 = querySnapshot.getLong("date2");
-                                    String place = querySnapshot.getString("place");
-                                    String explain = querySnapshot.getString("explain");
-                                    Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                                    DocumentReference documentReference = querySnapshot.getReference();
-
-                                    FindPost post = new FindPost();
-                                    post.viewType = 1;
-                                    post.imageUrl = imageUrl;
-                                    post.name = name;
-                                    post.mail = mail;
-                                    post.city = city;
-                                    post.district = district;
-                                    if (time1 == null) {
-                                        post.time1 = 0;
-                                    } else {
-                                        post.time1 = time1;
-                                    }
-                                    if (time2 == null) {
-                                        post.time2 = 0;
-                                    } else {
-                                        post.time2 = time2;
-                                    }
-                                    if (date1 == null) {
-                                        post.date1 = 0;
-                                    } else {
-                                        post.date1 = date1;
-                                    }
-                                    if (date2 == null) {
-                                        post.date2 = 0;
-                                    } else {
-                                        post.date2 = date2;
-                                    }
-                                    post.place = place;
-                                    post.explain = explain;
-                                    post.timestamp = timestamp;
-                                    post.lat = lat;
-                                    post.lng = lng;
-                                    post.radius = radius;
-                                    post.documentReference = documentReference;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-                                } else {
-                                    //kesişmiyor
-                                }
-                            }
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        System.out.println("error : "+e.getLocalizedMessage());
-                        e.printStackTrace();
-                    });
                 }else {
                 }
             }catch (Exception e){
@@ -371,8 +269,6 @@ public class MainFragment extends Fragment {
             }
         }
         else if (checkDistrict && checkPlace && checkDate && checkTime) {
-            //halledildi
-            //index halledildi
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -390,100 +286,13 @@ public class MainFragment extends Fragment {
                     long time1_long = time_1.getTime();
                     long time2_long = time_2.getTime();
 
-                    Query query = firestore.collection(collection)
+                    query = firestore.collection(collection)
                         .whereEqualTo("district", districtFind)
                         .whereEqualTo("place",placeFind)
                         .whereLessThanOrEqualTo("date1",date2_long)
                         .whereGreaterThanOrEqualTo("date2",date1_long)
                         .whereLessThanOrEqualTo("time1",time2_long)
                         .whereGreaterThanOrEqualTo("time2",time1_long);
-
-                    query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FindPost post = new FindPost();
-                                    post.viewType = 2;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                }
-                            }, 2000);
-                        }
-                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-                            String imageUrl = querySnapshot.getString("imageUrl");
-                            String name = querySnapshot.getString("name");
-                            String mail = querySnapshot.getString("mail");
-                            String city = querySnapshot.getString("city");
-                            String district = querySnapshot.getString("district");
-                            Long time1 = querySnapshot.getLong("time1");
-                            Long time2 = querySnapshot.getLong("time2");
-                            Long date1 = querySnapshot.getLong("date1");
-                            Long date2 = querySnapshot.getLong("date2");
-                            String place = querySnapshot.getString("place");
-                            String explain = querySnapshot.getString("explain");
-                            Double lat = querySnapshot.getDouble("lat");
-                            Double lng = querySnapshot.getDouble("lng");
-                            Long x = querySnapshot.getLong("radius");
-                            double radius = 0;
-                            if(x != null){
-                                radius = x;
-                            }
-                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                            DocumentReference documentReference = querySnapshot.getReference();
-
-                            FindPost post = new FindPost();
-                            post.viewType = 1;
-                            post.imageUrl = imageUrl;
-                            post.name = name;
-                            post.mail = mail;
-                            post.city = city;
-                            post.district = district;
-                            if (time1 == null) {
-                                post.time1 = 0;
-                            } else {
-                                post.time1 = time1;
-                            }
-                            if (time2 == null) {
-                                post.time2 = 0;
-                            } else {
-                                post.time2 = time2;
-                            }
-                            if (date1 == null) {
-                                post.date1 = 0;
-                            } else {
-                                post.date1 = date1;
-                            }
-                            if (date2 == null) {
-                                post.date2 = 0;
-                            } else {
-                                post.date2 = date2;
-                            }
-                            post.place = place;
-                            post.explain = explain;
-                            post.timestamp = timestamp;
-                            post.lat = lat;
-                            post.lng = lng;
-                            post.radius = radius;
-                            post.documentReference = documentReference;
-
-                            postArrayList.add(post);
-                            postAdapter.notifyDataSetChanged();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        System.out.println("error : "+e.getLocalizedMessage());
-                        e.printStackTrace();
-                    });
                 }else {
                 }
             }catch (Exception e){
@@ -491,8 +300,6 @@ public class MainFragment extends Fragment {
             }
         }
         else if (checkDistrict && checkPlace && checkDate && checkField) {
-            //halledildi
-            //indexe gerek yok
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -504,115 +311,11 @@ public class MainFragment extends Fragment {
                     long date1_long = date_1.getTime();
                     long date2_long = date_2.getTime();
 
-                    Query query = firestore.collection(collection)
+                    query = firestore.collection(collection)
                         .whereEqualTo("district", districtFind)
                         .whereEqualTo("place",placeFind)
                         .whereLessThanOrEqualTo("date1",date2_long)
                         .whereGreaterThanOrEqualTo("date2",date1_long);
-
-                    query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FindPost post = new FindPost();
-                                    post.viewType = 2;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                }
-                            }, 2000);
-                        }
-                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-
-                            double lat = 0,lng = 0;
-                            double radius = 0;
-                            Double lat_x = querySnapshot.getDouble("lat");
-                            Double lng_y = querySnapshot.getDouble("lng");
-                            Long x = querySnapshot.getLong("radius");
-                            if(lat_x != null && lng_y != null && x != null){
-                                lat = lat_x;
-                                lng = lng_y;
-                                radius = x;
-                            }
-
-                            boolean check = lat != 0 && lng != 0 && radius != 0;
-
-                            if(check){
-
-                                double distance = CalculationByDistance(latFind,lngFind,lat,lng);
-                                double radiusSum = radiusFind/1000 + radius/1000;
-                                boolean isIntersecting = distance <= radiusSum;
-                                if (isIntersecting) {
-                                    String imageUrl = querySnapshot.getString("imageUrl");
-                                    String name = querySnapshot.getString("name");
-                                    String mail = querySnapshot.getString("mail");
-                                    String city = querySnapshot.getString("city");
-                                    String district = querySnapshot.getString("district");
-                                    Long time1 = querySnapshot.getLong("time1");
-                                    Long time2 = querySnapshot.getLong("time2");
-                                    Long date1 = querySnapshot.getLong("date1");
-                                    Long date2 = querySnapshot.getLong("date2");
-                                    String place = querySnapshot.getString("place");
-                                    String explain = querySnapshot.getString("explain");
-                                    Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                                    DocumentReference documentReference = querySnapshot.getReference();
-
-                                    FindPost post = new FindPost();
-                                    post.viewType = 1;
-                                    post.imageUrl = imageUrl;
-                                    post.name = name;
-                                    post.mail = mail;
-                                    post.city = city;
-                                    post.district = district;
-                                    if (time1 == null) {
-                                        post.time1 = 0;
-                                    } else {
-                                        post.time1 = time1;
-                                    }
-                                    if (time2 == null) {
-                                        post.time2 = 0;
-                                    } else {
-                                        post.time2 = time2;
-                                    }
-                                    if (date1 == null) {
-                                        post.date1 = 0;
-                                    } else {
-                                        post.date1 = date1;
-                                    }
-                                    if (date2 == null) {
-                                        post.date2 = 0;
-                                    } else {
-                                        post.date2 = date2;
-                                    }
-                                    post.place = place;
-                                    post.explain = explain;
-                                    post.timestamp = timestamp;
-                                    post.lat = lat;
-                                    post.lng = lng;
-                                    post.radius = radius;
-                                    post.documentReference = documentReference;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-                                } else {
-                                    //kesişmiyor
-                                }
-                            }
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        System.out.println("error : "+e.getLocalizedMessage());
-                        e.printStackTrace();
-                    });
                 }else {
                 }
             }catch (Exception e){
@@ -620,8 +323,6 @@ public class MainFragment extends Fragment {
             }
         }
         else if (checkDistrict && checkPlace && checkTime && checkField) {
-            //halledildi
-            //indexe gerek yok
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -634,115 +335,12 @@ public class MainFragment extends Fragment {
                     long time1_long = time_1.getTime();
                     long time2_long = time_2.getTime();
 
-                    Query query = firestore.collection(collection)
-                            .whereEqualTo("district", districtFind)
-                            .whereEqualTo("place",placeFind)
-                            .whereLessThanOrEqualTo("time1",time2_long)
-                            .whereGreaterThanOrEqualTo("time2",time1_long);
+                    query = firestore.collection(collection)
+                        .whereEqualTo("district", districtFind)
+                        .whereEqualTo("place",placeFind)
+                        .whereLessThanOrEqualTo("time1",time2_long)
+                        .whereGreaterThanOrEqualTo("time2",time1_long);
 
-                    query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FindPost post = new FindPost();
-                                    post.viewType = 2;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                }
-                            }, 2000);
-                        }
-                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-
-                            double lat = 0,lng = 0;
-                            double radius = 0;
-                            Double lat_x = querySnapshot.getDouble("lat");
-                            Double lng_y = querySnapshot.getDouble("lng");
-                            Long x = querySnapshot.getLong("radius");
-                            if(lat_x != null && lng_y != null && x != null){
-                                lat = lat_x;
-                                lng = lng_y;
-                                radius = x;
-                            }
-
-                            boolean check = lat != 0 && lng != 0 && radius != 0;
-
-                            if(check){
-
-                                double distance = CalculationByDistance(latFind,lngFind,lat,lng);
-                                double radiusSum = radiusFind/1000 + radius/1000;
-                                boolean isIntersecting = distance <= radiusSum;
-                                if (isIntersecting) {
-                                    String imageUrl = querySnapshot.getString("imageUrl");
-                                    String name = querySnapshot.getString("name");
-                                    String mail = querySnapshot.getString("mail");
-                                    String city = querySnapshot.getString("city");
-                                    String district = querySnapshot.getString("district");
-                                    Long time1 = querySnapshot.getLong("time1");
-                                    Long time2 = querySnapshot.getLong("time2");
-                                    Long date1 = querySnapshot.getLong("date1");
-                                    Long date2 = querySnapshot.getLong("date2");
-                                    String place = querySnapshot.getString("place");
-                                    String explain = querySnapshot.getString("explain");
-                                    Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                                    DocumentReference documentReference = querySnapshot.getReference();
-
-                                    FindPost post = new FindPost();
-                                    post.viewType = 1;
-                                    post.imageUrl = imageUrl;
-                                    post.name = name;
-                                    post.mail = mail;
-                                    post.city = city;
-                                    post.district = district;
-                                    if (time1 == null) {
-                                        post.time1 = 0;
-                                    } else {
-                                        post.time1 = time1;
-                                    }
-                                    if (time2 == null) {
-                                        post.time2 = 0;
-                                    } else {
-                                        post.time2 = time2;
-                                    }
-                                    if (date1 == null) {
-                                        post.date1 = 0;
-                                    } else {
-                                        post.date1 = date1;
-                                    }
-                                    if (date2 == null) {
-                                        post.date2 = 0;
-                                    } else {
-                                        post.date2 = date2;
-                                    }
-                                    post.place = place;
-                                    post.explain = explain;
-                                    post.timestamp = timestamp;
-                                    post.lat = lat;
-                                    post.lng = lng;
-                                    post.radius = radius;
-                                    post.documentReference = documentReference;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-                                } else {
-                                    //kesişmiyor
-                                }
-                            }
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        System.out.println("error : "+e.getLocalizedMessage());
-                        e.printStackTrace();
-                    });
                 }else {
                 }
             }catch (Exception e){
@@ -750,8 +348,6 @@ public class MainFragment extends Fragment {
             }
         }
         else if (checkDistrict && checkDate && checkTime && checkField) {
-            //halledildi
-            //indexe gerek yok
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -769,116 +365,12 @@ public class MainFragment extends Fragment {
                     long time1_long = time_1.getTime();
                     long time2_long = time_2.getTime();
 
-                    Query query = firestore.collection(collection)
+                    query = firestore.collection(collection)
                         .whereEqualTo("district", districtFind)
                         .whereLessThanOrEqualTo("date1",date2_long)
                         .whereGreaterThanOrEqualTo("date2",date1_long)
                         .whereLessThanOrEqualTo("time1",time2_long)
                         .whereGreaterThanOrEqualTo("time2",time1_long);
-
-                    query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FindPost post = new FindPost();
-                                    post.viewType = 2;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                }
-                            }, 2000);
-                        }
-                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-
-                            double lat = 0,lng = 0;
-                            double radius = 0;
-                            Double lat_x = querySnapshot.getDouble("lat");
-                            Double lng_y = querySnapshot.getDouble("lng");
-                            Long x = querySnapshot.getLong("radius");
-                            if(lat_x != null && lng_y != null && x != null){
-                                lat = lat_x;
-                                lng = lng_y;
-                                radius = x;
-                            }
-
-                            boolean check = lat != 0 && lng != 0 && radius != 0;
-
-                            if(check){
-
-                                double distance = CalculationByDistance(latFind,lngFind,lat,lng);
-                                double radiusSum = radiusFind/1000 + radius/1000;
-                                boolean isIntersecting = distance <= radiusSum;
-                                if (isIntersecting) {
-                                    String imageUrl = querySnapshot.getString("imageUrl");
-                                    String name = querySnapshot.getString("name");
-                                    String mail = querySnapshot.getString("mail");
-                                    String city = querySnapshot.getString("city");
-                                    String district = querySnapshot.getString("district");
-                                    Long time1 = querySnapshot.getLong("time1");
-                                    Long time2 = querySnapshot.getLong("time2");
-                                    Long date1 = querySnapshot.getLong("date1");
-                                    Long date2 = querySnapshot.getLong("date2");
-                                    String place = querySnapshot.getString("place");
-                                    String explain = querySnapshot.getString("explain");
-                                    Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                                    DocumentReference documentReference = querySnapshot.getReference();
-
-                                    FindPost post = new FindPost();
-                                    post.viewType = 1;
-                                    post.imageUrl = imageUrl;
-                                    post.name = name;
-                                    post.mail = mail;
-                                    post.city = city;
-                                    post.district = district;
-                                    if (time1 == null) {
-                                        post.time1 = 0;
-                                    } else {
-                                        post.time1 = time1;
-                                    }
-                                    if (time2 == null) {
-                                        post.time2 = 0;
-                                    } else {
-                                        post.time2 = time2;
-                                    }
-                                    if (date1 == null) {
-                                        post.date1 = 0;
-                                    } else {
-                                        post.date1 = date1;
-                                    }
-                                    if (date2 == null) {
-                                        post.date2 = 0;
-                                    } else {
-                                        post.date2 = date2;
-                                    }
-                                    post.place = place;
-                                    post.explain = explain;
-                                    post.timestamp = timestamp;
-                                    post.lat = lat;
-                                    post.lng = lng;
-                                    post.radius = radius;
-                                    post.documentReference = documentReference;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-                                } else {
-                                    //kesişmiyor
-                                }
-                            }
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        System.out.println("error : "+e.getLocalizedMessage());
-                        e.printStackTrace();
-                    });
                 }else {
                 }
             }catch (Exception e){
@@ -886,8 +378,6 @@ public class MainFragment extends Fragment {
             }
         }
         else if (checkDistrict && checkPlace && checkDate) {
-            // halledildi
-            // index halledildi
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -900,98 +390,12 @@ public class MainFragment extends Fragment {
                     long date1_long = date_1.getTime();
                     long date2_long = date_2.getTime();
 
-                    Query query = firestore.collection(collection)
+                    query = firestore.collection(collection)
                         .whereEqualTo("district", districtFind)
                         .whereEqualTo("place",placeFind)
                         .whereLessThanOrEqualTo("date1",date2_long)
                         .whereGreaterThanOrEqualTo("date2",date1_long);
 
-                    query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FindPost post = new FindPost();
-                                    post.viewType = 2;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                }
-                            }, 2000);
-                        }
-                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-                            String imageUrl = querySnapshot.getString("imageUrl");
-                            String name = querySnapshot.getString("name");
-                            String mail = querySnapshot.getString("mail");
-                            String city = querySnapshot.getString("city");
-                            String district = querySnapshot.getString("district");
-                            Long time1 = querySnapshot.getLong("time1");
-                            Long time2 = querySnapshot.getLong("time2");
-                            Long date1 = querySnapshot.getLong("date1");
-                            Long date2 = querySnapshot.getLong("date2");
-                            String place = querySnapshot.getString("place");
-                            String explain = querySnapshot.getString("explain");
-                            Double lat = querySnapshot.getDouble("lat");
-                            Double lng = querySnapshot.getDouble("lng");
-                            Long x = querySnapshot.getLong("radius");
-                            double radius = 0;
-                            if(x != null){
-                                radius = x;
-                            }
-                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                            DocumentReference documentReference = querySnapshot.getReference();
-
-                            FindPost post = new FindPost();
-                            post.viewType = 1;
-                            post.imageUrl = imageUrl;
-                            post.name = name;
-                            post.mail = mail;
-                            post.city = city;
-                            post.district = district;
-                            if (time1 == null) {
-                                post.time1 = 0;
-                            } else {
-                                post.time1 = time1;
-                            }
-                            if (time2 == null) {
-                                post.time2 = 0;
-                            } else {
-                                post.time2 = time2;
-                            }
-                            if (date1 == null) {
-                                post.date1 = 0;
-                            } else {
-                                post.date1 = date1;
-                            }
-                            if (date2 == null) {
-                                post.date2 = 0;
-                            } else {
-                                post.date2 = date2;
-                            }
-                            post.place = place;
-                            post.explain = explain;
-                            post.timestamp = timestamp;
-                            post.lat = lat;
-                            post.lng = lng;
-                            post.radius = radius;
-                            post.documentReference = documentReference;
-
-                            postArrayList.add(post);
-                            postAdapter.notifyDataSetChanged();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        System.out.println("error : "+e.getLocalizedMessage());
-                        e.printStackTrace();
-                    });
                 }else {
                 }
             }catch (Exception e){
@@ -999,8 +403,6 @@ public class MainFragment extends Fragment {
             }
         }
         else if (checkDistrict && checkPlace && checkTime) {
-            //halledildi
-            //index halledildi
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -1012,98 +414,12 @@ public class MainFragment extends Fragment {
                     long time1_long = time_1.getTime();
                     long time2_long = time_2.getTime();
 
-                    Query query = firestore.collection(collection)
+                    query = firestore.collection(collection)
                         .whereEqualTo("district", districtFind)
                         .whereEqualTo("place",placeFind)
                         .whereLessThanOrEqualTo("time1",time2_long)
                         .whereGreaterThanOrEqualTo("time2",time1_long);
 
-                    query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FindPost post = new FindPost();
-                                    post.viewType = 2;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                }
-                            }, 2000);
-                        }
-                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-                            String imageUrl = querySnapshot.getString("imageUrl");
-                            String name = querySnapshot.getString("name");
-                            String mail = querySnapshot.getString("mail");
-                            String city = querySnapshot.getString("city");
-                            String district = querySnapshot.getString("district");
-                            Long time1 = querySnapshot.getLong("time1");
-                            Long time2 = querySnapshot.getLong("time2");
-                            Long date1 = querySnapshot.getLong("date1");
-                            Long date2 = querySnapshot.getLong("date2");
-                            String place = querySnapshot.getString("place");
-                            String explain = querySnapshot.getString("explain");
-                            Double lat = querySnapshot.getDouble("lat");
-                            Double lng = querySnapshot.getDouble("lng");
-                            Long x = querySnapshot.getLong("radius");
-                            double radius = 0;
-                            if(x != null){
-                                radius = x;
-                            }
-                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                            DocumentReference documentReference = querySnapshot.getReference();
-
-                            FindPost post = new FindPost();
-                            post.viewType = 1;
-                            post.imageUrl = imageUrl;
-                            post.name = name;
-                            post.mail = mail;
-                            post.city = city;
-                            post.district = district;
-                            if (time1 == null) {
-                                post.time1 = 0;
-                            } else {
-                                post.time1 = time1;
-                            }
-                            if (time2 == null) {
-                                post.time2 = 0;
-                            } else {
-                                post.time2 = time2;
-                            }
-                            if (date1 == null) {
-                                post.date1 = 0;
-                            } else {
-                                post.date1 = date1;
-                            }
-                            if (date2 == null) {
-                                post.date2 = 0;
-                            } else {
-                                post.date2 = date2;
-                            }
-                            post.place = place;
-                            post.explain = explain;
-                            post.timestamp = timestamp;
-                            post.lat = lat;
-                            post.lng = lng;
-                            post.radius = radius;
-                            post.documentReference = documentReference;
-
-                            postArrayList.add(post);
-                            postAdapter.notifyDataSetChanged();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        System.out.println("error : "+e.getLocalizedMessage());
-                        e.printStackTrace();
-                    });
                 }else {
                 }
             }catch (Exception e){
@@ -1111,8 +427,6 @@ public class MainFragment extends Fragment {
             }
         }
         else if (checkDistrict && checkDate && checkTime) {
-            // halledildi
-            // index halledildi
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -1130,99 +444,13 @@ public class MainFragment extends Fragment {
                     long time1_long = time_1.getTime();
                     long time2_long = time_2.getTime();
 
-                    Query query = firestore.collection(collection)
+                    query = firestore.collection(collection)
                         .whereEqualTo("district", districtFind)
                         .whereLessThanOrEqualTo("date1",date2_long)
                         .whereGreaterThanOrEqualTo("date2",date1_long)
                         .whereLessThanOrEqualTo("time1",time2_long)
                         .whereGreaterThanOrEqualTo("time2",time1_long);
 
-                    query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FindPost post = new FindPost();
-                                    post.viewType = 2;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                }
-                            }, 2000);
-                        }
-                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-                            String imageUrl = querySnapshot.getString("imageUrl");
-                            String name = querySnapshot.getString("name");
-                            String mail = querySnapshot.getString("mail");
-                            String city = querySnapshot.getString("city");
-                            String district = querySnapshot.getString("district");
-                            Long time1 = querySnapshot.getLong("time1");
-                            Long time2 = querySnapshot.getLong("time2");
-                            Long date1 = querySnapshot.getLong("date1");
-                            Long date2 = querySnapshot.getLong("date2");
-                            String place = querySnapshot.getString("place");
-                            String explain = querySnapshot.getString("explain");
-                            Double lat = querySnapshot.getDouble("lat");
-                            Double lng = querySnapshot.getDouble("lng");
-                            Long x = querySnapshot.getLong("radius");
-                            double radius = 0;
-                            if(x != null){
-                                radius = x;
-                            }
-                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                            DocumentReference documentReference = querySnapshot.getReference();
-
-                            FindPost post = new FindPost();
-                            post.viewType = 1;
-                            post.imageUrl = imageUrl;
-                            post.name = name;
-                            post.mail = mail;
-                            post.city = city;
-                            post.district = district;
-                            if (time1 == null) {
-                                post.time1 = 0;
-                            } else {
-                                post.time1 = time1;
-                            }
-                            if (time2 == null) {
-                                post.time2 = 0;
-                            } else {
-                                post.time2 = time2;
-                            }
-                            if (date1 == null) {
-                                post.date1 = 0;
-                            } else {
-                                post.date1 = date1;
-                            }
-                            if (date2 == null) {
-                                post.date2 = 0;
-                            } else {
-                                post.date2 = date2;
-                            }
-                            post.place = place;
-                            post.explain = explain;
-                            post.timestamp = timestamp;
-                            post.lat = lat;
-                            post.lng = lng;
-                            post.radius = radius;
-                            post.documentReference = documentReference;
-
-                            postArrayList.add(post);
-                            postAdapter.notifyDataSetChanged();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        System.out.println("error : "+e.getLocalizedMessage());
-                        e.printStackTrace();
-                    });
                 }else {
                 }
             }catch (Exception e){
@@ -1230,121 +458,14 @@ public class MainFragment extends Fragment {
             }
         }
         else if (checkDistrict && checkPlace && checkField) {
-            //halledildi
-            //indexe gerek yok
             postArrayList.clear();
             String collection = "post" + cityFind;
-            Query query = firestore.collection(collection)
+            query = firestore.collection(collection)
                 .whereEqualTo("district", districtFind)
                 .whereEqualTo("place",placeFind);
 
-            query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                if(!queryDocumentSnapshots.isEmpty()){
-                    binding.shimmerLayout.stopShimmer();
-                    binding.shimmerLayout.setVisibility(View.GONE);
-                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                }else {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            FindPost post = new FindPost();
-                            post.viewType = 2;
-
-                            postArrayList.add(post);
-                            postAdapter.notifyDataSetChanged();
-
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }
-                    }, 2000);
-                }
-                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-
-                    double lat = 0,lng = 0;
-                    double radius = 0;
-                    Double lat_x = querySnapshot.getDouble("lat");
-                    Double lng_y = querySnapshot.getDouble("lng");
-                    Long x = querySnapshot.getLong("radius");
-                    if(lat_x != null && lng_y != null && x != null){
-                        lat = lat_x;
-                        lng = lng_y;
-                        radius = x;
-                    }
-
-                    boolean check = lat != 0 && lng != 0 && radius != 0;
-
-                    if(check){
-
-                        double distance = CalculationByDistance(latFind,lngFind,lat,lng);
-                        double radiusSum = radiusFind/1000 + radius/1000;
-                        boolean isIntersecting = distance <= radiusSum;
-                        if (isIntersecting) {
-                            String imageUrl = querySnapshot.getString("imageUrl");
-                            String name = querySnapshot.getString("name");
-                            String mail = querySnapshot.getString("mail");
-                            String city = querySnapshot.getString("city");
-                            String district = querySnapshot.getString("district");
-                            Long time1 = querySnapshot.getLong("time1");
-                            Long time2 = querySnapshot.getLong("time2");
-                            Long date1 = querySnapshot.getLong("date1");
-                            Long date2 = querySnapshot.getLong("date2");
-                            String place = querySnapshot.getString("place");
-                            String explain = querySnapshot.getString("explain");
-                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                            DocumentReference documentReference = querySnapshot.getReference();
-
-                            FindPost post = new FindPost();
-                            post.viewType = 1;
-                            post.imageUrl = imageUrl;
-                            post.name = name;
-                            post.mail = mail;
-                            post.city = city;
-                            post.district = district;
-                            if (time1 == null) {
-                                post.time1 = 0;
-                            } else {
-                                post.time1 = time1;
-                            }
-                            if (time2 == null) {
-                                post.time2 = 0;
-                            } else {
-                                post.time2 = time2;
-                            }
-                            if (date1 == null) {
-                                post.date1 = 0;
-                            } else {
-                                post.date1 = date1;
-                            }
-                            if (date2 == null) {
-                                post.date2 = 0;
-                            } else {
-                                post.date2 = date2;
-                            }
-                            post.place = place;
-                            post.explain = explain;
-                            post.timestamp = timestamp;
-                            post.lat = lat;
-                            post.lng = lng;
-                            post.radius = radius;
-                            post.documentReference = documentReference;
-
-                            postArrayList.add(post);
-                            postAdapter.notifyDataSetChanged();
-                        } else {
-                            //kesişmiyor
-                        }
-                    }
-                }
-            })
-            .addOnFailureListener(e -> {
-                System.out.println("error: "+e.getLocalizedMessage());
-                e.printStackTrace();
-            });
         }
         else if (checkDistrict && checkDate && checkField) {
-            //halledildi
-            //indexe gerek yok
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -1356,113 +477,11 @@ public class MainFragment extends Fragment {
                     long date1_long = date_1.getTime();
                     long date2_long = date_2.getTime();
 
-                    Query query = firestore.collection(collection)
+                    query = firestore.collection(collection)
                         .whereEqualTo("district", districtFind)
                         .whereLessThanOrEqualTo("date1",date2_long)
                         .whereGreaterThanOrEqualTo("date2",date1_long);
 
-                    query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FindPost post = new FindPost();
-                                    post.viewType = 2;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                }
-                            }, 2000);
-                        }
-                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-
-                            double lat = 0,lng = 0;
-                            double radius = 0;
-                            Double lat_x = querySnapshot.getDouble("lat");
-                            Double lng_y = querySnapshot.getDouble("lng");
-                            Long x = querySnapshot.getLong("radius");
-                            if(lat_x != null && lng_y != null && x != null){
-                                lat = lat_x;
-                                lng = lng_y;
-                                radius = x;
-                            }
-
-                            boolean check = lat != 0 && lng != 0 && radius != 0;
-
-                            if(check){
-
-                                double distance = CalculationByDistance(latFind,lngFind,lat,lng);
-                                double radiusSum = radiusFind/1000 + radius/1000;
-                                boolean isIntersecting = distance <= radiusSum;
-                                if (isIntersecting) {
-                                    String imageUrl = querySnapshot.getString("imageUrl");
-                                    String name = querySnapshot.getString("name");
-                                    String mail = querySnapshot.getString("mail");
-                                    String city = querySnapshot.getString("city");
-                                    String district = querySnapshot.getString("district");
-                                    Long time1 = querySnapshot.getLong("time1");
-                                    Long time2 = querySnapshot.getLong("time2");
-                                    Long date1 = querySnapshot.getLong("date1");
-                                    Long date2 = querySnapshot.getLong("date2");
-                                    String place = querySnapshot.getString("place");
-                                    String explain = querySnapshot.getString("explain");
-                                    Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                                    DocumentReference documentReference = querySnapshot.getReference();
-
-                                    FindPost post = new FindPost();
-                                    post.viewType = 1;
-                                    post.imageUrl = imageUrl;
-                                    post.name = name;
-                                    post.mail = mail;
-                                    post.city = city;
-                                    post.district = district;
-                                    if (time1 == null) {
-                                        post.time1 = 0;
-                                    } else {
-                                        post.time1 = time1;
-                                    }
-                                    if (time2 == null) {
-                                        post.time2 = 0;
-                                    } else {
-                                        post.time2 = time2;
-                                    }
-                                    if (date1 == null) {
-                                        post.date1 = 0;
-                                    } else {
-                                        post.date1 = date1;
-                                    }
-                                    if (date2 == null) {
-                                        post.date2 = 0;
-                                    } else {
-                                        post.date2 = date2;
-                                    }
-                                    post.place = place;
-                                    post.explain = explain;
-                                    post.timestamp = timestamp;
-                                    post.lat = lat;
-                                    post.lng = lng;
-                                    post.radius = radius;
-                                    post.documentReference = documentReference;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-                                } else {
-                                    //kesişmiyor
-                                }
-                            }
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        e.printStackTrace();
-                    });
                 }else {
                 }
             }catch (Exception e){
@@ -1470,8 +489,6 @@ public class MainFragment extends Fragment {
             }
         }
         else if (checkDistrict && checkTime && checkField) {
-            //halledildi
-            // indexe gerek yok
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -1484,114 +501,11 @@ public class MainFragment extends Fragment {
                     long time1_long = time_1.getTime();
                     long time2_long = time_2.getTime();
 
-                    Query query = firestore.collection(collection)
+                    query = firestore.collection(collection)
                         .whereEqualTo("district", districtFind)
                         .whereLessThanOrEqualTo("time1",time2_long)
                         .whereGreaterThanOrEqualTo("time2",time1_long);
 
-                    query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FindPost post = new FindPost();
-                                    post.viewType = 2;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                }
-                            }, 2000);
-                        }
-                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-
-                            double lat = 0,lng = 0;
-                            double radius = 0;
-                            Double lat_x = querySnapshot.getDouble("lat");
-                            Double lng_y = querySnapshot.getDouble("lng");
-                            Long x = querySnapshot.getLong("radius");
-                            if(lat_x != null && lng_y != null && x != null){
-                                lat = lat_x;
-                                lng = lng_y;
-                                radius = x;
-                            }
-
-                            boolean check = lat != 0 && lng != 0 && radius != 0;
-
-                            if(check){
-
-                                double distance = CalculationByDistance(latFind,lngFind,lat,lng);
-                                double radiusSum = radiusFind/1000 + radius/1000;
-                                boolean isIntersecting = distance <= radiusSum;
-                                if (isIntersecting) {
-                                    String imageUrl = querySnapshot.getString("imageUrl");
-                                    String name = querySnapshot.getString("name");
-                                    String mail = querySnapshot.getString("mail");
-                                    String city = querySnapshot.getString("city");
-                                    String district = querySnapshot.getString("district");
-                                    Long time1 = querySnapshot.getLong("time1");
-                                    Long time2 = querySnapshot.getLong("time2");
-                                    Long date1 = querySnapshot.getLong("date1");
-                                    Long date2 = querySnapshot.getLong("date2");
-                                    String place = querySnapshot.getString("place");
-                                    String explain = querySnapshot.getString("explain");
-                                    Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                                    DocumentReference documentReference = querySnapshot.getReference();
-
-                                    FindPost post = new FindPost();
-                                    post.viewType = 1;
-                                    post.imageUrl = imageUrl;
-                                    post.name = name;
-                                    post.mail = mail;
-                                    post.city = city;
-                                    post.district = district;
-                                    if (time1 == null) {
-                                        post.time1 = 0;
-                                    } else {
-                                        post.time1 = time1;
-                                    }
-                                    if (time2 == null) {
-                                        post.time2 = 0;
-                                    } else {
-                                        post.time2 = time2;
-                                    }
-                                    if (date1 == null) {
-                                        post.date1 = 0;
-                                    } else {
-                                        post.date1 = date1;
-                                    }
-                                    if (date2 == null) {
-                                        post.date2 = 0;
-                                    } else {
-                                        post.date2 = date2;
-                                    }
-                                    post.place = place;
-                                    post.explain = explain;
-                                    post.timestamp = timestamp;
-                                    post.lat = lat;
-                                    post.lng = lng;
-                                    post.radius = radius;
-                                    post.documentReference = documentReference;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-                                } else {
-                                    //kesişmiyor
-                                }
-                            }
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        System.out.println("error : "+e.getLocalizedMessage());
-                        e.printStackTrace();
-                    });
                 }else {
                 }
             }catch (Exception e){
@@ -1601,215 +515,21 @@ public class MainFragment extends Fragment {
 
         }
         else if (checkDistrict && checkPlace) {
-            //halledildi
-            //indexe gerek yok
             postArrayList.clear();
             String collection = "post" + cityFind;
-            Query query = firestore.collection(collection)
+            query = firestore.collection(collection)
                 .whereEqualTo("district", districtFind)
                 .whereEqualTo("place", placeFind);
 
-            query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                if(!queryDocumentSnapshots.isEmpty()){
-                    binding.shimmerLayout.stopShimmer();
-                    binding.shimmerLayout.setVisibility(View.GONE);
-                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                }else {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            FindPost post = new FindPost();
-                            post.viewType = 2;
-
-                            postArrayList.add(post);
-                            postAdapter.notifyDataSetChanged();
-
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }
-                    }, 2000);
-                }
-                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-                    String imageUrl = querySnapshot.getString("imageUrl");
-                    String name = querySnapshot.getString("name");
-                    String mail = querySnapshot.getString("mail");
-                    String city = querySnapshot.getString("city");
-                    String district = querySnapshot.getString("district");
-                    Long time1 = querySnapshot.getLong("time1");
-                    Long time2 = querySnapshot.getLong("time2");
-                    Long date1 = querySnapshot.getLong("date1");
-                    Long date2 = querySnapshot.getLong("date2");
-                    String place = querySnapshot.getString("place");
-                    String explain = querySnapshot.getString("explain");
-                    Double lat = querySnapshot.getDouble("lat");
-                    Double lng = querySnapshot.getDouble("lng");
-                    Long x = querySnapshot.getLong("radius");
-                    double radius = 0;
-                    if(x != null){
-                        radius = x;
-                    }
-                    Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                    DocumentReference documentReference = querySnapshot.getReference();
-
-                    FindPost post = new FindPost();
-                    post.viewType = 1;
-                    post.imageUrl = imageUrl;
-                    post.name = name;
-                    post.mail = mail;
-                    post.city = city;
-                    post.district = district;
-                    if (time1 == null) {
-                        post.time1 = 0;
-                    } else {
-                        post.time1 = time1;
-                    }
-                    if (time2 == null) {
-                        post.time2 = 0;
-                    } else {
-                        post.time2 = time2;
-                    }
-                    if (date1 == null) {
-                        post.date1 = 0;
-                    } else {
-                        post.date1 = date1;
-                    }
-                    if (date2 == null) {
-                        post.date2 = 0;
-                    } else {
-                        post.date2 = date2;
-                    }
-                    post.place = place;
-                    post.explain = explain;
-                    post.timestamp = timestamp;
-                    post.lat = lat;
-                    post.lng = lng;
-                    post.radius = radius;
-                    post.documentReference = documentReference;
-
-                    postArrayList.add(post);
-                    postAdapter.notifyDataSetChanged();
-                }
-            }).addOnFailureListener(e -> {
-                System.out.println("error : "+e.getLocalizedMessage());
-            });
-
         }
         else if (checkDistrict && checkField) {
-            //halledildi
-            //indexe gerek yok
             postArrayList.clear();
             String collection = "post" + cityFind;
-            Query query = firestore.collection(collection)
-                    .whereEqualTo("district", districtFind);
-
-            query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                if(!queryDocumentSnapshots.isEmpty()){
-                    binding.shimmerLayout.stopShimmer();
-                    binding.shimmerLayout.setVisibility(View.GONE);
-                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                }else {
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            FindPost post = new FindPost();
-                            post.viewType = 2;
-
-                            postArrayList.add(post);
-                            postAdapter.notifyDataSetChanged();
-
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }
-                    }, 2000);
-                }
-                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-
-                    double lat = 0,lng = 0;
-                    double radius = 0;
-                    Double lat_x = querySnapshot.getDouble("lat");
-                    Double lng_y = querySnapshot.getDouble("lng");
-                    Long x = querySnapshot.getLong("radius");
-                    if(lat_x != null && lng_y != null && x != null){
-                        lat = lat_x;
-                        lng = lng_y;
-                        radius = x;
-                    }
-
-                    boolean check = lat != 0 && lng != 0 && radius != 0;
-
-                    if(check){
-
-                        double distance = CalculationByDistance(latFind,lngFind,lat,lng);
-                        double radiusSum = radiusFind/1000 + radius/1000;
-                        boolean isIntersecting = distance <= radiusSum;
-                        if (isIntersecting) {
-                            String imageUrl = querySnapshot.getString("imageUrl");
-                            String name = querySnapshot.getString("name");
-                            String mail = querySnapshot.getString("mail");
-                            String city = querySnapshot.getString("city");
-                            String district = querySnapshot.getString("district");
-                            Long time1 = querySnapshot.getLong("time1");
-                            Long time2 = querySnapshot.getLong("time2");
-                            Long date1 = querySnapshot.getLong("date1");
-                            Long date2 = querySnapshot.getLong("date2");
-                            String place = querySnapshot.getString("place");
-                            String explain = querySnapshot.getString("explain");
-                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                            DocumentReference documentReference = querySnapshot.getReference();
-
-                            FindPost post = new FindPost();
-                            post.viewType = 1;
-                            post.imageUrl = imageUrl;
-                            post.name = name;
-                            post.mail = mail;
-                            post.city = city;
-                            post.district = district;
-                            if (time1 == null) {
-                                post.time1 = 0;
-                            } else {
-                                post.time1 = time1;
-                            }
-                            if (time2 == null) {
-                                post.time2 = 0;
-                            } else {
-                                post.time2 = time2;
-                            }
-                            if (date1 == null) {
-                                post.date1 = 0;
-                            } else {
-                                post.date1 = date1;
-                            }
-                            if (date2 == null) {
-                                post.date2 = 0;
-                            } else {
-                                post.date2 = date2;
-                            }
-                            post.place = place;
-                            post.explain = explain;
-                            post.timestamp = timestamp;
-                            post.lat = lat;
-                            post.lng = lng;
-                            post.radius = radius;
-                            post.documentReference = documentReference;
-
-                            postArrayList.add(post);
-                            postAdapter.notifyDataSetChanged();
-                        } else {
-                            //kesişmiyor
-                        }
-                    }
-                }
-            }).addOnFailureListener(e -> {
-
-            });
+            query = firestore.collection(collection)
+                .whereEqualTo("district", districtFind);
 
         }
         else if (checkDistrict && checkDate) {
-            //halledildi
-            //index halledildi
-            System.out.println("hey");
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -1821,97 +541,11 @@ public class MainFragment extends Fragment {
                     long date1_long = date_1.getTime();
                     long date2_long = date_2.getTime();
 
-                    Query query = firestore.collection(collection)
+                    query = firestore.collection(collection)
                         .whereEqualTo("district", districtFind)
                         .whereLessThanOrEqualTo("date1",date2_long)
                         .whereGreaterThanOrEqualTo("date2",date1_long);
 
-                    query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FindPost post = new FindPost();
-                                    post.viewType = 2;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                }
-                            }, 2000);
-                        }
-                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-                            String imageUrl = querySnapshot.getString("imageUrl");
-                            String name = querySnapshot.getString("name");
-                            String mail = querySnapshot.getString("mail");
-                            String city = querySnapshot.getString("city");
-                            String district = querySnapshot.getString("district");
-                            Long time1 = querySnapshot.getLong("time1");
-                            Long time2 = querySnapshot.getLong("time2");
-                            Long date1 = querySnapshot.getLong("date1");
-                            Long date2 = querySnapshot.getLong("date2");
-                            String place = querySnapshot.getString("place");
-                            String explain = querySnapshot.getString("explain");
-                            Double lat = querySnapshot.getDouble("lat");
-                            Double lng = querySnapshot.getDouble("lng");
-                            Long x = querySnapshot.getLong("radius");
-                            double radius = 0;
-                            if(x != null){
-                                radius = x;
-                            }
-                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                            DocumentReference documentReference = querySnapshot.getReference();
-
-                            FindPost post = new FindPost();
-                            post.viewType = 1;
-                            post.imageUrl = imageUrl;
-                            post.name = name;
-                            post.mail = mail;
-                            post.city = city;
-                            post.district = district;
-                            if (time1 == null) {
-                                post.time1 = 0;
-                            } else {
-                                post.time1 = time1;
-                            }
-                            if (time2 == null) {
-                                post.time2 = 0;
-                            } else {
-                                post.time2 = time2;
-                            }
-                            if (date1 == null) {
-                                post.date1 = 0;
-                            } else {
-                                post.date1 = date1;
-                            }
-                            if (date2 == null) {
-                                post.date2 = 0;
-                            } else {
-                                post.date2 = date2;
-                            }
-                            post.place = place;
-                            post.explain = explain;
-                            post.timestamp = timestamp;
-                            post.lat = lat;
-                            post.lng = lng;
-                            post.radius = radius;
-                            post.documentReference = documentReference;
-
-                            postArrayList.add(post);
-                            postAdapter.notifyDataSetChanged();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        System.out.println("error: "+e.getLocalizedMessage());
-                        e.printStackTrace();
-                    });
                 }else {
                 }
             }catch (Exception e){
@@ -1920,8 +554,6 @@ public class MainFragment extends Fragment {
             }
         }
         else if (checkDistrict && checkTime) {
-            //halledildi
-            //index halledildi
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -1933,97 +565,11 @@ public class MainFragment extends Fragment {
                     long time1_long = time_1.getTime();
                     long time2_long = time_2.getTime();
 
-                    Query query = firestore.collection(collection)
+                    query = firestore.collection(collection)
                         .whereEqualTo("district", districtFind)
                         .whereLessThanOrEqualTo("time1",time2_long)
                         .whereGreaterThanOrEqualTo("time2",time1_long);
 
-                    query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-                        if(!queryDocumentSnapshots.isEmpty()){
-                            binding.shimmerLayout.stopShimmer();
-                            binding.shimmerLayout.setVisibility(View.GONE);
-                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        }else {
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FindPost post = new FindPost();
-                                    post.viewType = 2;
-
-                                    postArrayList.add(post);
-                                    postAdapter.notifyDataSetChanged();
-
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                }
-                            }, 2000);
-                        }
-                        for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-                            String imageUrl = querySnapshot.getString("imageUrl");
-                            String name = querySnapshot.getString("name");
-                            String mail = querySnapshot.getString("mail");
-                            String city = querySnapshot.getString("city");
-                            String district = querySnapshot.getString("district");
-                            Long time1 = querySnapshot.getLong("time1");
-                            Long time2 = querySnapshot.getLong("time2");
-                            Long date1 = querySnapshot.getLong("date1");
-                            Long date2 = querySnapshot.getLong("date2");
-                            String place = querySnapshot.getString("place");
-                            String explain = querySnapshot.getString("explain");
-                            Double lat = querySnapshot.getDouble("lat");
-                            Double lng = querySnapshot.getDouble("lng");
-                            Long x = querySnapshot.getLong("radius");
-                            double radius = 0;
-                            if(x != null){
-                                radius = x;
-                            }
-                            Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                            DocumentReference documentReference = querySnapshot.getReference();
-
-                            FindPost post = new FindPost();
-                            post.viewType = 1;
-                            post.imageUrl = imageUrl;
-                            post.name = name;
-                            post.mail = mail;
-                            post.city = city;
-                            post.district = district;
-                            if (time1 == null) {
-                                post.time1 = 0;
-                            } else {
-                                post.time1 = time1;
-                            }
-                            if (time2 == null) {
-                                post.time2 = 0;
-                            } else {
-                                post.time2 = time2;
-                            }
-                            if (date1 == null) {
-                                post.date1 = 0;
-                            } else {
-                                post.date1 = date1;
-                            }
-                            if (date2 == null) {
-                                post.date2 = 0;
-                            } else {
-                                post.date2 = date2;
-                            }
-                            post.place = place;
-                            post.explain = explain;
-                            post.timestamp = timestamp;
-                            post.lat = lat;
-                            post.lng = lng;
-                            post.radius = radius;
-                            post.documentReference = documentReference;
-
-                            postArrayList.add(post);
-                            postAdapter.notifyDataSetChanged();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        System.out.println("error: "+e.getLocalizedMessage());
-                        e.printStackTrace();
-                    });
                 }else {
                 }
             }catch (Exception e){
@@ -2031,128 +577,129 @@ public class MainFragment extends Fragment {
             }
         }
         else if (checkDistrict) {
-            //halledildi
-            //indexe gerek yok
             postArrayList.clear();
             String collection = "post" + cityFind;
-            Query query = firestore.collection(collection)
+            query = firestore.collection(collection)
                 .whereEqualTo("district", districtFind);
 
-            query.get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if(!queryDocumentSnapshots.isEmpty()){
-                        binding.shimmerLayout.stopShimmer();
-                        binding.shimmerLayout.setVisibility(View.GONE);
-                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                    }else {
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                FindPost post = new FindPost();
-                                post.viewType = 2;
-
-                                postArrayList.add(post);
-                                postAdapter.notifyDataSetChanged();
-
-                                binding.shimmerLayout.stopShimmer();
-                                binding.shimmerLayout.setVisibility(View.GONE);
-                                binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                            }
-                        }, 2000);
-                    }
-                    for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-                        String imageUrl = querySnapshot.getString("imageUrl");
-                        String name = querySnapshot.getString("name");
-                        String mail = querySnapshot.getString("mail");
-                        String city = querySnapshot.getString("city");
-                        String district = querySnapshot.getString("district");
-                        Long time1 = querySnapshot.getLong("time1");
-                        Long time2 = querySnapshot.getLong("time2");
-                        Long date1 = querySnapshot.getLong("date1");
-                        Long date2 = querySnapshot.getLong("date2");
-                        String place = querySnapshot.getString("place");
-                        String explain = querySnapshot.getString("explain");
-                        Double lat = querySnapshot.getDouble("lat");
-                        Double lng = querySnapshot.getDouble("lng");
-                        Long x = querySnapshot.getLong("radius");
-                        double radius = 0;
-                        if(x != null){
-                            radius = x;
-                        }
-                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-                        DocumentReference documentReference = querySnapshot.getReference();
-
-                        FindPost post = new FindPost();
-                        post.viewType = 1;
-                        post.imageUrl = imageUrl;
-                        post.name = name;
-                        post.mail = mail;
-                        post.city = city;
-                        post.district = district;
-                        if (time1 == null) {
-                            post.time1 = 0;
-                        } else {
-                            post.time1 = time1;
-                        }
-                        if (time2 == null) {
-                            post.time2 = 0;
-                        } else {
-                            post.time2 = time2;
-                        }
-                        if (date1 == null) {
-                            post.date1 = 0;
-                        } else {
-                            post.date1 = date1;
-                        }
-                        if (date2 == null) {
-                            post.date2 = 0;
-                        } else {
-                            post.date2 = date2;
-                        }
-                        post.place = place;
-                        post.explain = explain;
-                        post.timestamp = timestamp;
-                        post.lat = lat;
-                        post.lng = lng;
-                        post.radius = radius;
-                        post.documentReference = documentReference;
-
-                        postArrayList.add(post);
-                        postAdapter.notifyDataSetChanged();
-
-                    }
-                }).addOnFailureListener(e -> {
-
-                });
         }
         else {
-            //halledildi
-            //indexe gerek yok
             postArrayList.clear();
             String collection = "post" + cityFind;
-            Query query = firestore.collection(collection);
+            query = firestore.collection(collection);
 
-            query.get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if(!queryDocumentSnapshots.isEmpty()){
+        }
+
+        if(query != null){
+            if(checkField){
+                query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    if(queryDocumentSnapshots.isEmpty()){
+                        FindPost post = new FindPost();
+                        post.viewType = 2;
+
+                        postArrayList.add(post);
                         binding.shimmerLayout.stopShimmer();
                         binding.shimmerLayout.setVisibility(View.GONE);
                         binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                    }else {
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
+                        postAdapter.notifyDataSetChanged();
+                        return;
+                    }
+                    for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+
+                        double lat = 0,lng = 0;
+                        double radius = 0;
+                        Double lat_x = querySnapshot.getDouble("lat");
+                        Double lng_y = querySnapshot.getDouble("lng");
+                        Long x = querySnapshot.getLong("radius");
+                        if(lat_x != null && lng_y != null && x != null){
+                            lat = lat_x;
+                            lng = lng_y;
+                            radius = x;
+                        }
+
+                        boolean check = lat != 0 && lng != 0 && radius != 0;
+
+                        if(check){
+
+                            double distance = CalculationByDistance(latFind,lngFind,lat,lng);
+                            double radiusSum = radiusFind/1000 + radius/1000;
+                            boolean isIntersecting = distance <= radiusSum;
+                            if (isIntersecting) {
+                                String imageUrl = querySnapshot.getString("imageUrl");
+                                String name = querySnapshot.getString("name");
+                                String mail = querySnapshot.getString("mail");
+                                String city = querySnapshot.getString("city");
+                                String district = querySnapshot.getString("district");
+                                Long time1 = querySnapshot.getLong("time1");
+                                Long time2 = querySnapshot.getLong("time2");
+                                Long date1 = querySnapshot.getLong("date1");
+                                Long date2 = querySnapshot.getLong("date2");
+                                String place = querySnapshot.getString("place");
+                                String explain = querySnapshot.getString("explain");
+                                Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                                DocumentReference documentReference = querySnapshot.getReference();
+
                                 FindPost post = new FindPost();
-                                post.viewType = 2;
+                                post.viewType = 1;
+                                post.imageUrl = imageUrl;
+                                post.name = name;
+                                post.mail = mail;
+                                post.city = city;
+                                post.district = district;
+                                if (time1 == null) {
+                                    post.time1 = 0;
+                                } else {
+                                    post.time1 = time1;
+                                }
+                                if (time2 == null) {
+                                    post.time2 = 0;
+                                } else {
+                                    post.time2 = time2;
+                                }
+                                if (date1 == null) {
+                                    post.date1 = 0;
+                                } else {
+                                    post.date1 = date1;
+                                }
+                                if (date2 == null) {
+                                    post.date2 = 0;
+                                } else {
+                                    post.date2 = date2;
+                                }
+                                post.place = place;
+                                post.explain = explain;
+                                post.timestamp = timestamp;
+                                post.lat = lat;
+                                post.lng = lng;
+                                post.radius = radius;
+                                post.documentReference = documentReference;
 
                                 postArrayList.add(post);
-                                postAdapter.notifyDataSetChanged();
-
                                 binding.shimmerLayout.stopShimmer();
                                 binding.shimmerLayout.setVisibility(View.GONE);
                                 binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                                postAdapter.notifyDataSetChanged();
                             }
-                        }, 2000);
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println("error : "+e.getLocalizedMessage());
+                    e.printStackTrace();
+                });
+            }
+            else {
+                query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    if(queryDocumentSnapshots.isEmpty()){
+                        FindPost post = new FindPost();
+                        post.viewType = 2;
+
+                        postArrayList.add(post);
+                        binding.shimmerLayout.stopShimmer();
+                        binding.shimmerLayout.setVisibility(View.GONE);
+                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                        postAdapter.notifyDataSetChanged();
+                        return;
                     }
                     for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
                         String imageUrl = querySnapshot.getString("imageUrl");
@@ -2212,24 +759,28 @@ public class MainFragment extends Fragment {
                         post.documentReference = documentReference;
 
                         postArrayList.add(post);
+                        binding.shimmerLayout.stopShimmer();
+                        binding.shimmerLayout.setVisibility(View.GONE);
+                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
                         postAdapter.notifyDataSetChanged();
-
                     }
-                }).addOnFailureListener(e -> {
-
+                })
+                .addOnFailureListener(e -> {
+                    System.out.println("error : "+e.getLocalizedMessage());
+                    e.printStackTrace();
                 });
+            }
+        }else {
+            System.out.println("null");
         }
 
     }
 
     private void getData(){
         firestore.collection("post"+"İstanbul").get().addOnSuccessListener(queryDocumentSnapshots -> {
-            if(!queryDocumentSnapshots.isEmpty()){
-                binding.shimmerLayout.stopShimmer();
-                binding.shimmerLayout.setVisibility(View.GONE);
-                binding.recyclerViewMain.setVisibility(View.VISIBLE);
-            }
+            boolean found = false;
             for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+                found = true;
                 String imageUrl = querySnapshot.getString("imageUrl");
                 String name = querySnapshot.getString("name");
                 String mail = querySnapshot.getString("mail");
@@ -2287,10 +838,36 @@ public class MainFragment extends Fragment {
                 post.documentReference = documentReference;
 
                 postArrayList.add(post);
+                binding.shimmerLayout.stopShimmer();
+                binding.shimmerLayout.setVisibility(View.GONE);
+                binding.recyclerViewMain.setVisibility(View.VISIBLE);
                 postAdapter.notifyDataSetChanged();
+            }
+            if(!found){
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        FindPost post = new FindPost();
+                        post.viewType = 2;
 
+                        postArrayList.add(post);
+                        postAdapter.notifyDataSetChanged();
+
+                        binding.shimmerLayout.stopShimmer();
+                        binding.shimmerLayout.setVisibility(View.GONE);
+                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                    }
+                }, 1000);
             }
         });
+    }
+
+    public void goFind(){
+        FindFragment fragment = new FindFragment();
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     public double CalculationByDistance(double initialLat, double initialLong,
