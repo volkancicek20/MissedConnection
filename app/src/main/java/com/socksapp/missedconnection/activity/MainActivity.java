@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+
         fragmentContainerView = findViewById(R.id.fragmentContainerView2);
 
         bottomNavigationView = binding.bottomNavView;
@@ -266,6 +267,16 @@ public class MainActivity extends AppCompatActivity {
                     .into(headerImage);
             }
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override

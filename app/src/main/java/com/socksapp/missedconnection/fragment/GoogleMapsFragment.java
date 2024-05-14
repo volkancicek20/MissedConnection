@@ -138,16 +138,16 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
         mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map));
         if(type.equals("main")){
-            LatLng turkey = new LatLng(mainLat, mainLng);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(turkey, 15));
+            LatLng location = new LatLng(mainLat, mainLng);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
 
             MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(turkey);
+            markerOptions.position(location);
 
             mMap.addMarker(markerOptions);
 
             CircleOptions circleOptions = new CircleOptions();
-            circleOptions.center(turkey);
+            circleOptions.center(location);
             circleOptions.radius(mainRadius);
             circleOptions.strokeColor(Color.BLACK);
             circleOptions.fillColor(0x30ff0000);
@@ -243,14 +243,8 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
                 double latitude = addressList.get(0).getLatitude();
                 double longitude = addressList.get(0).getLongitude();
 
-                LatLng turkey = new LatLng(latitude, longitude);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(turkey, 13));
-
-                LatLngBounds curScreen = mMap.getProjection()
-                        .getVisibleRegion().latLngBounds;
-                System.out.println("A: "+curScreen.northeast);
-                System.out.println("B: "+curScreen.southwest);
-                System.out.println("C: "+curScreen.getCenter());
+                LatLng location = new LatLng(latitude, longitude);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
 
             } else {
                 System.out.println("No location found for the given address.");

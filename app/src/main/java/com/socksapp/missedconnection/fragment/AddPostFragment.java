@@ -9,6 +9,8 @@ import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -38,7 +40,9 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -64,6 +68,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -85,6 +90,8 @@ public class AddPostFragment extends Fragment {
     private TimePickerDialog timePickerDialog,timePickerDialog2;
     private int mYear,mMonth,mDay;
     private MainActivity mainActivity;
+
+    public static MapView mapView;
 
     public AddPostFragment() {
         // Required empty public constructor
@@ -111,6 +118,7 @@ public class AddPostFragment extends Fragment {
         binding = FragmentAddPostBinding.inflate(inflater,container,false);
         return binding.getRoot();
     }
+
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -185,11 +193,13 @@ public class AddPostFragment extends Fragment {
             @Override
             public void onMapReady(@NonNull GoogleMap googleMap) {
 
+                disableMapInteractions(googleMap);
+
                 googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map));
 
                 LatLng location = new LatLng(41.008240, 28.978359);
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 10));
-                googleMap.addMarker(new MarkerOptions().position(location).title("İstanbul"));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+//                googleMap.addMarker(new MarkerOptions().position(location).title("İstanbul"));
 
                 googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
@@ -259,6 +269,60 @@ public class AddPostFragment extends Fragment {
                 }
             }
         });
+
+        binding.districtCompleteText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String city = binding.cityCompleteText.getText().toString();
+                String district = s.toString();
+
+                Geocoder geocoder = new Geocoder(requireContext());
+                try {
+                    List<Address> addressList = geocoder.getFromLocationName(city + ", " + district, 1);
+                    if (addressList != null && addressList.size() > 0) {
+                        double latitude = addressList.get(0).getLatitude();
+                        double longitude = addressList.get(0).getLongitude();
+
+                        LatLng location = new LatLng(latitude, longitude);
+                        binding.mapView.getMapAsync(new OnMapReadyCallback() {
+                            @Override
+                            public void onMapReady(@NonNull GoogleMap googleMap) {
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+                            }
+                        });
+                    } else {
+                        System.out.println("No location found for the given address.");
+                    }
+                } catch (Exception e) {
+                    System.out.println("exception: "+e.getLocalizedMessage());
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+    private void disableMapInteractions(GoogleMap googleMap) {
+        if (googleMap != null) {
+            UiSettings uiSettings = googleMap.getUiSettings();
+            uiSettings.setZoomControlsEnabled(true);
+            uiSettings.setCompassEnabled(false);
+            uiSettings.setScrollGesturesEnabled(true);
+            uiSettings.setZoomGesturesEnabled(false);
+            uiSettings.setTiltGesturesEnabled(false);
+            uiSettings.setRotateGesturesEnabled(false);
+            uiSettings.setMyLocationButtonEnabled(false);
+            googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        }
     }
 
     private void goToMainFragment(View v){
@@ -362,6 +426,7 @@ public class AddPostFragment extends Fragment {
                                 batch.set(newPostRef2, post);
 
                                 batch.commit().addOnSuccessListener(aVoid -> {
+                                    resetAction();
                                     showToastShort("Eklendi");
                                 }).addOnFailureListener(e -> {
                                     showToastShort(e.getLocalizedMessage());
@@ -443,6 +508,7 @@ public class AddPostFragment extends Fragment {
                     batch.set(newPostRef2, post);
 
                     batch.commit().addOnSuccessListener(aVoid -> {
+                        resetAction();
                         showToastShort("Eklendi");
                     }).addOnFailureListener(e -> {
                         showToastShort(e.getLocalizedMessage());
@@ -499,6 +565,7 @@ public class AddPostFragment extends Fragment {
                                         batch.set(newPostRef2, post);
 
                                         batch.commit().addOnSuccessListener(aVoid -> {
+                                            resetAction();
                                             showToastShort("Eklendi");
                                         }).addOnFailureListener(e -> {
                                             showToastShort(e.getLocalizedMessage());
@@ -595,6 +662,7 @@ public class AddPostFragment extends Fragment {
                                         batch.set(newPostRef2, post);
 
                                         batch.commit().addOnSuccessListener(aVoid -> {
+                                            resetAction();
                                             showToastShort("Eklendi");
                                         }).addOnFailureListener(e -> {
                                             showToastShort(e.getLocalizedMessage());
@@ -668,6 +736,30 @@ public class AddPostFragment extends Fragment {
 
     }
 
+    private void resetAction(){
+        binding.mapView.setVisibility(View.GONE);
+        binding.visibleDatePicker.setVisibility(View.GONE);
+
+        binding.cityCompleteText.setText("");
+        binding.cityCompleteText.setAdapter(null);
+
+        binding.districtCompleteText.setText("");
+        binding.districtCompleteText.setAdapter(null);
+
+
+        binding.place.setText("");
+
+        binding.explain.setText("");
+
+        binding.dateEditText1.setText("");
+        binding.dateEditText2.setText("");
+
+        binding.timeEditText1.setText("");
+        binding.timeEditText2.setText("");
+
+//        binding.checkBoxContact.setChecked(false);
+
+    }
     private void showCustomTimeDialog1(View view) {
         if(timePickerDialog == null){
             final Calendar currentTime = Calendar.getInstance();
@@ -787,7 +879,7 @@ public class AddPostFragment extends Fragment {
             Date date2 = sdf.parse(time2);
 
             if (date1 != null && date2 != null) {
-                return date1.compareTo(date2) <= 0; // Saat1, saat2'den büyük veya eşitse true döndürün
+                return date1.compareTo(date2) <= 0;
             }
         } catch (ParseException e) {
             e.printStackTrace();
@@ -1306,6 +1398,24 @@ public class AddPostFragment extends Fragment {
         super.onPause();
         binding.mapView.onPause();
 
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        binding.mapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        binding.mapView.onLowMemory();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        binding.mapView.onSaveInstanceState(outState);
     }
 
     @Override

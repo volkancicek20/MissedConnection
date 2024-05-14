@@ -11,6 +11,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -25,6 +27,8 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -46,6 +50,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -68,6 +73,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -191,11 +197,12 @@ public class FindFragment extends Fragment {
             @Override
             public void onMapReady(@NonNull GoogleMap googleMap) {
 
+                disableMapInteractions(googleMap);
+
                 googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map));
 
                 LatLng location = new LatLng(41.008240, 28.978359);
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 10));
-                googleMap.addMarker(new MarkerOptions().position(location).title("İstanbul"));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
 
                 googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
@@ -228,6 +235,60 @@ public class FindFragment extends Fragment {
             }
         });
 
+        binding.districtCompleteText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String city = binding.cityCompleteText.getText().toString();
+                String district = s.toString();
+
+                Geocoder geocoder = new Geocoder(requireContext());
+                try {
+                    List<Address> addressList = geocoder.getFromLocationName(city + ", " + district, 1);
+                    if (addressList != null && addressList.size() > 0) {
+                        double latitude = addressList.get(0).getLatitude();
+                        double longitude = addressList.get(0).getLongitude();
+
+                        LatLng location = new LatLng(latitude, longitude);
+                        binding.mapView.getMapAsync(new OnMapReadyCallback() {
+                            @Override
+                            public void onMapReady(@NonNull GoogleMap googleMap) {
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+                            }
+                        });
+                    } else {
+                        System.out.println("No location found for the given address.");
+                    }
+                } catch (Exception e) {
+                    System.out.println("exception: "+e.getLocalizedMessage());
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+    }
+
+    private void disableMapInteractions(GoogleMap googleMap) {
+        if (googleMap != null) {
+            UiSettings uiSettings = googleMap.getUiSettings();
+            uiSettings.setZoomControlsEnabled(true);
+            uiSettings.setCompassEnabled(false);
+            uiSettings.setScrollGesturesEnabled(true);
+            uiSettings.setZoomGesturesEnabled(false);
+            uiSettings.setTiltGesturesEnabled(false);
+            uiSettings.setRotateGesturesEnabled(false);
+            uiSettings.setMyLocationButtonEnabled(false);
+            googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        }
     }
 
     private void goToMainFragment(){
@@ -1117,6 +1178,24 @@ public class FindFragment extends Fragment {
     public void onPause() {
         super.onPause();
         binding.mapView.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        binding.mapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        binding.mapView.onLowMemory();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        binding.mapView.onSaveInstanceState(outState);
     }
 
     @Override
