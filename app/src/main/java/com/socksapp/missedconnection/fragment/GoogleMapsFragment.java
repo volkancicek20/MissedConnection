@@ -44,7 +44,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
     private FragmentGoogleMapsBinding binding;
     private FirebaseFirestore firestore;
     private GoogleMap mMap;
-    private String type,city,district;
+    private String type,city,district,streetAddress;
     private MainActivity mainActivity;
     private LatLng customLatLng;
     private Circle currentCircle;
@@ -79,6 +79,8 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        streetAddress = "";
 
         if(type.equals("main")){
             binding.slider.setVisibility(View.GONE);
@@ -178,7 +180,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
                             try {
                                 geocoder = new Geocoder(requireContext(), Locale.getDefault());
                                 addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                                String streetAddress = "";
+                                streetAddress = "";
                                 if (addresses != null && addresses.size() > 0) {
                                     Address address = addresses.get(0);
                                     streetAddress = address.getAddressLine(0);
@@ -227,7 +229,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
 
         binding.saveLocation.setOnClickListener(v ->{
             if (customLatLng != null) {
-                saveLocationWithRadius(customLatLng, (int) binding.slider.getValue());
+                saveLocationWithRadius(customLatLng, (int) binding.slider.getValue(),streetAddress);
             } else {
                 Toast.makeText(requireContext(), "Haritaya tıklama yapmadınız.", Toast.LENGTH_SHORT).show();
             }
@@ -257,16 +259,18 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
 
-    private void saveLocationWithRadius(LatLng center, double radius) {
+    private void saveLocationWithRadius(LatLng center, double radius,String address) {
 
         if(type.equals("find_post")){
             FindFragment.rad = radius;
             FindFragment.lat = center.latitude;
             FindFragment.lng = center.longitude;
+            FindFragment.address = address;
         } else if (type.equals("add_post")) {
             AddPostFragment.rad = radius;
             AddPostFragment.lat = center.latitude;
             AddPostFragment.lng = center.longitude;
+            AddPostFragment.address = address;
         }
 
         requireActivity().getSupportFragmentManager().popBackStack();

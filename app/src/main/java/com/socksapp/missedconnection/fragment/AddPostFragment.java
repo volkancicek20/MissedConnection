@@ -7,6 +7,8 @@ import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
@@ -43,6 +45,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -84,6 +87,7 @@ public class AddPostFragment extends Fragment {
     private AutoCompleteTextView cityCompleteTextView,districtCompleteTextView;
     public static Double lat,lng;
     public static Double rad;
+    public static String address;
     private SharedPreferences nameShared,imageUrlShared;
     private String myUserName,myImageUrl,userMail;
     private DatePickerDialog datePickerDialog,datePickerDialog2;
@@ -106,7 +110,8 @@ public class AddPostFragment extends Fragment {
 
         lat = 0.0;
         lng = 0.0;
-        rad = 100.0;
+        rad = 0.0;
+        address = "";
 
         nameShared = requireActivity().getSharedPreferences("Name",Context.MODE_PRIVATE);
         imageUrlShared = requireActivity().getSharedPreferences("ImageUrl",Context.MODE_PRIVATE);
@@ -307,6 +312,39 @@ public class AddPostFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable s) {
 
+            }
+        });
+
+        binding.markedMapView.setText(address);
+
+        if(lat != 0.0 && lng != 0.0 && rad != 0.0){
+            setMarked();
+        }
+
+    }
+
+    private void setMarked(){
+        binding.mapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull GoogleMap googleMap) {
+
+                disableMapInteractions(googleMap);
+
+                googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map));
+
+//                LatLng location = new LatLng(lat, lng);
+//                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+//                googleMap.addMarker(new MarkerOptions().position(location).title(address));
+
+                LatLng location = new LatLng(lat, lng);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.person_active_96);
+                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false); // 50x50 boyutunda ikon
+                googleMap.addMarker(new MarkerOptions()
+                        .position(location)
+                        .title(address)
+                        .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap))
+                );
             }
         });
     }

@@ -91,6 +91,7 @@ public class FindFragment extends Fragment {
     private String myUserName,myImageUrl,userMail;
     public static Double lat,lng;
     public static Double rad;
+    public static String address;
     private DatePickerDialog datePickerDialog,datePickerDialog2;
     private TimePickerDialog timePickerDialog,timePickerDialog2;
     private int mYear,mMonth,mDay;
@@ -110,6 +111,7 @@ public class FindFragment extends Fragment {
         lat = 0.0;
         lng = 0.0;
         rad = 0.0;
+        address = "";
 
         nameShared = requireActivity().getSharedPreferences("Name",Context.MODE_PRIVATE);
         imageUrlShared = requireActivity().getSharedPreferences("ImageUrl",Context.MODE_PRIVATE);
@@ -149,7 +151,7 @@ public class FindFragment extends Fragment {
             selectDistrict(selectedCity);
         });
 
-        binding.dateTitleConstraintLayout.setOnTouchListener((v, event) -> {
+        binding.topDatePicker.setOnTouchListener((v, event) -> {
             int checkVisible = binding.visibleDatePicker.getVisibility();
             if(checkVisible == View.GONE){
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
@@ -159,7 +161,7 @@ public class FindFragment extends Fragment {
             return false;
         });
 
-        binding.mapViewConstraintLayout.setOnTouchListener((v, event) -> {
+        binding.topMapLinear.setOnTouchListener((v, event) -> {
             int checkVisible = binding.mapView.getVisibility();
             if(checkVisible == View.GONE){
                 binding.mapView.setVisibility(View.VISIBLE);

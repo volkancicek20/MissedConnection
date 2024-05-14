@@ -94,31 +94,59 @@
                     app:layout_constraintTop_toBottomOf="@id/place_text_input"
                     >
 
-                    <ImageView
-                        android:id="@+id/down_arrow_maps"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:id="@+id/topMapLinear"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
-                        android:background="@drawable/icon_down_arrow"
-                        android:backgroundTint="@color/gray"
-                        app:layout_constraintTop_toTopOf="@id/google_map_text_view"
-                        app:layout_constraintBottom_toBottomOf="@id/google_map_text_view"
-                        app:layout_constraintStart_toStartOf="parent"/>
-
-                    <TextView
-                        android:id="@+id/google_map_text_view"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Konum Seç"
-                        android:textColor="@color/gray"
-                        android:textSize="14sp"
-                        android:textStyle="normal"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginBottom="8dp"
-                        app:layout_constraintBottom_toTopOf="@id/mapView"
+                        android:orientation="horizontal"
+                        android:gravity="start"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/down_arrow_maps"/>
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/mapView"
+                        >
+
+                        <ImageView
+                            android:id="@+id/down_arrow_maps"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="16dp"
+                            android:layout_marginStart="16dp"
+                            android:background="@drawable/icon_down_arrow"
+                            android:backgroundTint="@color/gray"
+                            />
+
+                        <TextView
+                            android:id="@+id/google_map_text_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Konum Seç"
+                            android:textColor="@color/gray"
+                            android:textSize="14sp"
+                            android:textStyle="normal"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginBottom="16dp" />
+
+                        <TextView
+                            android:id="@+id/marked_map_view"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text=""
+                            android:textColor="@color/gray"
+                            android:textSize="12sp"
+                            android:textStyle="normal"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginBottom="16dp" />
+
+
+                    </LinearLayout>
+
 
                     <com.google.android.gms.maps.MapView
                         android:id="@+id/mapView"
@@ -126,7 +154,6 @@
                         android:layout_height="150dp"
                         android:layout_margin="16dp"
                         android:visibility="visible"
-                        app:layout_constraintTop_toBottomOf="@id/google_map_text_view"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -188,31 +215,45 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
 
-                    <ImageView
-                        android:id="@+id/down_arrow_date"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:id="@+id/topDatePicker"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_margin="16dp"
-                        android:background="@drawable/icon_down_arrow"
-                        android:backgroundTint="@color/gray"
-                        app:layout_constraintTop_toTopOf="@id/date_title_text"
-                        app:layout_constraintBottom_toBottomOf="@id/date_title_text"
-                        app:layout_constraintStart_toStartOf="parent"/>
-
-                    <TextView
-                        android:id="@+id/date_title_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Tarih Seçimi"
-                        android:textColor="@color/gray"
-                        android:textSize="14sp"
-                        android:textStyle="normal"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginBottom="8dp"
-                        app:layout_constraintBottom_toTopOf="@id/visible_date_picker"
+                        android:orientation="horizontal"
+                        android:gravity="start"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/down_arrow_date"/>
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/visible_date_picker">
+
+                        <ImageView
+                            android:id="@+id/down_arrow_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginBottom="16dp"
+                            android:background="@drawable/icon_down_arrow"
+                            android:backgroundTint="@color/gray"
+                            android:layout_gravity="center"
+                            />
+
+                        <TextView
+                            android:id="@+id/date_title_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Tarih Seçimi"
+                            android:textColor="@color/gray"
+                            android:textSize="14sp"
+                            android:textStyle="normal"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginBottom="16dp"
+                            />
+
+                    </LinearLayout>
+
 
                     <LinearLayout
                         android:id="@+id/visible_date_picker"
