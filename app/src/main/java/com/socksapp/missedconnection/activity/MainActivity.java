@@ -35,6 +35,7 @@ import com.socksapp.missedconnection.fragment.MyPostFragment;
 import com.socksapp.missedconnection.fragment.ProfileFragment;
 import com.socksapp.missedconnection.fragment.SavedPostFragment;
 import com.socksapp.missedconnection.fragment.SettingsFragment;
+import com.socksapp.missedconnection.myclass.ChatIdDataAccess;
 import com.socksapp.missedconnection.myclass.RefDataAccess;
 
 public class MainActivity extends AppCompatActivity {
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView headerName;
     public View headerView,includedLayout;
     public RefDataAccess refDataAccess;
+    public ChatIdDataAccess chatIdDataAccess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
 
         refDataAccess = new RefDataAccess(this);
         refDataAccess.open();
+
+        chatIdDataAccess = new ChatIdDataAccess(this);
+        chatIdDataAccess.open();
 
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -283,5 +288,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         refDataAccess.close();
+        chatIdDataAccess.close();
     }
 }

@@ -795,6 +795,8 @@ public class AddPostFragment extends Fragment {
         binding.timeEditText1.setText("");
         binding.timeEditText2.setText("");
 
+        binding.markedMapView.setText("");
+
 //        binding.checkBoxContact.setChecked(false);
 
     }

@@ -365,7 +365,7 @@ public class EditProfileFragment extends Fragment {
                 .centerCrop())
                 .into(binding.profileImage);
         }else {
-            binding.profileImage.setImageResource(R.drawable.icon_person);
+            binding.profileImage.setImageResource(R.drawable.person_active_96);
         }
 
     }

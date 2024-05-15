@@ -210,7 +210,15 @@ public class MainFragment extends Fragment {
         });
 
         message.setOnClickListener(v ->{
-
+            Bundle args = new Bundle();
+            args.putString("anotherMail", mail);
+            ChatFragment fragment = new ChatFragment();
+            fragment.setArguments(args);
+            FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+            dialog.dismiss();
         });
 
         report.setOnClickListener(v ->{

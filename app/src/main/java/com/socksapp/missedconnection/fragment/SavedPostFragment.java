@@ -30,6 +30,7 @@ import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.PostAdapter;
 import com.socksapp.missedconnection.adapter.SavedPostAdapter;
 import com.socksapp.missedconnection.databinding.FragmentSavedPostBinding;
+import com.socksapp.missedconnection.model.ChatsId;
 import com.socksapp.missedconnection.model.FindPost;
 import com.socksapp.missedconnection.model.RefItem;
 
@@ -43,7 +44,8 @@ public class SavedPostFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private MainActivity mainActivity;
-    private List<RefItem> arrayList;
+    private List<RefItem> refItemList;
+    private List<ChatsId> chatsIdList;
     private String userMail;
     public SavedPostAdapter savedPostAdapter;
     public ArrayList<FindPost> savedPostArrayList;
@@ -56,7 +58,8 @@ public class SavedPostFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        arrayList = new ArrayList<>();
+        refItemList = new ArrayList<>();
+        chatsIdList = new ArrayList<>();
         savedPostArrayList = new ArrayList<>();
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -108,9 +111,9 @@ public class SavedPostFragment extends Fragment {
     }
 
     private void getData(){
-        arrayList = mainActivity.refDataAccess.getAllRefs();
+        refItemList = mainActivity.refDataAccess.getAllRefs();
 
-        if(arrayList.isEmpty()){
+        if(refItemList.isEmpty()){
             FindPost post = new FindPost();
             post.viewType = 2;
 
@@ -121,7 +124,7 @@ public class SavedPostFragment extends Fragment {
             savedPostAdapter.notifyDataSetChanged();
 
         }else {
-            for (RefItem item : arrayList) {
+            for (RefItem item : refItemList) {
                 String mail = item.getMail();
                 String ref = item.getRef();
 
