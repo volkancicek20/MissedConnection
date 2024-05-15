@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -48,6 +49,8 @@ public class ProfileFragment extends Fragment {
 
         mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+        mainActivity.includedLayout.setVisibility(View.VISIBLE);
+        mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 
         setProfile(view);
 
@@ -59,7 +62,7 @@ public class ProfileFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                goToMainFragment(view);
+                goToMainFragment();
             }
         });
     }
@@ -96,7 +99,7 @@ public class ProfileFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    private void goToMainFragment(View v){
+    private void goToMainFragment(){
 
         mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
 

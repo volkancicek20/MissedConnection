@@ -57,11 +57,10 @@ public class MainFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private SharedPreferences nameShared,imageUrlShared;
-    private String userMail;
+    private String userMail,myUserName,myImageUrl;
     private MainActivity mainActivity;
     public PostAdapter postAdapter;
     public ArrayList<FindPost> postArrayList;
-    private static final int SCROLL_THRESHOLD = 200;
     private Handler handler;
     public MainFragment() {
         // Required empty public constructor
@@ -95,6 +94,7 @@ public class MainFragment extends Fragment {
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
         mainActivity.includedLayout.setVisibility(View.VISIBLE);
         mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+
         ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mainActivity.fragmentContainerView.getLayoutParams();
         layoutParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
         mainActivity.fragmentContainerView.setLayoutParams(layoutParams);
@@ -102,6 +102,9 @@ public class MainFragment extends Fragment {
         binding.shimmerLayout.startShimmer();
 
         userMail = user.getEmail();
+
+        myUserName = nameShared.getString("name","");
+        myImageUrl = nameShared.getString("imageUrl","");
 
         binding.recyclerViewMain.setLayoutManager(new LinearLayoutManager(view.getContext()));
         postAdapter = new PostAdapter(postArrayList,view.getContext(),MainFragment.this);
@@ -128,51 +131,6 @@ public class MainFragment extends Fragment {
             getData();
         }
 
-//        final int[] totalScrolledDistance = {0};
-//
-//        binding.recyclerViewMain.addOnScrollListener(new RecyclerView.OnScrollListener() {
-//            @Override
-//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-//                super.onScrolled(recyclerView, dx, dy);
-//
-//                totalScrolledDistance[0] += dy;
-//
-//                if (dy > 0 && totalScrolledDistance[0] >= SCROLL_THRESHOLD) {
-//                    animateBottomNavigationView(false);
-//
-//                    totalScrolledDistance[0] = 0;
-//                }
-//
-//                if (dy < 0 && totalScrolledDistance[0] <= -SCROLL_THRESHOLD) {
-//                    animateBottomNavigationView(true);
-//
-//                    totalScrolledDistance[0] = 0;
-//                }
-//            }
-//        });
-
-    }
-
-    private void animateBottomNavigationView(boolean isVisible) {
-        if (isVisible) {
-            mainActivity.bottomNavigationView.animate()
-                .translationY(0)
-                .setDuration(100)
-                .setInterpolator(new DecelerateInterpolator())
-                    .withStartAction(() -> {
-                        mainActivity.bottomViewLine.setVisibility(View.VISIBLE);
-                        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
-                    });
-        } else {
-            mainActivity.bottomNavigationView.animate()
-                .translationY(mainActivity.bottomNavigationView.getHeight())
-                .setDuration(100)
-                .setInterpolator(new DecelerateInterpolator())
-                .withEndAction(() -> {
-                    mainActivity.bottomViewLine.setVisibility(View.GONE);
-                    mainActivity.bottomNavigationView.setVisibility(View.GONE);
-                });
-        }
     }
 
     public void dialogShow(View view, String mail, String name, Double lat, Double lng, double radius, DocumentReference documentReference){
@@ -219,15 +177,21 @@ public class MainFragment extends Fragment {
         });
 
         message.setOnClickListener(v ->{
-            Bundle args = new Bundle();
-            args.putString("anotherMail", mail);
-            ChatFragment fragment = new ChatFragment();
-            fragment.setArguments(args);
-            FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
-            dialog.dismiss();
+            if(!myUserName.isEmpty()){
+                Bundle args = new Bundle();
+                args.putString("anotherMail", mail);
+                ChatFragment fragment = new ChatFragment();
+                fragment.setArguments(args);
+                FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+                dialog.dismiss();
+            }else {
+                Toast.makeText(v.getContext(),"Mesaj göndermek için profilinizi tamamlamalısınız.",Toast.LENGTH_LONG).show();
+                dialog.dismiss();
+            }
+
         });
 
         report.setOnClickListener(v ->{
@@ -903,6 +867,16 @@ public class MainFragment extends Fragment {
 
     public double toRadians(double deg) {
         return deg * (Math.PI/180);
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
+        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+        mainActivity.includedLayout.setVisibility(View.VISIBLE);
+        mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
     }
 
     @Override

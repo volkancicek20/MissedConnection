@@ -57,7 +57,6 @@ public class RecentConversationsAdapter extends RecyclerView.Adapter<RecentConve
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
-//        String myMail = user.getEmail();
         holder.binding.recyclerViewProfilePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,12 +64,12 @@ public class RecentConversationsAdapter extends RecyclerView.Adapter<RecentConve
                 getShow(holder.itemView,chatMessages.get(pos).conversionImage);
             }
         });
-        holder.binding.getRoot().setOnLongClickListener(v -> {
+        holder.binding.messageConstraintLayout.setOnLongClickListener(v -> {
             int pos = holder.getAdapterPosition();
             if(pos != RecyclerView.NO_POSITION){
                 String selectedItem = chatMessages.get(pos).conversionId;
                 if(fragment != null){
-//                    fragment.choiceItem(holder.itemView,selectedItem,myMail,loadingStandartDialog,pos,database);
+                    fragment.choiceItem(holder.itemView,selectedItem,pos);
                 }
             }
             return true;

@@ -1,11 +1,18 @@
 package com.socksapp.missedconnection.fragment;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
@@ -20,14 +27,18 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.MetadataChanges;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.RecentConversationsAdapter;
@@ -89,6 +100,24 @@ public class MessageFragment extends Fragment implements ConversionListener{
 
         listenConversations();
 
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                goToMainFragment(view);
+            }
+        });
+
+    }
+
+    private void goToMainFragment(View v){
+
+        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
+
+        MainFragment fragment = new MainFragment();
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
 
@@ -195,9 +224,93 @@ public class MessageFragment extends Fragment implements ConversionListener{
         fragmentTransaction.commit();
     }
 
+    public void choiceItem(View view, String userMail, int position){
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        builder.setMessage("Mesajı silmek istiyor musunuz?");
+        builder.setPositiveButton("Sil", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                deleteConversations(userMail,"senderId","receiverId");
+                deleteConversations(userMail,"receiverId","senderId");
+                deleteChats(userMail,position);
+            }
+        });
+        builder.setNegativeButton("Geri", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        builder.show();
+    }
+
+    public void deleteConversations(String userMail, String senderId, String receiverId){
+        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
+        CollectionReference collectionReference = firebaseFirestore.collection("conversations");
+        collectionReference.whereEqualTo(senderId, userMail).whereEqualTo(receiverId,myMail).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    document.getReference().delete();
+                }
+            }
+        });
+    }
+
+    public void deleteChats(String userMail, int position){
+
+        firebaseFirestore.collection("chatsId").document(myMail).get().addOnSuccessListener(documentSnapshot -> {
+            if(documentSnapshot.exists()){
+                Map<String,Object> data = documentSnapshot.getData();
+                if(data != null){
+                    if(!data.isEmpty()){
+                        if(data.containsKey(userMail)){
+                            String id = (String) data.get(userMail);
+                            if(id != null && !id.isEmpty()){
+                                deleteSubCollections(id,position);
+                            }
+                        }
+                    }
+                }
+            }
+        }).addOnFailureListener(e -> {
+
+        });
+    }
+    public void deleteSubCollections(String documentId, int position) {
+        WriteBatch batch = firebaseFirestore.batch();
+        CollectionReference subCollectionReference = firebaseFirestore.collection("chats").document(documentId).collection(documentId);
+        subCollectionReference.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    batch.delete(document.getReference());
+                }
+
+                DocumentReference documentReference = firebaseFirestore.collection("chats").document(documentId);
+                batch.delete(documentReference);
+
+                batch.commit().addOnCompleteListener(subTask -> {
+                    if (subTask.isSuccessful()) {
+                        conversationsAdapter.notifyItemRemoved(position);
+                        conversations.remove(position);
+                        conversationsAdapter.notifyDataSetChanged();
+                    }else {
+
+                    }
+                });
+            } else {
+
+            }
+        });
+    }
+
     @Override
     public void onResume() {
         super.onResume();
+        mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
+        mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+        mainActivity.includedLayout.setVisibility(View.VISIBLE);
+        mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 //        startListeningToChanges();
     }
 

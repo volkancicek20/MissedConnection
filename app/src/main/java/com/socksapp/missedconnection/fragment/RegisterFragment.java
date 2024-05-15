@@ -105,9 +105,10 @@ public class RegisterFragment extends Fragment {
                 if (task.isSuccessful()) {
                     Toast.makeText(view.getContext(), "Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.", Toast.LENGTH_LONG).show();
                 } else {
-                    Exception exception = task.getException();
+//                    Exception exception = task.getException();
                     Toast.makeText(view.getContext(), "Doğrulama e-postası gönderilirken bir hata oluştu.", Toast.LENGTH_SHORT).show();
                 }
             });
+
     }
 }

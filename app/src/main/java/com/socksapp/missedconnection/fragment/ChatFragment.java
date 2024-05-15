@@ -4,14 +4,18 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -95,12 +99,35 @@ public class ChatFragment extends Fragment {
         myUserName = nameShared.getString("name","");
         myImageUrl = imageUrlShared.getString("imageUrl","");
 
+        mainActivity.bottomNavigationView.setVisibility(View.GONE);
+        mainActivity.includedLayout.setVisibility(View.GONE);
+        mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+
         chatAdapter = new ChatAdapter(chatMessages,myMail);
         binding.recyclerViewChat.setAdapter(chatAdapter);
 
         listenMessages();
 
         binding.layoutSend.setOnClickListener(sendMessageClickListener);
+        binding.backAndImageLinearLayout.setOnClickListener(backAndImageLinearLayoutClickListener);
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                goToMessageFragment();
+            }
+        });
+    }
+
+    private void goToMessageFragment(){
+
+        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navMessage);
+
+        MessageFragment fragment = new MessageFragment();
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     public View.OnClickListener sendMessageClickListener = new View.OnClickListener() {
@@ -114,6 +141,8 @@ public class ChatFragment extends Fragment {
         }
     };
 
+    public View.OnClickListener backAndImageLinearLayoutClickListener = view -> goToMessageFragment();
+
     private String generateAlphanumericUUID() {
         String uuid = UUID.randomUUID().toString();
         uuid = uuid.replaceAll("-", "");
@@ -121,7 +150,6 @@ public class ChatFragment extends Fragment {
     }
 
     private void sendMessage(String msg){
-
         firebaseFirestore.collection("chatsId").document(myMail).get().addOnSuccessListener(documentSnapshot -> {
             if(documentSnapshot.exists()){
                 Map<String,Object> data = documentSnapshot.getData();
@@ -129,34 +157,35 @@ public class ChatFragment extends Fragment {
                     if(!data.isEmpty()){
                         if(data.containsKey(anotherMail)){
                             String id = (String) data.get(anotherMail);
-                            WriteBatch batch = firebaseFirestore.batch();
+                            if(id != null && !id.isEmpty()){
+                                WriteBatch batch = firebaseFirestore.batch();
 
-                            String messageId = firebaseFirestore.collection("chats").document(id).collection(id).document().getId();
+                                String messageId = firebaseFirestore.collection("chats").document(id).collection(id).document().getId();
 
-                            HashMap<String, Object> message = new HashMap<>();
-                            message.put("senderId", myMail);
-                            message.put("receiverId", anotherMail);
-                            message.put("message", msg);
-                            message.put("date", new Date());
+                                HashMap<String, Object> message = new HashMap<>();
+                                message.put("senderId", myMail);
+                                message.put("receiverId", anotherMail);
+                                message.put("message", msg);
+                                message.put("date", new Date());
 
-                            batch.set(firebaseFirestore.collection("chats").document(id).collection(id).document(messageId), message);
-                            DocumentReference conversionRef = firebaseFirestore.collection("conversations").document();
-                            if (conversionId != null) {
-                                DocumentReference conversationRef = firebaseFirestore.collection("conversations").document(conversionId);
-                                batch.update(conversationRef, "lastMessage", msg, "date", new Date());
-                            } else {
-                                HashMap<String, Object> conversion = new HashMap<>();
-                                conversion.put("senderId", myMail);
-                                conversion.put("receiverId", anotherMail);
-                                conversion.put("lastMessage", msg);
-                                conversion.put("date", new Date());
-                                batch.set(conversionRef, conversion);
+                                batch.set(firebaseFirestore.collection("chats").document(id).collection(id).document(messageId), message);
+                                DocumentReference conversionRef = firebaseFirestore.collection("conversations").document();
+                                if (conversionId != null) {
+                                    DocumentReference conversationRef = firebaseFirestore.collection("conversations").document(conversionId);
+                                    batch.update(conversationRef, "lastMessage", msg, "date", new Date());
+                                } else {
+                                    HashMap<String, Object> conversion = new HashMap<>();
+                                    conversion.put("senderId", myMail);
+                                    conversion.put("receiverId", anotherMail);
+                                    conversion.put("lastMessage", msg);
+                                    conversion.put("date", new Date());
+                                    batch.set(conversionRef, conversion);
+                                }
+
+                                batch.commit().addOnSuccessListener(aVoid -> {
+                                    binding.inputMessage.setText("");
+                                });
                             }
-
-                            batch.commit().addOnSuccessListener(aVoid -> {
-                                conversionId = conversionRef.getId();
-                                binding.inputMessage.setText("");
-                            });
                         }else {
                             String auto_id = generateAlphanumericUUID();
                             Map<String, Object> dataId = new HashMap<>();
@@ -197,7 +226,6 @@ public class ChatFragment extends Fragment {
                             }
 
                             batch.commit().addOnSuccessListener(aVoid -> {
-                                conversionId = conversionRef.getId();
                                 binding.inputMessage.setText("");
                             });
                         }
@@ -241,7 +269,6 @@ public class ChatFragment extends Fragment {
                         }
 
                         batch.commit().addOnSuccessListener(aVoid -> {
-                            conversionId = conversionRef.getId();
                             binding.inputMessage.setText("");
                         });
                     }
@@ -286,7 +313,6 @@ public class ChatFragment extends Fragment {
                 }
 
                 batch.commit().addOnSuccessListener(aVoid -> {
-                    conversionId = conversionRef.getId();
                     binding.inputMessage.setText("");
                 });
             }
@@ -434,17 +460,13 @@ public class ChatFragment extends Fragment {
             int count = chatMessages.size();
             for (DocumentChange documentChange : value.getDocumentChanges()){
                 if(documentChange.getType() == DocumentChange.Type.ADDED){
-                    try {
-                        ChatMessage chatMessage = new ChatMessage();
-                        chatMessage.senderId = documentChange.getDocument().getString("senderId");
-                        chatMessage.receiverId = documentChange.getDocument().getString("receiverId");
-                        chatMessage.message = documentChange.getDocument().getString("message");
-                        chatMessage.dateTime = getReadableDateTime(documentChange.getDocument().getDate("date"));
-                        chatMessage.dateObject = documentChange.getDocument().getDate("date");
-                        chatMessages.add(chatMessage);
-                    }catch (Exception e){
-
-                    }
+                    ChatMessage chatMessage = new ChatMessage();
+                    chatMessage.senderId = documentChange.getDocument().getString("senderId");
+                    chatMessage.receiverId = documentChange.getDocument().getString("receiverId");
+                    chatMessage.message = documentChange.getDocument().getString("message");
+                    chatMessage.dateTime = getReadableDateTime(documentChange.getDocument().getDate("date"));
+                    chatMessage.dateObject = documentChange.getDocument().getDate("date");
+                    chatMessages.add(chatMessage);
                 }
             }
             Collections.sort(chatMessages,(obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
@@ -452,9 +474,8 @@ public class ChatFragment extends Fragment {
                 chatAdapter.notifyDataSetChanged();
             }else {
                 chatAdapter.notifyItemRangeInserted(chatMessages.size(),chatMessages.size());
-                binding.recyclerViewChat.smoothScrollToPosition(chatMessages.size()-1);
+                binding.recyclerViewChat.smoothScrollToPosition(chatMessages.size());
             }
-            binding.recyclerViewChat.setVisibility(View.VISIBLE);
         }
 
         if(conversionId == null){
