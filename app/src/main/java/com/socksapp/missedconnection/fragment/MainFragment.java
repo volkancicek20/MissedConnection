@@ -26,6 +26,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,6 +35,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
@@ -204,9 +207,15 @@ public class MainFragment extends Fragment {
         LinearLayout report = dialog.findViewById(R.id.layoutReport);
 
         save.setOnClickListener(v ->{
-            mainActivity.refDataAccess.insertRef(documentReference.getId(),mail);
-            Toast.makeText(view.getContext(), "Kaydedildi", Toast.LENGTH_SHORT).show();
-            dialog.dismiss();
+            HashMap<String,Object> data = new HashMap<>();
+            data.put(documentReference.getId(),mail);
+            firestore.collection("saves").document(userMail).set(data,SetOptions.merge()).addOnSuccessListener(unused -> {
+//                mainActivity.refDataAccess.insertRef(documentReference.getId(),mail);
+                Toast.makeText(view.getContext(), "Kaydedildi", Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+            }).addOnFailureListener(e -> {
+
+            });
         });
 
         message.setOnClickListener(v ->{

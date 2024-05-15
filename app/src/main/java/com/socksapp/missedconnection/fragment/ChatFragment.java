@@ -121,118 +121,309 @@ public class ChatFragment extends Fragment {
     }
 
     private void sendMessage(String msg){
-        String id = mainActivity.chatIdDataAccess.getChatsIdByMail(anotherMail);
-        if(id != null){
 
-            WriteBatch batch = firebaseFirestore.batch();
+        firebaseFirestore.collection("chatsId").document(myMail).get().addOnSuccessListener(documentSnapshot -> {
+            if(documentSnapshot.exists()){
+                Map<String,Object> data = documentSnapshot.getData();
+                if(data != null){
+                    if(!data.isEmpty()){
+                        if(data.containsKey(anotherMail)){
+                            String id = (String) data.get(anotherMail);
+                            WriteBatch batch = firebaseFirestore.batch();
 
-            String messageId = firebaseFirestore.collection("chats").document(id).collection(id).document().getId();
+                            String messageId = firebaseFirestore.collection("chats").document(id).collection(id).document().getId();
 
-            HashMap<String, Object> message = new HashMap<>();
-            message.put("senderId", myMail);
-            message.put("receiverId", anotherMail);
-            message.put("message", msg);
-            message.put("date", new Date());
+                            HashMap<String, Object> message = new HashMap<>();
+                            message.put("senderId", myMail);
+                            message.put("receiverId", anotherMail);
+                            message.put("message", msg);
+                            message.put("date", new Date());
 
-            batch.set(firebaseFirestore.collection("chats").document(id).collection(id).document(messageId), message);
-            DocumentReference conversionRef = firebaseFirestore.collection("conversations").document();
-            if (conversionId != null) {
-                DocumentReference conversationRef = firebaseFirestore.collection("conversations").document(conversionId);
-                batch.update(conversationRef, "lastMessage", msg, "date", new Date());
-            } else {
-                HashMap<String, Object> conversion = new HashMap<>();
-                conversion.put("senderId", myMail);
-                conversion.put("receiverId", anotherMail);
-                conversion.put("lastMessage", msg);
-                conversion.put("date", new Date());
-                batch.set(conversionRef, conversion);
+                            batch.set(firebaseFirestore.collection("chats").document(id).collection(id).document(messageId), message);
+                            DocumentReference conversionRef = firebaseFirestore.collection("conversations").document();
+                            if (conversionId != null) {
+                                DocumentReference conversationRef = firebaseFirestore.collection("conversations").document(conversionId);
+                                batch.update(conversationRef, "lastMessage", msg, "date", new Date());
+                            } else {
+                                HashMap<String, Object> conversion = new HashMap<>();
+                                conversion.put("senderId", myMail);
+                                conversion.put("receiverId", anotherMail);
+                                conversion.put("lastMessage", msg);
+                                conversion.put("date", new Date());
+                                batch.set(conversionRef, conversion);
+                            }
+
+                            batch.commit().addOnSuccessListener(aVoid -> {
+                                conversionId = conversionRef.getId();
+                                binding.inputMessage.setText("");
+                            });
+                        }else {
+                            String auto_id = generateAlphanumericUUID();
+                            Map<String, Object> dataId = new HashMap<>();
+                            dataId.put(anotherMail,auto_id);
+                            Map<String, Object> dataId2 = new HashMap<>();
+                            dataId2.put(myMail,auto_id);
+
+                            WriteBatch batch = firebaseFirestore.batch();
+
+                            DocumentReference docRef1 = firebaseFirestore.collection("chatsId").document(myMail);
+                            batch.set(docRef1, dataId, SetOptions.merge());
+
+                            DocumentReference docRef2 = firebaseFirestore.collection("chatsId").document(anotherMail);
+                            batch.set(docRef2, dataId2, SetOptions.merge());
+
+//                            mainActivity.chatIdDataAccess.addChatsId(anotherMail,auto_id);
+
+                            String messageId = firebaseFirestore.collection("chats").document(auto_id).collection(auto_id).document().getId();
+
+                            HashMap<String, Object> message = new HashMap<>();
+                            message.put("senderId", myMail);
+                            message.put("receiverId", anotherMail);
+                            message.put("message", msg);
+                            message.put("date", new Date());
+
+                            batch.set(firebaseFirestore.collection("chats").document(auto_id).collection(auto_id).document(messageId), message);
+                            DocumentReference conversionRef = firebaseFirestore.collection("conversations").document();
+                            if (conversionId != null) {
+                                DocumentReference conversationRef = firebaseFirestore.collection("conversations").document(conversionId);
+                                batch.update(conversationRef, "lastMessage", msg, "date", new Date());
+                            } else {
+                                HashMap<String, Object> conversion = new HashMap<>();
+                                conversion.put("senderId", myMail);
+                                conversion.put("receiverId", anotherMail);
+                                conversion.put("lastMessage", msg);
+                                conversion.put("date", new Date());
+                                batch.set(conversionRef, conversion);
+                            }
+
+                            batch.commit().addOnSuccessListener(aVoid -> {
+                                conversionId = conversionRef.getId();
+                                binding.inputMessage.setText("");
+                            });
+                        }
+                    }else {
+                        String auto_id = generateAlphanumericUUID();
+                        Map<String, Object> dataId = new HashMap<>();
+                        dataId.put(anotherMail,auto_id);
+                        Map<String, Object> dataId2 = new HashMap<>();
+                        dataId2.put(myMail,auto_id);
+
+                        WriteBatch batch = firebaseFirestore.batch();
+
+                        DocumentReference docRef1 = firebaseFirestore.collection("chatsId").document(myMail);
+                        batch.set(docRef1, dataId, SetOptions.merge());
+
+                        DocumentReference docRef2 = firebaseFirestore.collection("chatsId").document(anotherMail);
+                        batch.set(docRef2, dataId2, SetOptions.merge());
+
+//                        mainActivity.chatIdDataAccess.addChatsId(anotherMail,auto_id);
+
+                        String messageId = firebaseFirestore.collection("chats").document(auto_id).collection(auto_id).document().getId();
+
+                        HashMap<String, Object> message = new HashMap<>();
+                        message.put("senderId", myMail);
+                        message.put("receiverId", anotherMail);
+                        message.put("message", msg);
+                        message.put("date", new Date());
+
+                        batch.set(firebaseFirestore.collection("chats").document(auto_id).collection(auto_id).document(messageId), message);
+                        DocumentReference conversionRef = firebaseFirestore.collection("conversations").document();
+                        if (conversionId != null) {
+                            DocumentReference conversationRef = firebaseFirestore.collection("conversations").document(conversionId);
+                            batch.update(conversationRef, "lastMessage", msg, "date", new Date());
+                        } else {
+                            HashMap<String, Object> conversion = new HashMap<>();
+                            conversion.put("senderId", myMail);
+                            conversion.put("receiverId", anotherMail);
+                            conversion.put("lastMessage", msg);
+                            conversion.put("date", new Date());
+                            batch.set(conversionRef, conversion);
+                        }
+
+                        batch.commit().addOnSuccessListener(aVoid -> {
+                            conversionId = conversionRef.getId();
+                            binding.inputMessage.setText("");
+                        });
+                    }
+                }
+            }else {
+                String auto_id = generateAlphanumericUUID();
+                Map<String, Object> dataId = new HashMap<>();
+                dataId.put(anotherMail,auto_id);
+                Map<String, Object> dataId2 = new HashMap<>();
+                dataId2.put(myMail,auto_id);
+
+                WriteBatch batch = firebaseFirestore.batch();
+
+                DocumentReference docRef1 = firebaseFirestore.collection("chatsId").document(myMail);
+                batch.set(docRef1, dataId, SetOptions.merge());
+
+                DocumentReference docRef2 = firebaseFirestore.collection("chatsId").document(anotherMail);
+                batch.set(docRef2, dataId2, SetOptions.merge());
+
+//                mainActivity.chatIdDataAccess.addChatsId(anotherMail,auto_id);
+
+                String messageId = firebaseFirestore.collection("chats").document(auto_id).collection(auto_id).document().getId();
+
+                HashMap<String, Object> message = new HashMap<>();
+                message.put("senderId", myMail);
+                message.put("receiverId", anotherMail);
+                message.put("message", msg);
+                message.put("date", new Date());
+
+                batch.set(firebaseFirestore.collection("chats").document(auto_id).collection(auto_id).document(messageId), message);
+                DocumentReference conversionRef = firebaseFirestore.collection("conversations").document();
+                if (conversionId != null) {
+                    DocumentReference conversationRef = firebaseFirestore.collection("conversations").document(conversionId);
+                    batch.update(conversationRef, "lastMessage", msg, "date", new Date());
+                } else {
+                    HashMap<String, Object> conversion = new HashMap<>();
+                    conversion.put("senderId", myMail);
+                    conversion.put("receiverId", anotherMail);
+                    conversion.put("lastMessage", msg);
+                    conversion.put("date", new Date());
+                    batch.set(conversionRef, conversion);
+                }
+
+                batch.commit().addOnSuccessListener(aVoid -> {
+                    conversionId = conversionRef.getId();
+                    binding.inputMessage.setText("");
+                });
             }
+        }).addOnFailureListener(e -> {
 
-            batch.commit().addOnSuccessListener(aVoid -> {
-                conversionId = conversionRef.getId();
-                binding.inputMessage.setText("");
-            });
+        });
 
-
+//        String id = mainActivity.chatIdDataAccess.getChatsIdByMail(anotherMail);
+//        if(id != null){
+//
+//            WriteBatch batch = firebaseFirestore.batch();
+//
+//            String messageId = firebaseFirestore.collection("chats").document(id).collection(id).document().getId();
+//
 //            HashMap<String, Object> message = new HashMap<>();
-//            message.put("senderId",myMail);
-//            message.put("receiverId",anotherMail);
-//            message.put("message",msg);
-//            message.put("date",new Date());
-//            firebaseFirestore.collection("chats").document(id).collection(id).add(message);
-//            if(conversionId != null){
-//                DocumentReference documentReference =
-//                    firebaseFirestore.collection("conversations").document(conversionId);
-//                documentReference.update(
-//                    "lastMessage",msg,
-//                    "date",new Date()
-//                );
-//            }else {
-//                HashMap<String,Object> conversion = new HashMap<>();
-//                conversion.put("senderId",myMail);
-//                conversion.put("receiverId",anotherMail);
-//                conversion.put("lastMessage",msg);
-//                conversion.put("date",new Date());
-//                firebaseFirestore.collection("conversations")
-//                    .add(conversion)
-//                    .addOnSuccessListener(documentReference -> conversionId = documentReference.getId());
+//            message.put("senderId", myMail);
+//            message.put("receiverId", anotherMail);
+//            message.put("message", msg);
+//            message.put("date", new Date());
+//
+//            batch.set(firebaseFirestore.collection("chats").document(id).collection(id).document(messageId), message);
+//            DocumentReference conversionRef = firebaseFirestore.collection("conversations").document();
+//            if (conversionId != null) {
+//                DocumentReference conversationRef = firebaseFirestore.collection("conversations").document(conversionId);
+//                batch.update(conversationRef, "lastMessage", msg, "date", new Date());
+//            } else {
+//                HashMap<String, Object> conversion = new HashMap<>();
+//                conversion.put("senderId", myMail);
+//                conversion.put("receiverId", anotherMail);
+//                conversion.put("lastMessage", msg);
+//                conversion.put("date", new Date());
+//                batch.set(conversionRef, conversion);
 //            }
-
-        }else {
-            String auto_id = generateAlphanumericUUID();
-            Map<String, Object> dataId = new HashMap<>();
-            dataId.put(anotherMail,auto_id);
-            Map<String, Object> dataId2 = new HashMap<>();
-            dataId2.put(myMail,auto_id);
-
-            WriteBatch batch = firebaseFirestore.batch();
-
-            DocumentReference docRef1 = firebaseFirestore.collection("chatsId").document(anotherMail);
-            batch.set(docRef1, dataId, SetOptions.merge());
-
-            DocumentReference docRef2 = firebaseFirestore.collection("chatsId").document(myMail);
-            batch.set(docRef2, dataId2, SetOptions.merge());
-
-            mainActivity.chatIdDataAccess.addChatsId(anotherMail,auto_id);
-
-            String messageId = firebaseFirestore.collection("chats").document(auto_id).collection(auto_id).document().getId();
-
-            HashMap<String, Object> message = new HashMap<>();
-            message.put("senderId", myMail);
-            message.put("receiverId", anotherMail);
-            message.put("message", msg);
-            message.put("date", new Date());
-
-            batch.set(firebaseFirestore.collection("chats").document(auto_id).collection(auto_id).document(messageId), message);
-            DocumentReference conversionRef = firebaseFirestore.collection("conversations").document();
-            if (conversionId != null) {
-                DocumentReference conversationRef = firebaseFirestore.collection("conversations").document(conversionId);
-                batch.update(conversationRef, "lastMessage", msg, "date", new Date());
-            } else {
-                HashMap<String, Object> conversion = new HashMap<>();
-                conversion.put("senderId", myMail);
-                conversion.put("receiverId", anotherMail);
-                conversion.put("lastMessage", msg);
-                conversion.put("date", new Date());
-                batch.set(conversionRef, conversion);
-            }
-
-            batch.commit().addOnSuccessListener(aVoid -> {
-                conversionId = conversionRef.getId();
-                binding.inputMessage.setText("");
-            });
-
-        }
+//
+//            batch.commit().addOnSuccessListener(aVoid -> {
+//                conversionId = conversionRef.getId();
+//                binding.inputMessage.setText("");
+//            });
+//
+//
+////            HashMap<String, Object> message = new HashMap<>();
+////            message.put("senderId",myMail);
+////            message.put("receiverId",anotherMail);
+////            message.put("message",msg);
+////            message.put("date",new Date());
+////            firebaseFirestore.collection("chats").document(id).collection(id).add(message);
+////            if(conversionId != null){
+////                DocumentReference documentReference =
+////                    firebaseFirestore.collection("conversations").document(conversionId);
+////                documentReference.update(
+////                    "lastMessage",msg,
+////                    "date",new Date()
+////                );
+////            }else {
+////                HashMap<String,Object> conversion = new HashMap<>();
+////                conversion.put("senderId",myMail);
+////                conversion.put("receiverId",anotherMail);
+////                conversion.put("lastMessage",msg);
+////                conversion.put("date",new Date());
+////                firebaseFirestore.collection("conversations")
+////                    .add(conversion)
+////                    .addOnSuccessListener(documentReference -> conversionId = documentReference.getId());
+////            }
+//
+//        }
+//        else {
+//            String auto_id = generateAlphanumericUUID();
+//            Map<String, Object> dataId = new HashMap<>();
+//            dataId.put(anotherMail,auto_id);
+//            Map<String, Object> dataId2 = new HashMap<>();
+//            dataId2.put(myMail,auto_id);
+//
+//            WriteBatch batch = firebaseFirestore.batch();
+//
+//            DocumentReference docRef1 = firebaseFirestore.collection("chatsId").document(anotherMail);
+//            batch.set(docRef1, dataId, SetOptions.merge());
+//
+//            DocumentReference docRef2 = firebaseFirestore.collection("chatsId").document(myMail);
+//            batch.set(docRef2, dataId2, SetOptions.merge());
+//
+//            mainActivity.chatIdDataAccess.addChatsId(anotherMail,auto_id);
+//
+//            String messageId = firebaseFirestore.collection("chats").document(auto_id).collection(auto_id).document().getId();
+//
+//            HashMap<String, Object> message = new HashMap<>();
+//            message.put("senderId", myMail);
+//            message.put("receiverId", anotherMail);
+//            message.put("message", msg);
+//            message.put("date", new Date());
+//
+//            batch.set(firebaseFirestore.collection("chats").document(auto_id).collection(auto_id).document(messageId), message);
+//            DocumentReference conversionRef = firebaseFirestore.collection("conversations").document();
+//            if (conversionId != null) {
+//                DocumentReference conversationRef = firebaseFirestore.collection("conversations").document(conversionId);
+//                batch.update(conversationRef, "lastMessage", msg, "date", new Date());
+//            } else {
+//                HashMap<String, Object> conversion = new HashMap<>();
+//                conversion.put("senderId", myMail);
+//                conversion.put("receiverId", anotherMail);
+//                conversion.put("lastMessage", msg);
+//                conversion.put("date", new Date());
+//                batch.set(conversionRef, conversion);
+//            }
+//
+//            batch.commit().addOnSuccessListener(aVoid -> {
+//                conversionId = conversionRef.getId();
+//                binding.inputMessage.setText("");
+//            });
+//
+//        }
     }
 
     private void listenMessages() {
-        String id = mainActivity.chatIdDataAccess.getChatsIdByMail(anotherMail);
-        if(id != null){
-            firebaseFirestore.collection("chats")
-                .document(id).collection(id).addSnapshotListener(eventListener);
-        }else {
-            // viewType 2
-        }
+        firebaseFirestore.collection("chatsId").document(myMail).get().addOnSuccessListener(documentSnapshot -> {
+            if(documentSnapshot.exists()){
+                Map<String , Object> data = documentSnapshot.getData();
+                if(data != null && !data.isEmpty()){
+                    String id = (String) data.get(anotherMail);
+                    if(id != null && !id.isEmpty()){
+                        firebaseFirestore.collection("chats")
+                            .document(id).collection(id).addSnapshotListener(eventListener);
+                    }
+                }
+
+            }
+        }).addOnFailureListener(e -> {
+
+        });
+
+
+//        String id = mainActivity.chatIdDataAccess.getChatsIdByMail(anotherMail);
+//        if(id != null){
+//            firebaseFirestore.collection("chats")
+//                .document(id).collection(id).addSnapshotListener(eventListener);
+//        }else {
+//            // viewType 2
+//        }
     }
 
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {

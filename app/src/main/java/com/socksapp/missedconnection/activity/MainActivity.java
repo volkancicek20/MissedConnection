@@ -197,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
                     clearShared(editor2);
 
                     refDataAccess.deleteAllData();
+                    chatIdDataAccess.deleteAllData();
                     logout();
                     drawerLayout.closeDrawers();
                 }

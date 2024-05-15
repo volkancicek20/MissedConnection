@@ -159,19 +159,16 @@ public class MessageFragment extends Fragment implements ConversionListener{
                 chatMessage.conversionId = mail;
                 conversations.add(chatMessage);
                 Collections.sort(conversations, (obj1, obj2)-> obj2.dateObject.compareTo(obj1.dateObject));
-                binding.recyclerViewMessage.smoothScrollToPosition(0);
-                binding.recyclerViewMessage.setVisibility(View.VISIBLE);
-                conversationsAdapter.notifyDataSetChanged();
             }else {
                 chatMessage.conversionName = "";
                 chatMessage.conversionImage = "";
                 chatMessage.conversionId = null;
                 conversations.add(chatMessage);
                 Collections.sort(conversations, (obj1, obj2)-> obj2.dateObject.compareTo(obj1.dateObject));
-                binding.recyclerViewMessage.smoothScrollToPosition(0);
-                binding.recyclerViewMessage.setVisibility(View.VISIBLE);
-                conversationsAdapter.notifyDataSetChanged();
             }
+            binding.recyclerViewMessage.smoothScrollToPosition(0);
+            binding.recyclerViewMessage.setVisibility(View.VISIBLE);
+            conversationsAdapter.notifyDataSetChanged();
         }).addOnFailureListener(e -> {
             chatMessage.conversionName = "";
             chatMessage.conversionImage = "";
@@ -201,42 +198,42 @@ public class MessageFragment extends Fragment implements ConversionListener{
     @Override
     public void onResume() {
         super.onResume();
-        startListeningToChanges();
+//        startListeningToChanges();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (listenerRegistration != null) {
-            listenerRegistration.remove();
-        }
+//        if (listenerRegistration != null) {
+//            listenerRegistration.remove();
+//        }
     }
 
-    public void startListeningToChanges() {
-        listenerRegistration = firebaseFirestore.collection("chatsId").document(myMail).addSnapshotListener(MetadataChanges.INCLUDE, new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot snapshot,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    return;
-                }
-
-                if (snapshot != null && snapshot.exists()) {
-                    Map<String, Object> data = snapshot.getData();
-                    if (data != null) {
-                        for (Map.Entry<String, Object> entry : data.entrySet()) {
-                            String mail = entry.getKey();
-                            String id = (String) entry.getValue();
-                            ContentValues values = new ContentValues();
-                            values.put("mail", mail);
-                            values.put("id", id);
-                            mainActivity.chatIdDataAccess.addChatsId(mail,id);
-                        }
-                    }
-                }
-            }
-        });
-    }
+//    public void startListeningToChanges() {
+//        listenerRegistration = firebaseFirestore.collection("chatsId").document(myMail).addSnapshotListener(MetadataChanges.INCLUDE, new EventListener<DocumentSnapshot>() {
+//            @Override
+//            public void onEvent(@Nullable DocumentSnapshot snapshot,
+//                                @Nullable FirebaseFirestoreException e) {
+//                if (e != null) {
+//                    return;
+//                }
+//
+//                if (snapshot != null && snapshot.exists()) {
+//                    Map<String, Object> data = snapshot.getData();
+//                    if (data != null) {
+//                        for (Map.Entry<String, Object> entry : data.entrySet()) {
+//                            String mail = entry.getKey();
+//                            String id = (String) entry.getValue();
+//                            ContentValues values = new ContentValues();
+//                            values.put("mail", mail);
+//                            values.put("id", id);
+//                            mainActivity.chatIdDataAccess.addChatsId(mail,id);
+//                        }
+//                    }
+//                }
+//            }
+//        });
+//    }
 
     @Override
     public void onAttach(@NonNull Context context) {

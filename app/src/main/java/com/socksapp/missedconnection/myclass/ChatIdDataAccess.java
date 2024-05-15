@@ -75,5 +75,8 @@ public class ChatIdDataAccess {
         return id;
     }
 
+    public void deleteAllData() {
+        database.delete("chatsId", null, null);
+    }
 }
 

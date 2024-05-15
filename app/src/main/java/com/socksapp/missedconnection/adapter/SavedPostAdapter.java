@@ -120,7 +120,7 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
                 getShow(imageUrl,name,city,district,place,explain,timestamp,savedPostHolder);
 
                 savedPostHolder.recyclerSavedPostBinding.removeSavedMenu.setOnClickListener(v ->{
-                    fragment.removeSaved(v,documentReference,holder.getAdapterPosition());
+                    fragment.removeSaved(v,documentReference.getId(),holder.getAdapterPosition());
                 });
 
                 break;
