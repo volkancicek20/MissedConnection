@@ -1,7 +1,9 @@
 package com.socksapp.missedconnection.fragment;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -139,23 +141,39 @@ public class MyPostFragment extends Fragment {
 
         delete.setOnClickListener(v ->{
 
-            WriteBatch batch = firestore.batch();
+            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+            builder.setMessage("Paylaşımı silmek istiyor musunuz?");
+            builder.setPositiveButton("Sil", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog2, int which) {
+                    WriteBatch batch = firestore.batch();
 
-            batch.delete(firestore.collection(userMail).document(documentReference.getId()));
-            batch.delete(firestore.collection("post"+city).document(documentReference.getId()));
+                    batch.delete(firestore.collection(userMail).document(documentReference.getId()));
+                    batch.delete(firestore.collection("post"+city).document(documentReference.getId()));
 
-            batch.commit()
-                .addOnSuccessListener(aVoid -> {
-                    mainActivity.refDataAccess.deleteRef(documentReference.getId());
-                    myPostAdapter.notifyItemRemoved(position);
-                    postArrayList.remove(position);
-                    myPostAdapter.notifyDataSetChanged();
-                    Toast.makeText(view.getContext(), "Silindi", Toast.LENGTH_SHORT).show();
-                    dialog.dismiss();
-                })
-                .addOnFailureListener(e -> {
+                    batch.commit()
+                        .addOnSuccessListener(aVoid -> {
+                            mainActivity.refDataAccess.deleteRef(documentReference.getId());
+                            myPostAdapter.notifyItemRemoved(position);
+                            postArrayList.remove(position);
+                            myPostAdapter.notifyDataSetChanged();
+                            dialog.dismiss();
+                            dialog2.dismiss();
+                        })
+                        .addOnFailureListener(e -> {
 
-                });
+                        });
+                }
+            });
+            builder.setNegativeButton("Geri", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog2, int which) {
+                    dialog2.dismiss();
+                }
+            });
+
+            builder.show();
+
         });
 
         if(dialog.getWindow() != null){

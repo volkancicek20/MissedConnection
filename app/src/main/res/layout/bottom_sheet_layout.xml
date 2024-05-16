@@ -42,7 +42,7 @@
             android:layout_marginStart="20dp"
             android:textStyle="normal"
             android:textSize="18sp"
-            android:text="Haritada göster"
+            android:text="@string/haritada_goster"
             android:textColor="@color/white"
             android:layout_gravity="center"
             android:gravity="center"/>
@@ -74,7 +74,7 @@
             android:layout_marginStart="20dp"
             android:textStyle="normal"
             android:textSize="18sp"
-            android:text="Kaydet"
+            android:text="@string/kaydet"
             android:textColor="@color/white"
             android:layout_gravity="center"
             android:gravity="center"/>
@@ -105,7 +105,7 @@
             android:layout_marginStart="20dp"
             android:textStyle="normal"
             android:textSize="18sp"
-            android:text="Mesaj gönder"
+            android:text="@string/mesaj_gonder"
             android:textColor="@color/white"
             android:layout_gravity="center"
             android:gravity="center"/>
@@ -145,7 +145,7 @@
             android:layout_marginStart="20dp"
             android:textStyle="normal"
             android:textSize="18sp"
-            android:text="Bildir"
+            android:text="@string/bildir"
             android:textColor="@color/white"
             android:layout_gravity="center"
             android:gravity="center"/>

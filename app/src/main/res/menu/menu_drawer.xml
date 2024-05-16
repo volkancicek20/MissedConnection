@@ -1,33 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-<!--    <group-->
-<!--        android:checkableBehavior="single"-->
-<!--        android:id="@+id/group1">-->
-
-
-
-<!--    </group>-->
-
     <item
         android:id="@+id/nav_drawer_home"
-        android:title="Anasayfa"
+        android:title="@string/anasayfa"
         android:icon="@drawable/home_default_96" />
 
 
     <item
         android:id="@+id/nav_drawer_setting"
-        android:title="Ayarlar"
+        android:title="@string/ayarlar"
         android:icon="@drawable/icon_settings_2"/>
-
-
-<!--    <group-->
-<!--        android:checkableBehavior="single"-->
-<!--        android:id="@+id/group2">-->
-
-
-
-<!--    </group>-->
 
 
     <group
@@ -36,7 +19,7 @@
 
         <item
             android:id="@+id/nav_drawer_logout"
-            android:title="Çıkış yap"
+            android:title="@string/cikis_yap"
             android:icon="@drawable/icon_logout"/>
 
     </group>

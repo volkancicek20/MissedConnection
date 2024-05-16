@@ -1,6 +1,7 @@
 package com.socksapp.missedconnection.fragment;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -12,12 +13,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentAccountSettingBinding;
 
 public class AccountSettingFragment extends Fragment {
     private FragmentAccountSettingBinding binding;
+    private SharedPreferences nameShared,imageUrlShared;
     private MainActivity mainActivity;
 
     public AccountSettingFragment() {
@@ -27,6 +31,8 @@ public class AccountSettingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        nameShared = requireActivity().getSharedPreferences("Name",Context.MODE_PRIVATE);
+        imageUrlShared = requireActivity().getSharedPreferences("ImageUrl",Context.MODE_PRIVATE);
     }
 
     @Override
@@ -42,6 +48,7 @@ public class AccountSettingFragment extends Fragment {
         mainActivity.bottomNavigationView.setVisibility(View.GONE);
         mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
 
+        setProfile(view);
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -51,6 +58,25 @@ public class AccountSettingFragment extends Fragment {
                 requireActivity().getSupportFragmentManager().popBackStack();
             }
         });
+    }
+
+    private void setProfile(View view){
+        String name = nameShared.getString("name","");
+        String imageUrl = imageUrlShared.getString("imageUrl","");
+
+        if(!name.isEmpty()){
+            binding.profileName.setText(name);
+        }
+        if(!imageUrl.isEmpty()){
+            Glide.with(view.getContext())
+                .load(imageUrl)
+                .apply(new RequestOptions()
+                .error(R.drawable.person_active_96)
+                .centerCrop())
+                .into(binding.profileImage);
+        }else {
+            binding.profileImage.setImageResource(R.drawable.person_active_96);
+        }
     }
 
     @Override

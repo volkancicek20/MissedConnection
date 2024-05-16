@@ -583,6 +583,7 @@ public class MainFragment extends Fragment {
                         binding.shimmerLayout.setVisibility(View.GONE);
                         binding.recyclerViewMain.setVisibility(View.VISIBLE);
                         postAdapter.notifyDataSetChanged();
+                        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                         return;
                     }
                     for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
@@ -660,6 +661,7 @@ public class MainFragment extends Fragment {
                                 binding.shimmerLayout.setVisibility(View.GONE);
                                 binding.recyclerViewMain.setVisibility(View.VISIBLE);
                                 postAdapter.notifyDataSetChanged();
+                                mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                             }
                         }
                     }
@@ -680,6 +682,7 @@ public class MainFragment extends Fragment {
                         binding.shimmerLayout.setVisibility(View.GONE);
                         binding.recyclerViewMain.setVisibility(View.VISIBLE);
                         postAdapter.notifyDataSetChanged();
+                        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                         return;
                     }
                     for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
@@ -744,6 +747,7 @@ public class MainFragment extends Fragment {
                         binding.shimmerLayout.setVisibility(View.GONE);
                         binding.recyclerViewMain.setVisibility(View.VISIBLE);
                         postAdapter.notifyDataSetChanged();
+                        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                     }
                 })
                 .addOnFailureListener(e -> {
@@ -849,6 +853,7 @@ public class MainFragment extends Fragment {
         fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navFind);
     }
 
     public double CalculationByDistance(double initialLat, double initialLong,

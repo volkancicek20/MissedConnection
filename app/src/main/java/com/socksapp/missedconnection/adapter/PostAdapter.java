@@ -216,11 +216,22 @@ public class PostAdapter extends RecyclerView.Adapter {
     private void getImageShow(View view,String imageUrl){
         LayoutInflater inflater = LayoutInflater.from(view.getContext());
         View popupView = inflater.inflate(R.layout.show_image, null);
-        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
 
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setFocusable(true);
-        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        ImageView cancel = popupView.findViewById(R.id.cancel_image);
+
+        cancel.setOnClickListener(v -> {
+            popupWindow.dismiss();
+        });
+
+        ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
+        constraintLayout.setOnClickListener(v -> {
+            popupWindow.dismiss();
+        });
+
+//        popupWindow.setOutsideTouchable(true);
+//        popupWindow.setFocusable(true);
+//        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         CircleImageView imageView = popupView.findViewById(R.id.show_image);
 

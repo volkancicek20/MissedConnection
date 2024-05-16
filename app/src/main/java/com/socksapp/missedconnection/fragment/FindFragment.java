@@ -327,7 +327,7 @@ public class FindFragment extends Fragment {
         checkTime1 = !time1.isEmpty();
         checkTime2 = !time2.isEmpty();
 
-        if(checkCity){
+        if(checkCity && checkDistrict){
             binding.cityTextInput.setError(null);
             binding.cityTextInput.setErrorIconDrawable(null);
             if(checkDate1 && checkDate2 && checkTime1 && checkTime2){
@@ -538,10 +538,15 @@ public class FindFragment extends Fragment {
                 }
             }
         }else {
-            binding.cityTextInput.setError("İl boş bırakılamaz");
-            binding.cityTextInput.setErrorIconDrawable(R.drawable.icon_error);
+            if(!checkCity){
+                binding.cityTextInput.setError("İl boş bırakılamaz");
+                binding.cityTextInput.setErrorIconDrawable(R.drawable.icon_error);
+            }
+            if(!checkDistrict){
+                binding.districtTextInput.setError("İlçe boş bırakılamaz");
+                binding.districtTextInput.setErrorIconDrawable(R.drawable.icon_error);
+            }
         }
-
     }
 
     private void showCustomTimeDialog1(View view) {

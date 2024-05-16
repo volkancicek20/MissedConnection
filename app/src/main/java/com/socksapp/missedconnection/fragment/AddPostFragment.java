@@ -241,7 +241,7 @@ public class AddPostFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                goToMainFragment(view);
+                goToMainFragment();
             }
         });
 
@@ -363,7 +363,7 @@ public class AddPostFragment extends Fragment {
         }
     }
 
-    private void goToMainFragment(View v){
+    private void goToMainFragment(){
 
         mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
 

@@ -110,7 +110,6 @@ public class ProfileFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-
     private void setProfile(View view){
         String name = nameShared.getString("name","");
         String imageUrl = imageUrlShared.getString("imageUrl","");

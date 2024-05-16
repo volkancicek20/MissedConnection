@@ -8,22 +8,14 @@
     android:background="@color/black"
     tools:context=".fragment.ProfileFragment">
 
-    <View
-        android:id="@+id/bg"
-        android:layout_width="wrap_content"
-        android:layout_height="120dp"
-        android:background="@drawable/bg_view_profile"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/profile_image"
         android:layout_width="120dp"
         android:layout_height="120dp"
         android:src="@drawable/erlik"
-        android:layout_marginTop="-80dp"
-        app:layout_constraintTop_toBottomOf="@id/bg"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         />
@@ -77,7 +69,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="Profili Düzenle"
+                android:text="@string/profili_duzenle"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -109,7 +101,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="Gönderilerim"
+                android:text="@string/gonderilerim"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -141,7 +133,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="Kaydedilen"
+                android:text="@string/kaydedilenler"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -173,7 +165,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="Hesap Ayarları"
+                android:text="@string/hesap_ayarlari"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -184,51 +176,6 @@
 
 
     </LinearLayout>
-
-
-<!--    <com.google.android.material.textfield.TextInputLayout-->
-<!--        android:id="@+id/name_text_input_layout"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="30dp"-->
-<!--        android:layout_marginEnd="20dp"-->
-<!--        android:layout_marginStart="20dp"-->
-<!--        app:hintEnabled="false"-->
-<!--        app:startIconDrawable="@drawable/icon_person_white"-->
-<!--        app:endIconDrawable="@drawable/icon_edit"-->
-<!--        app:endIconMode="custom"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/profile_image"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"-->
-<!--        >-->
-<!--        <EditText-->
-<!--            android:id="@+id/name_edittext"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:inputType="text"-->
-<!--            android:hint="Kullanıcı Adınızı Belirleyiniz"-->
-<!--            android:textColor="@color/white"-->
-<!--            android:textSize="16sp"-->
-<!--            android:textColorHint="@color/gray"-->
-<!--            />-->
-<!--    </com.google.android.material.textfield.TextInputLayout>-->
-
-
-<!--    <androidx.appcompat.widget.AppCompatButton-->
-<!--        android:id="@+id/save_profile"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginEnd="20dp"-->
-<!--        android:layout_marginStart="20dp"-->
-<!--        android:layout_marginBottom="10dp"-->
-<!--        android:layout_marginTop="20dp"-->
-<!--        android:background="@drawable/bg_profile_button"-->
-<!--        android:text="KAYDET"-->
-<!--        android:textColor="@color/white"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent" />-->
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

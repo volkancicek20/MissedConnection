@@ -154,7 +154,7 @@ public class MyPostAdapter extends RecyclerView.Adapter {
         if(imageUrl.isEmpty()){
             ImageView imageView;
             imageView = holder.recyclerPostBinding.recyclerProfileImage;
-            imageView.setImageResource(R.drawable.icon_person);
+            imageView.setImageResource(R.drawable.person_active_96);
         }else {
 
             Glide.with(context)

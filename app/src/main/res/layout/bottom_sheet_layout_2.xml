@@ -42,7 +42,7 @@
             android:layout_marginStart="20dp"
             android:textStyle="normal"
             android:textSize="18sp"
-            android:text="Haritada göster"
+            android:text="@string/haritada_goster"
             android:textColor="@color/white"
             android:layout_gravity="center"
             android:gravity="center"/>
@@ -74,7 +74,7 @@
             android:layout_marginStart="20dp"
             android:textStyle="normal"
             android:textSize="18sp"
-            android:text="Sil"
+            android:text="@string/sil"
             android:textColor="@color/red"
             android:layout_gravity="center"
             android:gravity="center"/>
