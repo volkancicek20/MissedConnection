@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.ActivityMainBinding;
+import com.socksapp.missedconnection.fragment.AboutUsFragment;
 import com.socksapp.missedconnection.fragment.AccountSettingFragment;
 import com.socksapp.missedconnection.fragment.AddPostFragment;
 import com.socksapp.missedconnection.fragment.EditProfileFragment;
@@ -38,13 +40,15 @@ import com.socksapp.missedconnection.fragment.SettingsFragment;
 import com.socksapp.missedconnection.myclass.ChatIdDataAccess;
 import com.socksapp.missedconnection.myclass.RefDataAccess;
 
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
     private FirebaseUser user;
-    private SharedPreferences nameShared,imageUrlShared;
+    private SharedPreferences nameShared,imageUrlShared,language;
     private SharedPreferences userDone;
     private String userMail;
     public FragmentContainerView fragmentContainerView;
@@ -62,9 +66,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        language = getSharedPreferences("Language",Context.MODE_PRIVATE);
+        setLanguage();
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
 
         fragmentContainerView = findViewById(R.id.fragmentContainerView2);
 
@@ -93,8 +99,8 @@ public class MainActivity extends AppCompatActivity {
         buttonDrawerToggle.setOnClickListener(v ->{
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView2);
             if (currentFragment instanceof SettingsFragment) {
-                buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
-                bottomNavigationView.setVisibility(View.VISIBLE);
+                buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
+                bottomNavigationView.setVisibility(View.GONE);
                 getSupportFragmentManager().popBackStack();
             } else if (currentFragment instanceof SavedPostFragment) {
                 buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
@@ -112,7 +118,11 @@ public class MainActivity extends AppCompatActivity {
                 buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
                 bottomNavigationView.setVisibility(View.VISIBLE);
                 getSupportFragmentManager().popBackStack();
-            } else {
+            }else if (currentFragment instanceof AboutUsFragment) {
+                buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
+                bottomNavigationView.setVisibility(View.GONE);
+                getSupportFragmentManager().popBackStack();
+            }else {
                 drawerLayout.open();
             }
         });
@@ -182,6 +192,24 @@ public class MainActivity extends AppCompatActivity {
         userMail = user.getEmail();
 
         getDataUser();
+
+    }
+
+    private void setLanguage() {
+        String getLanguage = language.getString("language","");
+
+        if(getLanguage.equals("english")){
+
+            Locale locale;
+            locale = new Locale("tr");
+            Locale.setDefault(locale);
+
+            Configuration configuration = new Configuration();
+            configuration.setLocale(locale);
+
+            getResources().updateConfiguration(configuration,getResources().getDisplayMetrics());
+
+        }
     }
 
     private void signOut(){

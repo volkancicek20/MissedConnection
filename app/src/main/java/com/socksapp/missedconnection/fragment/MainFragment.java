@@ -4,9 +4,12 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -78,6 +81,7 @@ public class MainFragment extends Fragment {
 
         nameShared = requireActivity().getSharedPreferences("Name", Context.MODE_PRIVATE);
         imageUrlShared = requireActivity().getSharedPreferences("ImageUrl", Context.MODE_PRIVATE);
+
     }
 
     @Override
@@ -130,6 +134,13 @@ public class MainFragment extends Fragment {
         }else {
             getData();
         }
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                System.exit(0);
+            }
+        });
 
     }
 

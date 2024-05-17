@@ -16,11 +16,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.LoginActivity;
@@ -70,8 +73,7 @@ public class LoginFragment extends Fragment {
                         Toast.makeText(view.getContext(), "Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.", Toast.LENGTH_SHORT).show();
                         binding.confirmMail.setVisibility(View.GONE);
                     } else {
-                        Exception exception = task.getException();
-                        Toast.makeText(view.getContext(), "Doğrulama e-postası gönderilirken bir hata oluştu.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view.getContext(), "Doğrulama e-postası gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.", Toast.LENGTH_LONG).show();
                     }
                 });
         });
@@ -102,7 +104,15 @@ public class LoginFragment extends Fragment {
         auth.signInWithEmailAndPassword(mail, password)
             .addOnCompleteListener(task -> {
                 if(task.isSuccessful()) {
-                    userVerified(view);
+                    firestore.collection("userDelete").document(mail).get().addOnSuccessListener(documentSnapshot -> {
+                        if(documentSnapshot.exists()){
+                            Toast.makeText(view.getContext(),"Bu hesap silinme aşamasındadır.",Toast.LENGTH_SHORT).show();
+                        }else {
+                            userVerified(view);
+                        }
+                    }).addOnFailureListener(e -> {
+
+                    });
                 } else {
                     Exception exception = task.getException();
                     if (exception instanceof FirebaseAuthInvalidUserException) {
