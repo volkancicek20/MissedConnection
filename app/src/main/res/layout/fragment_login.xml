@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_theme"
+    android:background="@color/white"
     tools:context=".fragment.LoginFragment">
 
     <androidx.constraintlayout.widget.Guideline
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:text="@string/hosgeldiniz"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:textSize="30sp"
         app:layout_constraintBottom_toTopOf="@id/guideline"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,7 +30,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         style="@style/custom_card_view_style"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -40,45 +40,73 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <EditText
-                android:id="@+id/login_email"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/login_email_input_layout"
+                style="@style/CustomTextInputLayout.Dark3"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@drawable/edit_text_background_login_page"
-                android:layout_marginTop="32dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
+                android:layout_marginTop="32dp"
                 android:layout_marginEnd="15dp"
-                android:drawableStart="@drawable/icon_mail"
-                android:drawableTint="@color/app_theme"
-                android:drawablePadding="8dp"
-                android:hint="@string/e_posta"
-                android:textSize="16sp"
-                android:textColorHint="@color/black"
-                android:textColor="@color/black"
+                app:boxStrokeColor="@color/text_input_stroke_change"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="1dp"
+                app:hintAnimationEnabled="false"
+                app:hintEnabled="false"
+                app:hintTextColor="@color/text_input_title_change"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:inputType="textEmailAddress" />
+                app:startIconDrawable="@drawable/icon_mail_outline"
+                app:startIconTint="@color/gray">
 
-            <EditText
-                android:id="@+id/login_password"
+                <EditText
+                    android:id="@+id/login_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/e_posta"
+                    android:paddingTop="10dp"
+                    android:inputType="textEmailAddress"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/text_input_title_change"
+                    android:textCursorDrawable="@drawable/edittext_cursor_color"
+                    android:textSize="16sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/login_password_input_layout"
+                style="@style/CustomTextInputLayout.Dark3"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@drawable/edit_text_background_login_page"
-                android:layout_marginTop="32dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="15dp"
+                android:layout_marginTop="32dp"
                 android:layout_marginEnd="15dp"
-                android:drawableStart="@drawable/icon_lock"
-                android:drawableTint="@color/app_theme"
-                android:drawablePadding="8dp"
-                android:hint="@string/sifre"
-                android:textSize="16sp"
-                android:textColorHint="@color/black"
-                android:textColor="@color/black"
-                app:layout_constraintTop_toBottomOf="@id/login_email"
-                app:layout_constraintStart_toStartOf="parent"
+                app:boxStrokeColor="@color/text_input_stroke_change"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeWidthFocused="1dp"
+                app:hintAnimationEnabled="false"
+                app:hintEnabled="false"
+                app:hintTextColor="@color/text_input_title_change"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:inputType="textPassword" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/login_email_input_layout"
+                app:startIconDrawable="@drawable/icon_lock_outline"
+                app:startIconTint="@color/gray">
+
+                <EditText
+                    android:id="@+id/login_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/sifre"
+                    android:inputType="textPassword"
+                    android:paddingTop="10dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/text_input_title_change"
+                    android:textCursorDrawable="@drawable/edittext_cursor_color"
+                    android:textSize="16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:id="@+id/confirmMail"
@@ -90,7 +118,7 @@
                 android:visibility="gone"
                 android:textStyle="bold"
                 android:textColor="@color/app_theme"
-                app:layout_constraintTop_toBottomOf="@id/login_password"
+                app:layout_constraintTop_toBottomOf="@id/login_password_input_layout"
                 app:layout_constraintStart_toStartOf="parent"/>
 
             <TextView
@@ -101,8 +129,8 @@
                 android:layout_marginEnd="12dp"
                 android:text="@string/sifremi_unuttum"
                 android:textStyle="bold"
-                android:textColor="@color/app_theme"
-                app:layout_constraintTop_toBottomOf="@id/login_password"
+                android:textColor="@color/white"
+                app:layout_constraintTop_toBottomOf="@id/login_password_input_layout"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
             <Button
@@ -111,14 +139,14 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
-                android:backgroundTint="@color/app_theme"
+                android:backgroundTint="@color/white"
                 android:text="@string/giris_yap"
-                android:textColor="@color/white"
+                android:textColor="@color/black"
                 app:cornerRadius="16dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/login_password" />
+                app:layout_constraintTop_toBottomOf="@id/login_password_input_layout" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -133,7 +161,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/hesabiniz_yok_mu"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="16sp"/>
 
                 <TextView
@@ -142,7 +170,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
                     android:text="@string/hesap_ac"
-                    android:textColor="@color/app_theme"
+                    android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"/>
 

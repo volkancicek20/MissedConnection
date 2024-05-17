@@ -29,6 +29,7 @@ import com.socksapp.missedconnection.databinding.ActivityMainBinding;
 import com.socksapp.missedconnection.fragment.AboutUsFragment;
 import com.socksapp.missedconnection.fragment.AccountSettingFragment;
 import com.socksapp.missedconnection.fragment.AddPostFragment;
+import com.socksapp.missedconnection.fragment.ChangePasswordFragment;
 import com.socksapp.missedconnection.fragment.EditProfileFragment;
 import com.socksapp.missedconnection.fragment.FindFragment;
 import com.socksapp.missedconnection.fragment.MainFragment;
@@ -119,6 +120,10 @@ public class MainActivity extends AppCompatActivity {
                 bottomNavigationView.setVisibility(View.VISIBLE);
                 getSupportFragmentManager().popBackStack();
             }else if (currentFragment instanceof AboutUsFragment) {
+                buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
+                bottomNavigationView.setVisibility(View.GONE);
+                getSupportFragmentManager().popBackStack();
+            }else if (currentFragment instanceof ChangePasswordFragment) {
                 buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
                 bottomNavigationView.setVisibility(View.GONE);
                 getSupportFragmentManager().popBackStack();
