@@ -110,7 +110,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/accountActivityLinearLayout"
+            android:id="@+id/postActivityLinearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="true"
@@ -133,7 +133,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="@string/hesap_hareketligi"
+                android:text="@string/gonderi_hareketleri"
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"

@@ -28,6 +28,8 @@ import com.socksapp.missedconnection.databinding.RecyclerEmptyPostBinding;
 import com.socksapp.missedconnection.databinding.RecyclerPostBinding;
 import com.socksapp.missedconnection.fragment.MainFragment;
 import com.socksapp.missedconnection.model.FindPost;
+import com.socksapp.missedconnection.myclass.SharedPreferencesHelper;
+
 import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -36,6 +38,8 @@ public class PostAdapter extends RecyclerView.Adapter {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private FirebaseFirestore firebaseFirestore;
+    private SharedPreferencesHelper sharedPreferencesHelper;
+
     public ArrayList<FindPost> arrayList;
     public Context context;
     public MainFragment fragment;
@@ -82,7 +86,8 @@ public class PostAdapter extends RecyclerView.Adapter {
         firebaseFirestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-
+        sharedPreferencesHelper = new SharedPreferencesHelper(context);
+        String myMail = sharedPreferencesHelper.getString("myMail", "");
         String imageUrl,name,mail,city,district,place,explain;
         double lat,lng;
         double radius;
@@ -92,6 +97,7 @@ public class PostAdapter extends RecyclerView.Adapter {
 
         switch (holder.getItemViewType()) {
             case LAYOUT_ONE:
+
 
                 PostHolder postHolder = (PostHolder) holder;
 
@@ -127,6 +133,10 @@ public class PostAdapter extends RecyclerView.Adapter {
                 ((PostHolder) holder).recyclerPostBinding.verticalMenu.setOnClickListener(v ->{
                     fragment.dialogShow(v,mail,name,lat,lng,radius,documentReference);
                 });
+
+                if(!myMail.equals(mail)){
+                    fragment.setActivityNotification(mail,documentReference);
+                }
 
                 break;
             case LAYOUT_EMPTY:

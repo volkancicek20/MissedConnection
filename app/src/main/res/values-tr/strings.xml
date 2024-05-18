@@ -23,6 +23,7 @@
     <!-- fragment_account_setting -->
     <string name="sifremi_degistir">Change my password</string>
     <string name="hesap_hareketligi">Account activity</string>
+    <string name="gonderi_hareketleri">Posts activity</string>
     <string name="hesabi_sil">Delete account</string>
 
     <!-- fragment_add_post -->
@@ -86,6 +87,11 @@
     <!-- recycler_empty_saved_post -->
     <string name="kaydedilen_gonderi_bulunamadi">Saved post not found</string>
     <string name="paylasimlara_git">Go to posts</string>
+
+    <!-- recycler_view_empty_post_notification -->
+    <string name="herhangi_bir_hareketlilik_yok">There is no activity</string>
+    <string name="no_activity_explain">Your posts have not yet been shown or searched by users. You can increase your exposure by better organizing your filters.</string>
+    <string name="yeni_g_nderi_payla">Share new post</string>
 
 
     <string-array name="city_names">

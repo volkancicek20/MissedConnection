@@ -30,16 +30,19 @@ import com.socksapp.missedconnection.fragment.AboutUsFragment;
 import com.socksapp.missedconnection.fragment.AccountSettingFragment;
 import com.socksapp.missedconnection.fragment.AddPostFragment;
 import com.socksapp.missedconnection.fragment.ChangePasswordFragment;
+import com.socksapp.missedconnection.fragment.DeleteAccountFragment;
 import com.socksapp.missedconnection.fragment.EditProfileFragment;
 import com.socksapp.missedconnection.fragment.FindFragment;
 import com.socksapp.missedconnection.fragment.MainFragment;
 import com.socksapp.missedconnection.fragment.MessageFragment;
 import com.socksapp.missedconnection.fragment.MyPostFragment;
+import com.socksapp.missedconnection.fragment.PostsActivityFragment;
 import com.socksapp.missedconnection.fragment.ProfileFragment;
 import com.socksapp.missedconnection.fragment.SavedPostFragment;
 import com.socksapp.missedconnection.fragment.SettingsFragment;
 import com.socksapp.missedconnection.myclass.ChatIdDataAccess;
 import com.socksapp.missedconnection.myclass.RefDataAccess;
+import com.socksapp.missedconnection.myclass.SharedPreferencesHelper;
 
 import java.util.Locale;
 
@@ -63,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     public View headerView,includedLayout;
     public RefDataAccess refDataAccess;
     public ChatIdDataAccess chatIdDataAccess;
+    private SharedPreferencesHelper sharedPreferencesHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        sharedPreferencesHelper = new SharedPreferencesHelper(this);
 
         fragmentContainerView = findViewById(R.id.fragmentContainerView2);
 
@@ -124,6 +130,14 @@ public class MainActivity extends AppCompatActivity {
                 bottomNavigationView.setVisibility(View.GONE);
                 getSupportFragmentManager().popBackStack();
             }else if (currentFragment instanceof ChangePasswordFragment) {
+                buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
+                bottomNavigationView.setVisibility(View.GONE);
+                getSupportFragmentManager().popBackStack();
+            }else if (currentFragment instanceof DeleteAccountFragment) {
+                buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
+                bottomNavigationView.setVisibility(View.GONE);
+                getSupportFragmentManager().popBackStack();
+            }else if (currentFragment instanceof PostsActivityFragment) {
                 buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
                 bottomNavigationView.setVisibility(View.GONE);
                 getSupportFragmentManager().popBackStack();
@@ -261,6 +275,9 @@ public class MainActivity extends AppCompatActivity {
         if(!userDone.getString("done","").equals("done")){
             firestore.collection("users").document(userMail).get().addOnSuccessListener(documentSnapshot -> {
                 if(documentSnapshot.exists()){
+
+                    sharedPreferencesHelper.saveString("myMail", userMail);
+
                     String name = documentSnapshot.getString("name");
                     String imageUrl = documentSnapshot.getString("imageUrl");
 
@@ -285,6 +302,7 @@ public class MainActivity extends AppCompatActivity {
                         editor.apply();
                     }
                     if(name != null && !name.isEmpty() && imageUrl != null && !imageUrl.isEmpty()){
+
                         SharedPreferences.Editor editor = userDone.edit();
                         editor.putString("done","done");
                         editor.apply();

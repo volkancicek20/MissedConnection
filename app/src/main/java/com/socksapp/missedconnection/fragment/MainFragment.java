@@ -35,6 +35,7 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -45,6 +46,7 @@ import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.PostAdapter;
 import com.socksapp.missedconnection.databinding.FragmentMainBinding;
 import com.socksapp.missedconnection.model.FindPost;
+import com.socksapp.missedconnection.myclass.TimedDataManager;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,6 +54,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class MainFragment extends Fragment {
 
@@ -65,6 +68,7 @@ public class MainFragment extends Fragment {
     public PostAdapter postAdapter;
     public ArrayList<FindPost> postArrayList;
     private Handler handler;
+    private TimedDataManager timedDataManager;
     public MainFragment() {
         // Required empty public constructor
     }
@@ -106,6 +110,8 @@ public class MainFragment extends Fragment {
         binding.shimmerLayout.startShimmer();
 
         userMail = user.getEmail();
+
+        timedDataManager = new TimedDataManager(view.getContext());
 
         myUserName = nameShared.getString("name","");
         myImageUrl = nameShared.getString("imageUrl","");
@@ -856,6 +862,30 @@ public class MainFragment extends Fragment {
                 }, 1000);
             }
         });
+    }
+
+    public void setActivityNotification(String mail, DocumentReference ref){
+
+        String refId = ref.getId();
+        String value = timedDataManager.getData(refId,"");
+
+        if(value.isEmpty()){
+            timedDataManager.saveData(refId, "view");
+
+            Map<String, Object> viewData = new HashMap<>();
+            viewData.put("name", myUserName);
+            viewData.put("refId", refId);
+            viewData.put("type", "view");
+            viewData.put("timestamp", FieldValue.serverTimestamp());
+
+            DocumentReference documentReference = firestore.collection("views").document(mail).collection(mail).document();
+
+            documentReference.set(viewData,SetOptions.merge()).addOnSuccessListener(unused -> {
+                Toast.makeText(requireContext(),"Bildirildi",Toast.LENGTH_SHORT).show();
+            });
+        }else {
+            // Veri bulundu ve süresi dolmamış
+        }
     }
 
     public void goFind(){

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    tools:context=".fragment.ChangePasswordFragment">
+    tools:context=".fragment.DeleteAccountFragment">
 
     <ImageView
         android:id="@+id/logo"
@@ -34,7 +35,7 @@
         app:hintTextColor="@color/text_input_title_change"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/new_password_input_layout"
+        app:layout_constraintBottom_toTopOf="@id/explain_input_layout"
         app:startIconDrawable="@drawable/icon_lock_outline"
         app:startIconTint="@color/gray">
 
@@ -45,52 +46,18 @@
             android:hint="@string/sifre"
             android:paddingTop="10dp"
             android:inputType="textPassword"
-            android:textColor="@color/white"
             android:maxLength="20"
+            android:textColor="@color/white"
             android:textColorHint="@color/text_input_title_change"
             android:textCursorDrawable="@drawable/edittext_cursor_color"
             android:textSize="16sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/new_password_input_layout"
+        android:id="@+id/explain_input_layout"
         style="@style/CustomTextInputLayout.Dark3"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginEnd="15dp"
-        app:boxStrokeColor="@color/text_input_stroke_change"
-        app:boxStrokeWidth="1dp"
-        app:boxStrokeWidthFocused="1dp"
-        app:hintAnimationEnabled="false"
-        app:hintEnabled="false"
-        app:hintTextColor="@color/text_input_title_change"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/new_password_confirm_input_layout"
-        app:startIconDrawable="@drawable/icon_lock_outline"
-        app:startIconTint="@color/gray">
-
-        <EditText
-            android:id="@+id/new_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Yeni sifre"
-            android:paddingTop="10dp"
-            android:inputType="textPassword"
-            android:textColor="@color/white"
-            android:maxLength="20"
-            android:textColorHint="@color/text_input_title_change"
-            android:textCursorDrawable="@drawable/edittext_cursor_color"
-            android:textSize="16sp" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/new_password_confirm_input_layout"
-        style="@style/CustomTextInputLayout.Dark3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="150dp"
         android:layout_marginStart="15dp"
         android:layout_marginBottom="100dp"
         android:layout_marginEnd="15dp"
@@ -100,37 +67,39 @@
         app:hintAnimationEnabled="false"
         app:hintEnabled="false"
         app:hintTextColor="@color/text_input_title_change"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/change_password_button"
-        app:startIconDrawable="@drawable/icon_lock_outline"
-        app:startIconTint="@color/gray">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/delete_account_button"
+        >
 
         <EditText
-            android:id="@+id/new_password_confirm"
+            android:id="@+id/explain"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Yeni sifre tekrar"
+            android:layout_height="150dp"
+            android:gravity="start|top"
+            android:maxLength="200"
+            android:hint="Hesabınızı neden silmek istiyorsunuz?"
+            android:inputType="textMultiLine"
             android:paddingTop="10dp"
-            android:inputType="textPassword"
             android:textColor="@color/white"
-            android:maxLength="20"
             android:textColorHint="@color/text_input_title_change"
             android:textCursorDrawable="@drawable/edittext_cursor_color"
             android:textSize="16sp" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/change_password_button"
+        android:id="@+id/delete_account_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="50dp"
         android:background="@drawable/bg_profile_button"
-        android:text="ŞİFREMİ DEĞİŞTİR"
+        android:text="HESABI SİL"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -235,7 +235,7 @@ public class MessageFragment extends Fragment implements ConversionListener{
                 deleteChats(userMail,position);
             }
         });
-        builder.setNegativeButton("Geri", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("İptal", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 

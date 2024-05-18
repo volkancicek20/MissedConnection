@@ -81,8 +81,9 @@ public class AccountSettingFragment extends Fragment {
 
         myMail = user.getEmail();
 
-        binding.deleteAccountLinearLayout.setOnClickListener(this::deleteAccount);
+        binding.deleteAccountLinearLayout.setOnClickListener(v -> goToDeleteAccountFragment());
         binding.changePasswordLinearLayout.setOnClickListener(v -> goToChangePasswordFragment());
+        binding.postActivityLinearLayout.setOnClickListener(v -> goToPostActivityFragment());
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -102,53 +103,20 @@ public class AccountSettingFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    private void deleteAccount(View view){
-        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-        builder.setTitle("Hesap Silme Onayı");
-        builder.setMessage("Bu işlem hesabınızı ve tüm verilerinizi kalıcı olarak silecektir. Devam etmek istediğinize emin misiniz?");
-        builder.setPositiveButton("Evet", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteUserAccount();
-            }
-        });
-
-        builder.setNegativeButton("İptal", (dialog, which) -> dialog.dismiss());
-        AlertDialog dialog = builder.create();
-        dialog.show();
-
+    private void goToPostActivityFragment(){
+        PostsActivityFragment fragment = new PostsActivityFragment();
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
-    private void deleteUserAccount() {
-        WriteBatch deleteBatch = firestore.batch();
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("mail", myMail);
-        DocumentReference userDeleteRef = firestore.collection("userDelete").document(myMail);
-        deleteBatch.set(userDeleteRef, data);
-
-        deleteBatch.commit().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Toast.makeText(getContext(), "Hesabınız 1 hafta içinde silinecektir.", Toast.LENGTH_LONG).show();
-                auth.signOut();
-                Intent intent = new Intent(requireActivity(), LoginActivity.class);
-                startActivity(intent);
-                requireActivity().finish();
-            } else {
-                Toast.makeText(getContext(), "Hesap silme işlemi başarısız. Lütfen tekrar deneyiniz", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-//        user.delete().addOnCompleteListener(task -> {
-//            if(task.isSuccessful()){
-//                Toast.makeText(getContext(), "Hesap başarıyla silindi.", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(requireActivity(), LoginActivity.class);
-//                startActivity(intent);
-//                requireActivity().finish();
-//            }
-//        }).addOnFailureListener(e -> {
-//
-//        });
+    private void goToDeleteAccountFragment(){
+        DeleteAccountFragment fragment = new DeleteAccountFragment();
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     private void setProfile(View view){
