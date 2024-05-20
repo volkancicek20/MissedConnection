@@ -133,15 +133,17 @@
 
                         <TextView
                             android:id="@+id/marked_map_view"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:gravity="end"
                             android:text=""
                             android:textColor="@color/gray"
                             android:textSize="12sp"
                             android:textStyle="normal"
                             android:layout_marginTop="16dp"
                             android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
                             android:layout_marginBottom="16dp" />
 
 
@@ -209,46 +211,44 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_map_card_view"
-                    app:layout_constraintTop_toBottomOf="@id/date_card_view"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent">
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/date_card_view">
 
                     <LinearLayout
                         android:id="@+id/topDatePicker"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
                         android:gravity="start"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
+                        android:orientation="horizontal"
+                        app:layout_constraintBottom_toTopOf="@id/visible_date_picker"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toTopOf="@id/visible_date_picker">
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
                             android:id="@+id/down_arrow_date"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
+                            android:layout_gravity="center"
                             android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
                             android:layout_marginBottom="16dp"
                             android:background="@drawable/icon_down_arrow"
-                            android:backgroundTint="@color/gray"
-                            android:layout_gravity="center"
-                            />
+                            android:backgroundTint="@color/gray" />
 
                         <TextView
                             android:id="@+id/date_title_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginBottom="16dp"
                             android:text="@string/tarih_secimi"
                             android:textColor="@color/gray"
                             android:textSize="14sp"
-                            android:textStyle="normal"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginBottom="16dp"
-                            />
+                            android:textStyle="normal" />
 
                     </LinearLayout>
 
@@ -263,135 +263,201 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent">
 
-                        <LinearLayout
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
                             <TextView
+                                android:id="@+id/date_range_text"
                                 android:layout_width="100dp"
                                 android:layout_height="wrap_content"
+                                android:layout_gravity="center"
                                 android:layout_marginStart="16dp"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
                                 android:text="@string/tarih_araligi"
                                 android:textColor="@color/gray"
                                 android:textSize="14sp"
-                                android:layout_gravity="center"
-                                />
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
+
+                            <TextView
+                                android:id="@+id/error_date1_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="10sp"
+                                android:textColor="@color/red"
+                                app:layout_constraintStart_toStartOf="@id/date_edit_text1"
+                                app:layout_constraintEnd_toEndOf="@id/date_edit_text1"
+                                app:layout_constraintBottom_toTopOf="@id/date_edit_text1" />
 
                             <EditText
                                 android:id="@+id/date_edit_text1"
-                                android:layout_width="wrap_content"
+                                android:layout_width="100dp"
                                 android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:hint="@string/gg_aa_yyyy"
-                                android:inputType="date"
-                                android:gravity="center"
-                                android:textSize="12sp"
-                                android:textColor="@color/white"
-                                android:textColorHint="@color/gray"
-                                android:maxLength="10"
                                 android:layout_gravity="center"
                                 android:layout_marginStart="16dp"
-                                android:layout_marginEnd="8dp"
-                                android:textCursorDrawable="@drawable/edittext_cursor_color"/>
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:hint="@string/gg_aa_yyyy"
+                                android:inputType="date"
+                                android:maxLength="10"
+                                android:textColor="@color/white"
+                                android:textColorHint="@color/gray"
+                                android:textCursorDrawable="@drawable/edittext_cursor_color"
+                                android:textSize="14sp"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/date_range_text"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
 
                             <TextView
+                                android:id="@+id/hyphen"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="16dp"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginBottom="16dp"
                                 android:text="-"
                                 android:textColor="@color/gray"
                                 android:textSize="20sp"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toStartOf="@+id/date_edit_text2"
+                                app:layout_constraintStart_toEndOf="@id/date_edit_text1"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/error_date2_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="10sp"
+                                android:textColor="@color/red"
+                                app:layout_constraintStart_toStartOf="@id/date_edit_text2"
+                                app:layout_constraintEnd_toEndOf="@id/date_edit_text2"
+                                app:layout_constraintBottom_toTopOf="@id/date_edit_text2" />
 
                             <EditText
                                 android:id="@+id/date_edit_text2"
-                                android:layout_width="wrap_content"
+                                android:layout_width="100dp"
                                 android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginBottom="16dp"
                                 android:layout_weight="1"
+                                android:gravity="center"
                                 android:hint="@string/gg_aa_yyyy"
                                 android:inputType="date"
-                                android:gravity="center"
-                                android:textSize="12sp"
+                                android:maxLength="10"
                                 android:textColor="@color/white"
                                 android:textColorHint="@color/gray"
-                                android:maxLength="10"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="16dp"
-                                android:layout_marginBottom="16dp"
-                                android:layout_marginEnd="16dp"
-                                android:layout_marginStart="8dp"
-                                android:textCursorDrawable="@drawable/edittext_cursor_color"/>
+                                android:textCursorDrawable="@drawable/edittext_cursor_color"
+                                android:textSize="14sp"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
 
-                        </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                        <LinearLayout
+                        <androidx.constraintlayout.widget.ConstraintLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
 
                             <TextView
+                                android:id="@+id/time_range_text"
                                 android:layout_width="100dp"
                                 android:layout_height="wrap_content"
+                                android:layout_gravity="center"
                                 android:layout_marginStart="16dp"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
                                 android:text="@string/saat_araligi"
                                 android:textColor="@color/gray"
                                 android:textSize="14sp"
-                                android:layout_gravity="center"
-                                />
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
+
+                            <TextView
+                                android:id="@+id/error_time1_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="10sp"
+                                android:textColor="@color/red"
+                                app:layout_constraintStart_toStartOf="@id/time_edit_text1"
+                                app:layout_constraintEnd_toEndOf="@id/time_edit_text1"
+                                app:layout_constraintBottom_toTopOf="@id/time_edit_text1" />
 
                             <EditText
                                 android:id="@+id/time_edit_text1"
-                                android:layout_width="wrap_content"
+                                android:layout_width="100dp"
                                 android:layout_height="wrap_content"
-                                android:textSize="12sp"
-                                android:textColor="@color/white"
-                                android:textColorHint="@color/gray"
-                                android:layout_weight="1"
-                                android:hint="@string/ss_dd"
-                                android:inputType="time"
-                                android:gravity="center"
-                                android:maxLength="5"
                                 android:layout_gravity="center"
                                 android:layout_marginStart="16dp"
-                                android:layout_marginEnd="8dp"
-                                android:textCursorDrawable="@drawable/edittext_cursor_color"/>
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:hint="@string/ss_dd"
+                                android:inputType="date"
+                                android:maxLength="10"
+                                android:textColor="@color/white"
+                                android:textColorHint="@color/gray"
+                                android:textCursorDrawable="@drawable/edittext_cursor_color"
+                                android:textSize="14sp"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintStart_toEndOf="@id/time_range_text"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
 
                             <TextView
+                                android:id="@+id/hyphen_2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="8dp"
-                                android:layout_marginTop="16dp"
-                                android:layout_marginEnd="8dp"
-                                android:layout_marginBottom="16dp"
                                 android:text="-"
                                 android:textColor="@color/gray"
                                 android:textSize="20sp"
-                                android:textStyle="bold" />
+                                android:textStyle="bold"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toStartOf="@+id/time_edit_text2"
+                                app:layout_constraintStart_toEndOf="@id/time_edit_text1"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/error_time2_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="10sp"
+                                android:textColor="@color/red"
+                                app:layout_constraintStart_toStartOf="@id/time_edit_text2"
+                                app:layout_constraintEnd_toEndOf="@id/time_edit_text2"
+                                app:layout_constraintBottom_toTopOf="@id/time_edit_text2" />
 
                             <EditText
                                 android:id="@+id/time_edit_text2"
-                                android:layout_width="wrap_content"
+                                android:layout_width="100dp"
                                 android:layout_height="wrap_content"
-                                android:textSize="12sp"
+                                android:layout_gravity="center"
+                                android:layout_marginStart="16dp"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginEnd="16dp"
+                                android:layout_marginBottom="16dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:hint="@string/ss_dd"
+                                android:inputType="date"
+                                android:maxLength="10"
                                 android:textColor="@color/white"
                                 android:textColorHint="@color/gray"
-                                android:layout_weight="1"
-                                android:hint="@string/ss_dd"
-                                android:inputType="time"
-                                android:gravity="center"
-                                android:maxLength="5"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="16dp"
-                                android:layout_marginBottom="16dp"
-                                android:layout_marginEnd="16dp"
-                                android:layout_marginStart="8dp"
-                                android:textCursorDrawable="@drawable/edittext_cursor_color"/>
+                                android:textCursorDrawable="@drawable/edittext_cursor_color"
+                                android:textSize="14sp"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintBottom_toBottomOf="parent"/>
 
-                        </LinearLayout>
+                        </androidx.constraintlayout.widget.ConstraintLayout>
 
                     </LinearLayout>
 
