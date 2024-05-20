@@ -421,7 +421,6 @@ public class AddPostFragment extends Fragment {
         boolean hasTime2 = !time2.isEmpty();
 
         boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
-        boolean isValid = checkCity && checkDistrict && checkExplain;
 
         if(checkCity && checkDistrict && checkExplain){
 

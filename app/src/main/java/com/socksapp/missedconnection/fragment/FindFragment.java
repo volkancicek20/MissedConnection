@@ -316,21 +316,20 @@ public class FindFragment extends Fragment {
         String date2 = binding.dateEditText2.getText().toString();
         String time2 = binding.timeEditText2.getText().toString();
 
-        boolean checkCity,checkDistrict,checkPlace,checkDate1,checkDate2,checkTime1,checkTime2;
+        boolean checkCity = !city.isEmpty();
+        boolean checkDistrict = !district.isEmpty();
+        boolean checkPlace = !place.isEmpty();
+
+        boolean hasDate1 = !date1.isEmpty();
+        boolean hasTime1 = !time1.isEmpty();
+        boolean hasDate2 = !date2.isEmpty();
+        boolean hasTime2 = !time2.isEmpty();
+
         boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
 
-        checkCity = !city.isEmpty();
-        checkDistrict = !district.isEmpty();
-        checkPlace = !place.isEmpty();
-        checkDate1 = !date1.isEmpty();
-        checkDate2 = !date2.isEmpty();
-        checkTime1 = !time1.isEmpty();
-        checkTime2 = !time2.isEmpty();
-
         if(checkCity && checkDistrict){
-            binding.cityTextInput.setError(null);
-            binding.cityTextInput.setErrorIconDrawable(null);
-            if(checkDate1 && checkDate2 && checkTime1 && checkTime2){
+
+            if(hasDate1 && hasDate2 && hasTime1 && hasTime2){
                 checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
                 checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
 
@@ -338,7 +337,6 @@ public class FindFragment extends Fragment {
                 checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
 
                 if(checkFormatDate1 && checkFormatDate2 && checkFormatTime1 && checkFormatTime2){
-
                     boolean checkComparesDate,checkComparesTime;
 
                     checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
@@ -363,188 +361,388 @@ public class FindFragment extends Fragment {
                         fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
                         fragmentTransaction.addToBackStack(null);
                         fragmentTransaction.commit();
-                    }else {
+                    }
+                    else {
                         if(!checkComparesDate){
-                            binding.dateEditText1.setError("2. girdiğiniz tarihten büyük olamaz");
+                            binding.errorDate1Text.setText("2. girdiğiniz tarihten büyük olamaz");
+                            binding.dateEditText1.setTextColor(Color.RED);
+                            binding.visibleDatePicker.setVisibility(View.VISIBLE);
                         }else {
                             binding.dateEditText1.setError(null);
+                            binding.errorDate1Text.setText("");
+                            binding.dateEditText1.setTextColor(Color.WHITE);
                         }
                         if(!checkComparesTime){
-                            binding.timeEditText1.setError("2. girdiğiniz saatten büyük olamaz");
+                            binding.errorTime2Text.setText("");
+                            binding.errorTime1Text.setText("2. girdiğiniz saatten büyük olamaz");
+                            binding.timeEditText1.setTextColor(Color.RED);
+                            binding.visibleDatePicker.setVisibility(View.VISIBLE);
                         }else {
                             binding.timeEditText1.setError(null);
+                            binding.errorTime1Text.setText("");
+                            binding.timeEditText1.setTextColor(Color.WHITE);
                         }
                     }
-                }else {
+
+                }
+                else {
                     if(!checkFormatDate1){
-                        binding.dateEditText1.setError("Uygun formatta tarih giriniz");
+                        binding.errorDate1Text.setText("Gün/Ay/Yıl formatına uygun giriniz");
+                        binding.dateEditText1.setTextColor(Color.RED);
+                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
                         binding.dateEditText1.setError(null);
                     }
                     if(!checkFormatDate2){
-                        binding.dateEditText2.setError("Uygun formatta tarih giriniz");
+                        binding.errorDate2Text.setText("Gün/Ay/Yıl formatına uygun giriniz");
+                        binding.dateEditText2.setTextColor(Color.RED);
+                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
                         binding.dateEditText2.setError(null);
                     }
                     if(!checkFormatTime1){
-                        binding.timeEditText1.setError("Uygun formatta saat giriniz");
+                        binding.errorTime1Text.setText("Saat:Dakika formatına uygun giriniz");
+                        binding.timeEditText1.setTextColor(Color.RED);
+                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
                         binding.timeEditText1.setError(null);
                     }
                     if(!checkFormatTime2){
-                        binding.timeEditText2.setError("Uygun formatta saat giriniz");
+                        binding.errorTime2Text.setText("Saat:Dakika formatına uygun giriniz");
+                        binding.timeEditText2.setTextColor(Color.RED);
+                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
                         binding.timeEditText2.setError(null);
                     }
                 }
-            }else {
+            }
 
-                if(!checkDate1 && !checkDate2 && !checkTime1 && !checkTime2){
-                    Bundle args = new Bundle();
-                    args.putString("city", city);
-                    args.putString("district", district);
-                    args.putString("place", place);
-                    args.putDouble("radius", radius);
-                    args.putDouble("latitude", latitude);
-                    args.putDouble("longitude", longitude);
-                    args.putString("date1", date1);
-                    args.putString("date2", date2);
-                    args.putString("time1", time1);
-                    args.putString("time2", time2);
 
-                    MainFragment mainFragment = new MainFragment();
-                    mainFragment.setArguments(args);
-                    FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
-                    fragmentTransaction.addToBackStack(null);
-                    fragmentTransaction.commit();
-                }
-                else {
+            // error
 
-                    if(checkDate1 && checkDate2 && (checkTime1 == checkTime2)){
-                        checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
-                        checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
-                        if(checkFormatDate1 && checkFormatDate2){
-                            boolean checkComparesDate;
+            if(hasDate1 && hasDate2 && hasTime1 && !hasTime2){
+                binding.errorDate1Text.setText("");
+                binding.errorDate2Text.setText("");
+                binding.errorTime1Text.setText("");
+                binding.dateEditText1.setTextColor(Color.WHITE);
+                binding.dateEditText2.setTextColor(Color.WHITE);
+                binding.timeEditText1.setTextColor(Color.WHITE);
 
-                            checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
+                binding.errorTime2Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.timeEditText2.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+            }
 
-                            if(checkComparesDate){
-                                binding.dateEditText1.setError(null);
-                                Bundle args = new Bundle();
-                                args.putString("city", city);
-                                args.putString("district", district);
-                                args.putString("place", place);
-                                args.putDouble("radius", radius);
-                                args.putDouble("latitude", latitude);
-                                args.putDouble("longitude", longitude);
-                                args.putString("date1", date1);
-                                args.putString("date2", date2);
-                                args.putString("time1", time1);
-                                args.putString("time2", time2);
+            if(hasDate1 && hasDate2 && !hasTime1 && hasTime2){
+                binding.errorDate1Text.setText("");
+                binding.errorDate2Text.setText("");
+                binding.errorTime2Text.setText("");
+                binding.dateEditText1.setTextColor(Color.WHITE);
+                binding.dateEditText2.setTextColor(Color.WHITE);
+                binding.timeEditText2.setTextColor(Color.WHITE);
 
-                                MainFragment mainFragment = new MainFragment();
-                                mainFragment.setArguments(args);
-                                FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                                fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
-                                fragmentTransaction.addToBackStack(null);
-                                fragmentTransaction.commit();
-                            }else {
-                                binding.dateEditText1.setError("2. girdiğiniz tarihten büyük olamaz");
-                            }
-                        }else {
-                            if(!checkFormatDate1){
-                                binding.dateEditText1.setError("Uygun formatta tarih giriniz");
-                            }else {
-                                binding.dateEditText1.setError(null);
-                            }
-                            if(!checkFormatDate2){
-                                binding.dateEditText2.setError("Uygun formatta tarih giriniz");
-                            }else {
-                                binding.dateEditText2.setError(null);
-                            }
-                        }
+
+                binding.errorTime1Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.timeEditText1.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+            }
+
+            if(hasDate1 && !hasDate2 && hasTime1 && hasTime2){
+                binding.errorDate1Text.setText("");
+                binding.errorTime1Text.setText("");
+                binding.errorTime2Text.setText("");
+                binding.dateEditText1.setTextColor(Color.WHITE);
+                binding.timeEditText1.setTextColor(Color.WHITE);
+                binding.timeEditText2.setTextColor(Color.WHITE);
+
+                binding.errorDate2Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.dateEditText2.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+            }
+
+            if(!hasDate1 && hasDate2 && hasTime1 && hasTime2){
+                binding.errorDate2Text.setText("");
+                binding.errorTime1Text.setText("");
+                binding.errorTime2Text.setText("");
+                binding.dateEditText2.setTextColor(Color.WHITE);
+                binding.timeEditText1.setTextColor(Color.WHITE);
+                binding.timeEditText2.setTextColor(Color.WHITE);
+
+                binding.errorDate1Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.dateEditText1.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+            }
+
+            if(hasDate1 && !hasDate2 && !hasTime1 && !hasTime2){
+                binding.errorDate1Text.setText("");
+                binding.errorTime1Text.setText("");
+                binding.errorTime2Text.setText("");
+                binding.timeEditText1.setHintTextColor(Color.GRAY);
+                binding.timeEditText2.setHintTextColor(Color.GRAY);
+                binding.dateEditText1.setTextColor(Color.WHITE);
+
+                binding.errorDate2Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.dateEditText2.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+            }
+
+            if(!hasDate1 && hasDate2 && !hasTime1 && !hasTime2){
+                binding.errorDate2Text.setText("");
+                binding.errorTime1Text.setText("");
+                binding.errorTime2Text.setText("");
+                binding.timeEditText1.setHintTextColor(Color.GRAY);
+                binding.timeEditText2.setHintTextColor(Color.GRAY);
+                binding.dateEditText2.setTextColor(Color.WHITE);
+
+                binding.errorDate1Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.dateEditText1.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+            }
+
+            if(!hasDate1 && !hasDate2 && hasTime1 && !hasTime2){
+                binding.errorDate1Text.setText("");
+                binding.errorDate2Text.setText("");
+                binding.errorTime1Text.setText("");
+                binding.dateEditText1.setHintTextColor(Color.GRAY);
+                binding.dateEditText2.setHintTextColor(Color.GRAY);
+                binding.timeEditText1.setTextColor(Color.WHITE);
+
+                binding.errorTime2Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.timeEditText2.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+            }
+
+            if(!hasDate1 && !hasDate2 && !hasTime1 && hasTime2){
+                binding.errorDate1Text.setText("");
+                binding.errorDate2Text.setText("");
+                binding.errorTime2Text.setText("");
+                binding.dateEditText1.setHintTextColor(Color.GRAY);
+                binding.dateEditText2.setHintTextColor(Color.GRAY);
+                binding.timeEditText2.setTextColor(Color.WHITE);
+
+                binding.errorTime1Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.timeEditText1.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+            }
+
+            if(hasDate1 && !hasDate2 && !hasTime1 && hasTime2){
+                binding.errorDate1Text.setText("");
+                binding.errorTime2Text.setText("");
+                binding.dateEditText1.setTextColor(Color.WHITE);
+                binding.timeEditText2.setTextColor(Color.WHITE);
+
+                binding.errorDate2Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.dateEditText2.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+
+                binding.errorTime1Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.timeEditText1.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+            }
+
+            if(hasDate1 && !hasDate2 && hasTime1 && !hasTime2){
+                binding.errorDate1Text.setText("");
+                binding.errorTime1Text.setText("");
+                binding.dateEditText1.setTextColor(Color.WHITE);
+                binding.timeEditText1.setTextColor(Color.WHITE);
+
+                binding.errorDate2Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.dateEditText2.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+
+                binding.errorTime2Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.timeEditText2.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+            }
+
+            if(!hasDate1 && hasDate2 && !hasTime1 && hasTime2){
+                binding.errorDate2Text.setText("");
+                binding.errorTime2Text.setText("");
+                binding.dateEditText2.setTextColor(Color.WHITE);
+                binding.timeEditText2.setTextColor(Color.WHITE);
+
+                binding.errorDate1Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.dateEditText1.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+
+                binding.errorTime1Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.timeEditText1.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+            }
+
+            if(!hasDate1 && hasDate2 && hasTime1 && !hasTime2){
+                binding.errorDate2Text.setText("");
+                binding.errorTime1Text.setText("");
+                binding.dateEditText2.setTextColor(Color.WHITE);
+                binding.timeEditText1.setTextColor(Color.WHITE);
+
+                binding.errorDate1Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.dateEditText1.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+
+                binding.errorTime2Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.timeEditText2.setHintTextColor(Color.RED);
+                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+            }
+
+            //error
+
+
+            if(hasDate1 && hasDate2 && !hasTime1 && !hasTime2){
+                checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
+                checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
+
+                if(checkFormatDate1 && checkFormatDate2){
+                    boolean checkComparesDate;
+
+                    checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
+
+                    if(checkComparesDate){
+                        binding.dateEditText1.setError(null);
+                        binding.errorDate1Text.setText("");
+                        binding.dateEditText1.setTextColor(Color.WHITE);
+
+                        Bundle args = new Bundle();
+                        args.putString("city", city);
+                        args.putString("district", district);
+                        args.putString("place", place);
+                        args.putDouble("radius", radius);
+                        args.putDouble("latitude", latitude);
+                        args.putDouble("longitude", longitude);
+                        args.putString("date1", date1);
+                        args.putString("date2", date2);
+                        args.putString("time1", time1);
+                        args.putString("time2", time2);
+
+                        MainFragment mainFragment = new MainFragment();
+                        mainFragment.setArguments(args);
+                        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
                     }
                     else {
-                        if(!checkDate1){
-                            binding.dateEditText1.setError("Tarihi giriniz");
-                        }else {
-                            binding.dateEditText1.setError(null);
-                        }
-                        if(!checkDate2){
-                            binding.dateEditText2.setError("Tarihi giriniz");
-                        }else {
-                            binding.dateEditText2.setError(null);
-                        }
-                    }
-
-                    if(checkTime1 && checkTime2 && (checkDate1 == checkDate2)){
-                        checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
-                        checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
-
-                        if(checkFormatTime1 && checkFormatTime2){
-                            boolean checkComparesTime;
-
-                            checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
-
-                            if(checkComparesTime){
-                                binding.timeEditText1.setError(null);
-                                Bundle args = new Bundle();
-                                args.putString("city", city);
-                                args.putString("district", district);
-                                args.putString("place", place);
-                                args.putDouble("radius", radius);
-                                args.putDouble("latitude", latitude);
-                                args.putDouble("longitude", longitude);
-                                args.putString("date1", date1);
-                                args.putString("date2", date2);
-                                args.putString("time1", time1);
-                                args.putString("time2", time2);
-
-                                MainFragment mainFragment = new MainFragment();
-                                mainFragment.setArguments(args);
-                                FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                                fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
-                                fragmentTransaction.addToBackStack(null);
-                                fragmentTransaction.commit();
-                            }else {
-                                binding.timeEditText1.setError("2. girdiğiniz saatten büyük olamaz");
-                            }
-                        }else {
-                            if(!checkFormatTime1){
-                                binding.timeEditText1.setError("Uygun formatta saat giriniz");
-                            }else {
-                                binding.timeEditText1.setError(null);
-                            }
-                            if(!checkFormatTime2){
-                                binding.timeEditText2.setError("Uygun formatta saat giriniz");
-                            }else {
-                                binding.timeEditText2.setError(null);
-                            }
-                        }
-                    }else {
-                        if(!checkTime1){
-                            binding.timeEditText1.setError("Saati giriniz");
-                        }else {
-                            binding.timeEditText1.setError(null);
-                        }
-                        if(!checkTime2){
-                            binding.timeEditText2.setError("Saati giriniz");
-                        }else {
-                            binding.timeEditText2.setError(null);
-                        }
+                        binding.errorDate1Text.setText("2. girdiğiniz tarihten büyük olamaz");
+                        binding.dateEditText1.setTextColor(Color.RED);
+                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }
 
                 }
+                else {
+                    if(!checkFormatDate1){
+                        binding.errorDate1Text.setText("Gün/Ay/Yıl formatına uygun giriniz");
+                        binding.dateEditText1.setTextColor(Color.RED);
+                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+                    }else {
+                        binding.dateEditText1.setError(null);
+                    }
+                    if(!checkFormatDate2){
+                        binding.errorDate2Text.setText("Gün/Ay/Yıl formatına uygun giriniz");
+                        binding.dateEditText2.setTextColor(Color.RED);
+                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+                    }else {
+                        binding.dateEditText2.setError(null);
+                    }
+                }
             }
-        }else {
+
+            if(!hasDate1 && !hasDate2 && hasTime1 && hasTime2){
+                checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
+                checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
+
+                if(checkFormatTime1 && checkFormatTime2){
+                    boolean checkComparesTime;
+
+                    checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
+
+                    if(checkComparesTime){
+                        binding.timeEditText1.setError(null);
+                        binding.errorTime1Text.setText("");
+                        binding.timeEditText1.setTextColor(Color.WHITE);
+
+                        Bundle args = new Bundle();
+                        args.putString("city", city);
+                        args.putString("district", district);
+                        args.putString("place", place);
+                        args.putDouble("radius", radius);
+                        args.putDouble("latitude", latitude);
+                        args.putDouble("longitude", longitude);
+                        args.putString("date1", date1);
+                        args.putString("date2", date2);
+                        args.putString("time1", time1);
+                        args.putString("time2", time2);
+
+                        MainFragment mainFragment = new MainFragment();
+                        mainFragment.setArguments(args);
+                        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
+                    }
+                    else {
+                        binding.errorTime1Text.setText("2. girdiğiniz saatten büyük olamaz");
+                        binding.timeEditText1.setTextColor(Color.RED);
+                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+                    }
+
+                }
+                else {
+                    if(!checkFormatTime1){
+                        binding.errorTime1Text.setText("Saat:Dakika formatına uygun giriniz");
+                        binding.timeEditText1.setTextColor(Color.RED);
+                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+                    }else {
+                        binding.timeEditText1.setError(null);
+                        binding.errorTime1Text.setText("");
+                        binding.timeEditText1.setTextColor(Color.WHITE);
+                    }
+                    if(!checkFormatTime2){
+                        binding.errorTime2Text.setText("Saat:Dakika formatına uygun giriniz");
+                        binding.timeEditText2.setTextColor(Color.RED);
+                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+                    }else {
+                        binding.timeEditText2.setError(null);
+                        binding.timeEditText2.setTextColor(Color.WHITE);
+                    }
+                }
+            }
+
+            if(!hasDate1 && !hasDate2 && !hasTime1 && !hasTime2){
+                Bundle args = new Bundle();
+                args.putString("city", city);
+                args.putString("district", district);
+                args.putString("place", place);
+                args.putDouble("radius", radius);
+                args.putDouble("latitude", latitude);
+                args.putDouble("longitude", longitude);
+                args.putString("date1", date1);
+                args.putString("date2", date2);
+                args.putString("time1", time1);
+                args.putString("time2", time2);
+
+                MainFragment mainFragment = new MainFragment();
+                mainFragment.setArguments(args);
+                FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+
+        }
+        else {
             if(!checkCity){
                 binding.cityTextInput.setError("İl boş bırakılamaz");
-                binding.cityTextInput.setErrorIconDrawable(R.drawable.icon_error);
+                binding.cityTextInput.setErrorIconDrawable(null);
+            }else {
+                binding.cityTextInput.setError(null);
+                binding.cityTextInput.setErrorIconDrawable(null);
             }
             if(!checkDistrict){
                 binding.districtTextInput.setError("İlçe boş bırakılamaz");
-                binding.districtTextInput.setErrorIconDrawable(R.drawable.icon_error);
+                binding.districtTextInput.setErrorIconDrawable(null);
+            }else {
+                binding.districtTextInput.setError(null);
+                binding.districtTextInput.setErrorIconDrawable(null);
             }
         }
     }
@@ -562,6 +760,8 @@ public class FindFragment extends Fragment {
                         public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
                             String timeString = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
                             binding.timeEditText1.setText(timeString);
+                            binding.timeEditText1.setTextColor(Color.WHITE);
+                            binding.errorTime1Text.setText("");
                         }
                     },
                     hour,
@@ -585,6 +785,8 @@ public class FindFragment extends Fragment {
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                     String timeString = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, (month + 1), year);
                     binding.dateEditText1.setText(timeString);
+                    binding.dateEditText1.setTextColor(Color.WHITE);
+                    binding.errorDate1Text.setText("");
                 }
             },mYear,mMonth,mDay);
         }
@@ -604,6 +806,8 @@ public class FindFragment extends Fragment {
                         public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
                             String timeString = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
                             binding.timeEditText2.setText(timeString);
+                            binding.timeEditText2.setTextColor(Color.WHITE);
+                            binding.errorTime2Text.setText("");
                         }
                     },
                     hour,
@@ -626,6 +830,8 @@ public class FindFragment extends Fragment {
                 public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                     String timeString = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, (month + 1), year);
                     binding.dateEditText2.setText(timeString);
+                    binding.dateEditText2.setTextColor(Color.WHITE);
+                    binding.errorDate2Text.setText("");
                 }
             },mYear,mMonth,mDay);
         }
