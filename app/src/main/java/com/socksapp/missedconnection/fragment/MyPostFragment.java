@@ -31,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
@@ -186,7 +187,7 @@ public class MyPostFragment extends Fragment {
     }
 
     private void getData(){
-        firestore.collection(userMail).get().addOnSuccessListener(queryDocumentSnapshots -> {
+        firestore.collection(userMail).orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener(queryDocumentSnapshots -> {
             if(queryDocumentSnapshots.isEmpty()){
                 FindPost post = new FindPost();
                 post.viewType = 2;

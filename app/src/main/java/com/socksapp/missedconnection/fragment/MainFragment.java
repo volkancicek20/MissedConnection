@@ -1,36 +1,37 @@
 package com.socksapp.missedconnection.fragment;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
 import android.os.Bundle;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -40,19 +41,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
-import com.google.firebase.firestore.WriteBatch;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.PostAdapter;
 import com.socksapp.missedconnection.databinding.FragmentMainBinding;
 import com.socksapp.missedconnection.model.FindPost;
 import com.socksapp.missedconnection.myclass.TimedDataManager;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -63,12 +62,14 @@ public class MainFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseUser user;
     private SharedPreferences nameShared,imageUrlShared;
-    private String userMail,myUserName,myImageUrl;
+    private String userMail,myUserName,myImageUrl,city;
     private MainActivity mainActivity;
     public PostAdapter postAdapter;
     public ArrayList<FindPost> postArrayList;
     private Handler handler;
     private TimedDataManager timedDataManager;
+    private FusedLocationProviderClient fusedLocationClient;
+    private static final int LOCATION_REQUEST_CODE = 100;
     public MainFragment() {
         // Required empty public constructor
     }
@@ -91,6 +92,9 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentMainBinding.inflate(inflater,container,false);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
         return binding.getRoot();
     }
 
@@ -102,6 +106,7 @@ public class MainFragment extends Fragment {
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
         mainActivity.includedLayout.setVisibility(View.VISIBLE);
         mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+
 
         ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) mainActivity.fragmentContainerView.getLayoutParams();
         layoutParams.bottomToBottom = ConstraintLayout.LayoutParams.PARENT_ID;
@@ -138,7 +143,7 @@ public class MainFragment extends Fragment {
 
             getData(city,district,place,date1,date2,time1,time2,radius,latitude,longitude);
         }else {
-            getData();
+            checkLocationPermission();
         }
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
@@ -149,6 +154,61 @@ public class MainFragment extends Fragment {
         });
 
     }
+
+    private void checkLocationPermission(){
+        if(ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(requireActivity(),Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            getUserLocation();
+        }else {
+            requestForPermission();
+        }
+    }
+
+    private void getUserLocation(){
+        if(ActivityCompat.checkSelfPermission(requireActivity(),Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            return;
+        }
+
+        Task<Location> task = fusedLocationClient.getLastLocation();
+
+        task.addOnSuccessListener(location -> {
+            if(location != null){
+                Geocoder geocoder = new Geocoder(requireActivity(), Locale.getDefault());
+                try {
+                    List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                    if (addresses != null && !addresses.isEmpty()) {
+                        city = addresses.get(0).getAdminArea();
+                        getData();
+                        System.out.println("city: "+addresses);
+                        Toast.makeText(requireActivity(),city,Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }else {
+                city = "İstanbul";
+                getData();
+            }
+        });
+    }
+
+    private void requestForPermission(){
+        ActivityCompat.requestPermissions(requireActivity(),new String[] {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == LOCATION_REQUEST_CODE){
+            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                getUserLocation();
+                Toast.makeText(requireActivity(),"Permission accepted",Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(requireActivity(),"Permission rejected",Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
     public void dialogShow(View view, String mail, String name, Double lat, Double lng, double radius, DocumentReference documentReference){
         final Dialog dialog = new Dialog(view.getContext());
@@ -779,7 +839,7 @@ public class MainFragment extends Fragment {
     }
 
     private void getData(){
-        firestore.collection("post"+"İstanbul").get().addOnSuccessListener(queryDocumentSnapshots -> {
+        firestore.collection("post"+city).get().addOnSuccessListener(queryDocumentSnapshots -> {
             boolean found = false;
             for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
                 found = true;

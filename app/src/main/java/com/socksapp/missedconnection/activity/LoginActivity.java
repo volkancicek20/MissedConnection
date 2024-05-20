@@ -20,7 +20,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-        if(user != null){
+        if(user != null && user.isEmailVerified()){
             Intent intent = new Intent(LoginActivity.this,MainActivity.class);
             startActivity(intent);
             finish();

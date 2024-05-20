@@ -1,5 +1,6 @@
 package com.socksapp.missedconnection.fragment;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,11 +10,15 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
@@ -39,7 +44,6 @@ public class RegisterFragment extends Fragment {
         super.onCreate(savedInstanceState);
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
     }
 
     @Override
@@ -51,44 +55,138 @@ public class RegisterFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         binding.loginPage.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_registerFragment_to_loginFragment);
         });
+
+        binding.signupEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                binding.signupEmailInputLayout.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        binding.signupPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                binding.signupPasswordInputLayout.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        binding.signupConfirm.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                binding.signupConfirmInputLayout.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
         binding.signupButton.setOnClickListener(v -> {
             Editable mail = binding.signupEmail.getText();
             Editable password = binding.signupPassword.getText();
             Editable passwordCheck = binding.signupConfirm.getText();
+
             if(mail != null && password != null && passwordCheck != null){
                 String mailText = mail.toString().trim();
                 String passwordText = password.toString().trim();
                 String passwordConfirmText = passwordCheck.toString().trim();
-                if(!mailText.isEmpty() && !passwordText.isEmpty() && !passwordConfirmText.isEmpty()){
-                    if(passwordText.equals(passwordConfirmText)){
-                        sign(v,mailText,passwordText);
+
+                boolean isMailValid = isValidEmail(mailText);
+                boolean isPasswordValid = !passwordText.isEmpty() && passwordText.length() >= 6
+                        && hasUpperCase(passwordText) && hasLowerCase(passwordText) && hasDigit(passwordText);
+                boolean passwordsMatch = passwordText.equals(passwordConfirmText);
+
+                if (isMailValid && isPasswordValid && passwordsMatch) {
+                    sign(v,mailText,passwordText);
+                } else {
+
+                    if(!isMailValid){
+                        binding.signupEmailInputLayout.setError("Mail adresi geçersiz");
                     }else {
-                        binding.signupConfirm.setError("Şifreler eşleşmiyor");
+                        binding.signupEmailInputLayout.setError(null);
                     }
-                }else {
-                    if(mailText.isEmpty()){
-                        binding.signupEmail.setError("E-posta adresinizi giriniz");
+
+                    if (!isPasswordValid) {
+                        binding.signupPasswordInputLayout.setError("Şifre en az 6 karakter uzunluğunda olmalı, en az 1 büyük harf, 1 küçük harf ve 1 rakam içermelidir.");
+                    } else {
+                        binding.signupPasswordInputLayout.setError(null);
                     }
-                    if(passwordText.isEmpty()){
-                        binding.signupPassword.setError("Şifrenizi giriniz");
-                    }
-                    if(passwordConfirmText.isEmpty()){
-                        binding.signupConfirm.setError("Şifrenizi tekrar giriniz");
+
+                    if (!passwordsMatch) {
+                        binding.signupConfirmInputLayout.setError("Şifreler eşleşmiyor");
+                    } else {
+                        binding.signupConfirmInputLayout.setError(null);
                     }
                 }
+
+
+//                if(!mailText.isEmpty() && !passwordText.isEmpty() && !passwordConfirmText.isEmpty()){
+//                    if(passwordText.equals(passwordConfirmText)){
+//                        sign(v,mailText,passwordText);
+//                    }else {
+//                        binding.signupConfirm.setError("Şifreler eşleşmiyor");
+//                    }
+//                }else {
+//                    if(mailText.isEmpty()){
+//                        binding.signupEmail.setError("E-posta adresinizi giriniz");
+//                    }
+//                    if(passwordText.isEmpty()){
+//                        binding.signupPassword.setError("Şifrenizi giriniz");
+//                    }
+//                    if(passwordConfirmText.isEmpty()){
+//                        binding.signupConfirm.setError("Şifrenizi tekrar giriniz");
+//                    }
+//                }
+
             }
         });
     }
 
     private void sign(View view,String mail,String password){
+        ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+        progressDialog.setMessage("Kayıt olunuyor..");
+        progressDialog.setCancelable(false);
+        progressDialog.setInverseBackgroundForced(false);
+        progressDialog.show();
         auth.createUserWithEmailAndPassword(mail, password)
             .addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
+                    user = auth.getCurrentUser();
+                    progressDialog.dismiss();
                     sendEmailVerification(view);
                 } else {
+                    progressDialog.dismiss();
                     Exception exception = task.getException();
                     if(exception instanceof FirebaseAuthUserCollisionException){
                         Toast.makeText(view.getContext(), "Bu e-posta adresiyle zaten kayıtlı bir kullanıcı var.", Toast.LENGTH_SHORT).show();
@@ -96,11 +194,13 @@ public class RegisterFragment extends Fragment {
                         Toast.makeText(view.getContext(), "Kayıt olurken bir hata oluştu. Hata:["+exception+"]", Toast.LENGTH_SHORT).show();
                     }
                 }
+            }).addOnFailureListener(e -> {
+                progressDialog.dismiss();
             });
     }
 
     private void sendEmailVerification(View view) {
-        auth.getCurrentUser().sendEmailVerification()
+        user.sendEmailVerification()
             .addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Toast.makeText(view.getContext(), "Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.", Toast.LENGTH_LONG).show();
@@ -110,5 +210,40 @@ public class RegisterFragment extends Fragment {
                 }
             });
 
+    }
+
+    private static boolean hasUpperCase(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isUpperCase(s.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasLowerCase(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isLowerCase(s.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean hasDigit(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isDigit(s.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isValidEmail(String email) {
+        if (TextUtils.isEmpty(email)) {
+            return false;
+        }
+
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 }

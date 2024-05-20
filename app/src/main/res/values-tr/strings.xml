@@ -82,7 +82,7 @@
     <!-- recycler_empty_post -->
     <string name="sonuc_bulunmadi">There were no results</string>
     <string name="sonuc_bulunamadi_aciklamasi">You can get different results by changing the filters you make</string>
-    <string name="tekrar_arama_yap">Search again</string>
+    <string name="tekrar_arama_yap">Search</string>
 
     <!-- recycler_empty_saved_post -->
     <string name="kaydedilen_gonderi_bulunamadi">Saved post not found</string>
@@ -291,7 +291,7 @@
     </string-array>
 
     <string-array name="district_adiyaman">
-        <item>Adıyaman (Merkez)</item>
+        <item>Adıyaman Merkez</item>
         <item>Besni</item>
         <item>Cebere</item>
         <item>Gerger</item>
@@ -302,7 +302,7 @@
         <item>Tut</item>
     </string-array>
     <string-array name="district_afyonkarahisar">
-        <item>Afyonkarahisar (Merkez)</item>
+        <item>Afyonkarahisar Merkez</item>
         <item>Başmakçı</item>
         <item>Bayat</item>
         <item>Bolvadin</item>
@@ -319,7 +319,7 @@
         <item>Şuhut</item>
     </string-array>
     <string-array name="district_agri">
-        <item>Ağrı (Merkez)</item>
+        <item>Ağrı Merkez</item>
         <item>Diyadin</item>
         <item>Doğubayazıt</item>
         <item>Eleşkirt</item>
@@ -329,7 +329,7 @@
         <item>Tutak</item>
     </string-array>
     <string-array name="district_amasya">
-        <item>Amasya (Merkez)</item>
+        <item>Amasya Merkez</item>
         <item>Bazarköy</item>
         <item>Erbaa</item>
         <item>Gümüşhacıköy</item>
@@ -358,7 +358,7 @@
         <item>Serik</item>
     </string-array>
     <string-array name="district_artvin">
-        <item>Artvin (Merkez)</item>
+        <item>Artvin Merkez</item>
         <item>Ardanuç</item>
         <item>Arhavi</item>
         <item>Borçka</item>
@@ -368,7 +368,7 @@
         <item>Şavşat</item>
     </string-array>
     <string-array name="district_aydin">
-        <item>Aydın (Merkez)</item>
+        <item>Aydın Merkez</item>
         <item>Bozdoğan</item>
         <item>Buharkent</item>
         <item>Çine</item>
@@ -406,7 +406,7 @@
         <item>Susurluk</item>
     </string-array>
     <string-array name="district_bilecik">
-        <item>Bilecik (Merkez)</item>
+        <item>Bilecik Merkez</item>
         <item>Bozüyük</item>
         <item>Gölpazarı</item>
         <item>İnhisar</item>
@@ -416,7 +416,7 @@
         <item>Yenipazar</item>
     </string-array>
     <string-array name="district_bingol">
-        <item>Bingöl (Merkez)</item>
+        <item>Bingöl Merkez</item>
         <item>Adaklı</item>
         <item>Ardıçlı</item>
         <item>Genç</item>
@@ -427,7 +427,7 @@
         <item>Yolçatı</item>
     </string-array>
     <string-array name="district_bitlis">
-        <item>Bitlis (Merkez)</item>
+        <item>Bitlis Merkez</item>
         <item>Ahlat</item>
         <item>Güroymak</item>
         <item>Hizan</item>
@@ -435,7 +435,7 @@
         <item>Tatvan</item>
     </string-array>
     <string-array name="district_bolu">
-        <item>Bolu (Merkez)</item>
+        <item>Bolu Merkez</item>
         <item>Dörtdivan</item>
         <item>Gerede</item>
         <item>Göynük</item>
@@ -447,7 +447,7 @@
         <item>Ağlasun</item>
         <item>Altınyayla</item>
         <item>Bucak</item>
-        <item>Burdur (Merkez)</item>
+        <item>Burdur Merkez</item>
         <item>Çeltikçi</item>
         <item>Gölhisar</item>
         <item>Karamanlı</item>
@@ -491,7 +491,7 @@
     <string-array name="district_cankiri">
         <item>Atkaracalar</item>
         <item>Bayramören</item>
-        <item>Çankırı (Merkez)</item>
+        <item>Çankırı Merkez</item>
         <item>Çerkeş</item>
         <item>Eldivan</item>
         <item>Ilgaz</item>
@@ -505,7 +505,7 @@
         <item>Alaca</item>
         <item>Bayat</item>
         <item>Boğazkale</item>
-        <item>Çorum (Merkez)</item>
+        <item>Çorum Merkez</item>
         <item>Dodurga</item>
         <item>İskilip</item>
         <item>Kargı</item>
@@ -526,7 +526,7 @@
         <item>Buldan</item>
         <item>Çal</item>
         <item>Çivril</item>
-        <item>Denizli (Merkez)</item>
+        <item>Denizli Merkez</item>
         <item>Güney</item>
         <item>Honaz</item>
         <item>Kale</item>
@@ -540,7 +540,7 @@
         <item>Bismil</item>
         <item>Çermik</item>
         <item>Dicle</item>
-        <item>Diyarbakır (Merkez)</item>
+        <item>Diyarbakır Merkez</item>
         <item>Eğil</item>
         <item>Ergani</item>
         <item>Hani</item>
@@ -554,7 +554,7 @@
         <item>Yenişehir</item>
     </string-array>
     <string-array name="district_edirne">
-        <item>Edirne (Merkez)</item>
+        <item>Edirne Merkez</item>
         <item>Enez</item>
         <item>Havsa</item>
         <item>İpsala</item>
@@ -569,7 +569,7 @@
         <item>Alacakaya</item>
         <item>Arıcak</item>
         <item>Baskil</item>
-        <item>Elazığ (Merkez)</item>
+        <item>Elazığ Merkez</item>
         <item>Karakoçan</item>
         <item>Keban</item>
         <item>Kovancılar</item>
@@ -579,7 +579,7 @@
     </string-array>
     <string-array name="district_erzincan">
         <item>Çayırlı</item>
-        <item>Erzincan (Merkez)</item>
+        <item>Erzincan Merkez</item>
         <item>Iliç</item>
         <item>Kemah</item>
         <item>Kemaliye</item>
@@ -591,7 +591,7 @@
         <item>Aşkale</item>
         <item>Aziziye</item>
         <item>Çat</item>
-        <item>Erzurum (Merkez)</item>
+        <item>Erzurum Merkez</item>
         <item>Hınıs</item>
         <item>İspir</item>
         <item>Karaçoban</item>
@@ -634,7 +634,7 @@
         <item>Bucaakça</item>
         <item>Dereli</item>
         <item>Espiye</item>
-        <item>Giresun (Merkez)</item>
+        <item>Giresun Merkez</item>
         <item>Görele</item>
         <item>Gümüşhacıköy</item>
         <item>Keşap</item>
@@ -644,7 +644,7 @@
         <item>Şebinkarahisar</item>
     </string-array>
     <string-array name="district_gumushane">
-        <item>Gümüşhane (Merkez)</item>
+        <item>Gümüşhane Merkez</item>
         <item>Köse</item>
         <item>Kürtün</item>
         <item>Şiran</item>
@@ -652,13 +652,13 @@
     </string-array>
     <string-array name="district_hakkari">
         <item>Çukurca</item>
-        <item>Hakkari (Merkez)</item>
+        <item>Hakkari Merkez</item>
         <item>Şemdinli</item>
         <item>Yüksekova</item>
     </string-array>
     <string-array name="district_hatay">
         <item>Altınözü</item>
-        <item>Antakya (Merkez)</item>
+        <item>Antakya Merkez</item>
         <item>Arsuz</item>
         <item>Belen</item>
         <item>Defne</item>
@@ -675,7 +675,7 @@
         <item>Eğirdir</item>
         <item>Gelendost</item>
         <item>Gönen</item>
-        <item>Isparta (Merkez)</item>
+        <item>Isparta Merkez</item>
         <item>Keçiborlu</item>
         <item>Sütçüler</item>
         <item>Şarkikaraağaç</item>
@@ -701,7 +701,7 @@
         <item>Arpaçay</item>
         <item>Digor</item>
         <item>Kağızman</item>
-        <item>Kars (Merkez)</item>
+        <item>Kars Merkez</item>
         <item>Sarıkamış</item>
         <item>Selim</item>
     </string-array>
@@ -716,7 +716,7 @@
         <item>Devrekani</item>
         <item>董家口</item>
         <item>Ilgaz</item>
-        <item>Kastamonu (Merkez)</item>
+        <item>Kastamonu Merkez</item>
         <item>Küre</item>
         <item>Taşköprü</item>
         <item>Tosya</item>
@@ -741,7 +741,7 @@
     <string-array name="district_kirklareli">
         <item>Babaeski</item>
         <item>Demirköy</item>
-        <item>Kırklareli (Merkez)</item>
+        <item>Kırklareli Merkez</item>
         <item>Kofçaz</item>
         <item>Lüleburgaz</item>
         <item>Pehlivanköy</item>
@@ -753,7 +753,7 @@
         <item>Boztepe</item>
         <item>Cacabey</item>
         <item>Kaman</item>
-        <item>Kırşehir (Merkez)</item>
+        <item>Kırşehir Merkez</item>
         <item>Mucur</item>
     </string-array>
     <string-array name="district_kocaeli">
@@ -764,7 +764,7 @@
         <item>Dilovası</item>
         <item>Gebze</item>
         <item>Gölcük</item>
-        <item>İzmit (Merkez)</item>
+        <item>İzmit Merkez</item>
         <item>Kandıra</item>
         <item>Karamürsel</item>
         <item>Kartepe</item>
@@ -810,7 +810,7 @@
         <item>Emet</item>
         <item>Gediz</item>
         <item>Hisarcık</item>
-        <item>Kütahya (Merkez)</item>
+        <item>Kütahya Merkez</item>
         <item>Pazarlar</item>
         <item>Şaphane</item>
         <item>Tavşanlı</item>
@@ -839,7 +839,7 @@
         <item>Kırkağaç</item>
         <item>Köprübaşı</item>
         <item>Kula</item>
-        <item>Manisa (Merkez)</item>
+        <item>Manisa Merkez</item>
         <item>Salihli</item>
         <item>Sarıgöl</item>
         <item>Selendi</item>
@@ -856,7 +856,7 @@
         <item>Ekinözü</item>
         <item>Elbistan</item>
         <item>Göksun</item>
-        <item>Kahramanmaraş (Merkez)</item>
+        <item>Kahramanmaraş Merkez</item>
         <item>Nurhak</item>
         <item>Onikişubat</item>
         <item>Pazarcık</item>
@@ -868,7 +868,7 @@
         <item>Dargeçit</item>
         <item>Derik</item>
         <item>Kızıltepe</item>
-        <item>Mardin (Merkez)</item>
+        <item>Mardin Merkez</item>
         <item>Mazıdağı</item>
         <item>Midyat</item>
         <item>Nusaybin</item>
@@ -885,7 +885,7 @@
         <item>Marmaris</item>
         <item>Menteşe</item>
         <item>Milas</item>
-        <item>Muğla (Merkez)</item>
+        <item>Muğla Merkez</item>
         <item>Ortaca</item>
         <item>Ula</item>
         <item>Yatağan</item>
@@ -895,7 +895,7 @@
         <item>Hasköy</item>
         <item>Korkut</item>
         <item>Malazgirt</item>
-        <item>Muş (Merkez)</item>
+        <item>Muş Merkez</item>
         <item>Varto</item>
     </string-array>
     <string-array name="district_nevsehir">
@@ -905,7 +905,7 @@
         <item>Gülşehir</item>
         <item>Hacıbektaş</item>
         <item>Kozaklı</item>
-        <item>Nevşehir (Merkez)</item>
+        <item>Nevşehir Merkez</item>
         <item>Ürgüp</item>
     </string-array>
     <string-array name="district_nigde">
@@ -913,7 +913,7 @@
         <item>Bor</item>
         <item>Çiftlik</item>
         <item>Çiftehan</item>
-        <item>Niğde (Merkez)</item>
+        <item>Niğde Merkez</item>
         <item>Ulukışla</item>
     </string-array>
     <string-array name="district_ordu">
@@ -931,7 +931,7 @@
         <item>Korgan</item>
         <item>Kumru</item>
         <item>Mesudiye</item>
-        <item>Ordu (Merkez)</item>
+        <item>Ordu Merkez</item>
         <item>Perşembe</item>
         <item>Ulubey</item>
         <item>Ünye</item>
@@ -951,7 +951,7 @@
         <item>Köprülü</item>
         <item>Mersin</item>
         <item>Pazar</item>
-        <item>Rize (Merkez)</item>
+        <item>Rize Merkez</item>
         <item>Şenkaya</item>
         <item>Trabzon</item>
     </string-array>
@@ -983,7 +983,7 @@
         <item>İlkadım</item>
         <item>Kavak</item>
         <item>Ladik</item>
-        <item>Samsun (Merkez)</item>
+        <item>Samsun Merkez</item>
         <item>Tekkeköy</item>
         <item>Terme</item>
         <item>Vezirköprü</item>
@@ -993,7 +993,7 @@
         <item>Eruh</item>
         <item>Kurtalan</item>
         <item>Pervari</item>
-        <item>Siirt (Merkez)</item>
+        <item>Siirt Merkez</item>
         <item>Tillo</item>
     </string-array>
     <string-array name="district_sinop">
@@ -1005,7 +1005,7 @@
         <item>Gerze</item>
         <item>Karakum</item>
         <item>Sarıkum</item>
-        <item>Sinop (Merkez)</item>
+        <item>Sinop Merkez</item>
         <item>Türkeli</item>
     </string-array>
     <string-array name="district_sivas">
@@ -1020,7 +1020,7 @@
         <item>İmranlı</item>
         <item>Kangal</item>
         <item>Koyulhisar</item>
-        <item>Sivas (Merkez)</item>
+        <item>Sivas Merkez</item>
         <item>Suşehri</item>
         <item>Şarkışla</item>
         <item>Ulaş</item>
@@ -1039,7 +1039,7 @@
         <item>Muratlı</item>
         <item>Saray</item>
         <item>Şarköy</item>
-        <item>Tekirdağ (Merkez)</item>
+        <item>Tekirdağ Merkez</item>
     </string-array>
     <string-array name="district_tokat">
         <item>Almus</item>
@@ -1050,7 +1050,7 @@
         <item>Pazar</item>
         <item>Reşadiye</item>
         <item>Sulusaray</item>
-        <item>Tokat (Merkez)</item>
+        <item>Tokat Merkez</item>
         <item>Turhal</item>
         <item>Yeşilyurt</item>
         <item>Zile</item>
@@ -1070,7 +1070,7 @@
         <item>Ortahisar</item>
         <item>Sürmene</item>
         <item>Tonya</item>
-        <item>Trabzon (Merkez)</item>
+        <item>Trabzon Merkez</item>
         <item>Vakfıkebir</item>
         <item>Yomra</item>
     </string-array>
@@ -1082,7 +1082,7 @@
         <item>Ovacık</item>
         <item>Pertek</item>
         <item>Pülümür</item>
-        <item>Tunceli (Merkez)</item>
+        <item>Tunceli Merkez</item>
     </string-array>
     <string-array name="district_sanliurfa">
         <item>Akçakale</item>
@@ -1096,7 +1096,7 @@
         <item>Karaköprü</item>
         <item>Siverek</item>
         <item>Suruç</item>
-        <item>Şanlıurfa (Merkez)</item>
+        <item>Şanlıurfa Merkez</item>
         <item>Viranşehir</item>
     </string-array>
     <string-array name="district_usak">
@@ -1105,7 +1105,7 @@
         <item>Karahallı</item>
         <item>Sivaslı</item>
         <item>Ulubey</item>
-        <item>Uşak (Merkez)</item>
+        <item>Uşak Merkez</item>
     </string-array>
     <string-array name="district_van">
         <item>Bahçesaray</item>
@@ -1120,7 +1120,7 @@
         <item>Özalp</item>
         <item>Saray</item>
         <item>Tuşba</item>
-        <item>Van (Merkez)</item>
+        <item>Van Merkez</item>
     </string-array>
     <string-array name="district_yozgat">
         <item>Akdağmadeni</item>
@@ -1134,7 +1134,7 @@
         <item>Sorgun</item>
         <item>Şefaatli</item>
         <item>Yenifakılı</item>
-        <item>Yozgat (Merkez)</item>
+        <item>Yozgat Merkez</item>
     </string-array>
     <string-array name="district_zonguldak">
         <item>Alaplı</item>
@@ -1145,11 +1145,11 @@
         <item>Karadeniz Ereğli</item>
         <item>Kilimli</item>
         <item>Kozlu</item>
-        <item>Zonguldak (Merkez)</item>
+        <item>Zonguldak Merkez</item>
     </string-array>
     <string-array name="district_aksaray">
         <item>Ağaçören</item>
-        <item>Aksaray (Merkez)</item>
+        <item>Aksaray Merkez</item>
         <item>Eskil</item>
         <item>Gülağaç</item>
         <item>Güzelyurt</item>
@@ -1160,7 +1160,7 @@
     </string-array>
     <string-array name="district_bayburt">
         <item>Aydıntepe</item>
-        <item>Bayburt (Merkez)</item>
+        <item>Bayburt Merkez</item>
         <item>Demirözü</item>
         <item>Gümüşhane</item>
         <item>Kelkit</item>
@@ -1170,7 +1170,7 @@
         <item>Ayrancı</item>
         <item>Başyayla</item>
         <item>Ermenek</item>
-        <item>Karaman (Merkez)</item>
+        <item>Karaman Merkez</item>
         <item>Kazımkarabekir</item>
         <item>Sarıveliler</item>
     </string-array>
@@ -1181,12 +1181,12 @@
         <item>Delice</item>
         <item>Hacılar</item>
         <item>Keskin</item>
-        <item>Kırıkkale (Merkez)</item>
+        <item>Kırıkkale Merkez</item>
         <item>Sulakyurt</item>
         <item>Yahşihan</item>
     </string-array>
     <string-array name="district_batman">
-        <item>Batman (Merkez)</item>
+        <item>Batman Merkez</item>
         <item>Beşiri</item>
         <item>Gercüş</item>
         <item>Hasankeyf</item>
@@ -1200,17 +1200,17 @@
         <item>Güçlükonak</item>
         <item>Idil</item>
         <item>Silopi</item>
-        <item>Şırnak (Merkez)</item>
+        <item>Şırnak Merkez</item>
         <item>Uludere</item>
     </string-array>
     <string-array name="district_bartin">
         <item>Amasra</item>
-        <item>Bartın (Merkez)</item>
+        <item>Bartın Merkez</item>
         <item>Kurucaşile</item>
         <item>Ulus</item>
     </string-array>
     <string-array name="district_ardahan">
-        <item>Ardahan (Merkez)</item>
+        <item>Ardahan Merkez</item>
         <item>Çıldır</item>
         <item>Göle</item>
         <item>Hanak</item>
@@ -1218,7 +1218,7 @@
     </string-array>
     <string-array name="district_igdir">
         <item>Aralık</item>
-        <item>Iğdır (Merkez)</item>
+        <item>Iğdır Merkez</item>
         <item>Karakoyunlu</item>
         <item>Tuzluca</item>
     </string-array>
@@ -1227,19 +1227,19 @@
         <item>Armutlu</item>
         <item>Çiftlikköy</item>
         <item>Termal</item>
-        <item>Yalova (Merkez)</item>
+        <item>Yalova Merkez</item>
     </string-array>
     <string-array name="district_karabuk">
         <item>Eflani</item>
         <item>Eskipazar</item>
         <item>Göynük</item>
-        <item>Karabük (Merkez)</item>
+        <item>Karabük Merkez</item>
         <item>Ovacık</item>
         <item>Safranbolu</item>
     </string-array>
     <string-array name="district_kilis">
         <item>Elbeyli</item>
-        <item>Kilis (Merkez)</item>
+        <item>Kilis Merkez</item>
         <item>Musabeyli</item>
         <item>Polateli</item>
     </string-array>
@@ -1247,7 +1247,7 @@
         <item>Bahçe</item>
         <item>Düziçi</item>
         <item>Kadirli</item>
-        <item>Osmaniye (Merkez)</item>
+        <item>Osmaniye Merkez</item>
         <item>Sumbas</item>
         <item>Toprakkale</item>
     </string-array>
@@ -1255,7 +1255,7 @@
         <item>Akçakoca</item>
         <item>Cumayeri</item>
         <item>Çilimli</item>
-        <item>Düzce (Merkez)</item>
+        <item>Düzce Merkez</item>
         <item>Gölyaka</item>
         <item>Gümüşova</item>
         <item>Kaynaşlı</item>

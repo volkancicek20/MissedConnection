@@ -20,6 +20,46 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/mail_text_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        app:hintEnabled="false"
+        app:hintAnimationEnabled="false"
+        app:hintTextColor="@color/text_input_title_change"
+        app:boxStrokeWidthFocused="1dp"
+        app:boxStrokeWidth="1dp"
+        app:boxStrokeColor="@color/text_input_stroke_change"
+        app:startIconDrawable="@drawable/icon_mail"
+        app:startIconTint="@color/gray"
+        app:endIconMode="custom"
+        app:layout_constraintTop_toBottomOf="@id/profile_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/CustomTextInputLayout.Dark3"
+        >
+        <EditText
+            android:id="@+id/mail_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint=""
+            android:enabled="false"
+            android:clickable="false"
+            android:focusableInTouchMode="false"
+            android:maxLength="15"
+            android:paddingTop="8dp"
+            android:inputType="text"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textColorHint="@color/text_input_title_change"
+            android:textCursorDrawable="@drawable/edittext_cursor_color"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/name_text_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -37,7 +77,7 @@
         app:endIconDrawable="@drawable/icon_edit"
         app:endIconTint="@color/gray"
         app:endIconMode="custom"
-        app:layout_constraintTop_toBottomOf="@id/profile_image"
+        app:layout_constraintTop_toBottomOf="@id/mail_text_input_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         style="@style/CustomTextInputLayout.Dark3"

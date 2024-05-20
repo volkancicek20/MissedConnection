@@ -1,5 +1,6 @@
 package com.socksapp.missedconnection.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -11,6 +12,9 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,7 +50,6 @@ public class LoginFragment extends Fragment {
         super.onCreate(savedInstanceState);
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
     }
 
     @Override
@@ -67,6 +70,7 @@ public class LoginFragment extends Fragment {
             }
         });
         binding.confirmMail.setOnClickListener(v ->{
+            user.reload();
             user.sendEmailVerification()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -80,49 +84,117 @@ public class LoginFragment extends Fragment {
         binding.register.setOnClickListener(v -> {
             Navigation.findNavController(v).navigate(R.id.action_loginFragment_to_registerFragment);
         });
+
+        binding.loginEmail.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                binding.loginEmailInputLayout.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        binding.loginPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                binding.loginPasswordInputLayout.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         binding.loginButton.setOnClickListener(v -> {
             Editable mail = binding.loginEmail.getText();
             Editable password = binding.loginPassword.getText();
             if(mail != null && password != null){
                 String mailText = mail.toString().trim();
                 String passwordText = password.toString().trim();
-                if(!mailText.isEmpty() && !passwordText.isEmpty()){
+
+                boolean isMailValid = isValidEmail(mailText);
+                boolean isPasswordValid = !passwordText.isEmpty();
+
+                if (isMailValid && isPasswordValid) {
                     login(v,mailText,passwordText);
-                }else {
-                    if(mailText.isEmpty()){
-                        binding.loginEmail.setError("E-posta adresinizi giriniz");
+                } else {
+
+                    if(!isMailValid){
+                        binding.loginEmailInputLayout.setError("Mail adresi geçersiz");
+                    }else {
+                        binding.loginEmailInputLayout.setError(null);
                     }
-                    if(passwordText.isEmpty()){
-                        binding.loginPassword.setError("Şifrenizi giriniz");
+
+                    if (!isPasswordValid) {
+                        binding.loginPasswordInputLayout.setError("Şifrenizi giriniz");
+                    } else {
+                        binding.loginPasswordInputLayout.setError(null);
                     }
                 }
+
+//                if(!mailText.isEmpty() && !passwordText.isEmpty()){
+//                    login(v,mailText,passwordText);
+//                }else {
+//                    if(mailText.isEmpty()){
+//                        binding.loginEmail.setError("E-posta adresinizi giriniz");
+//                    }
+//                    if(passwordText.isEmpty()){
+//                        binding.loginPassword.setError("Şifrenizi giriniz");
+//                    }
+//                }
             }
         });
     }
 
     private void login(View view,String mail,String password){
+        ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+        progressDialog.setMessage("Giriş yapılıyor..");
+        progressDialog.setCancelable(false);
+        progressDialog.setInverseBackgroundForced(false);
+        progressDialog.show();
         auth.signInWithEmailAndPassword(mail, password)
             .addOnCompleteListener(task -> {
                 if(task.isSuccessful()) {
                     firestore.collection("userDelete").document(mail).get().addOnSuccessListener(documentSnapshot -> {
                         if(documentSnapshot.exists()){
+                            progressDialog.dismiss();
                             Toast.makeText(view.getContext(),"Bu hesap silinme aşamasındadır.",Toast.LENGTH_SHORT).show();
                         }else {
+                            user = auth.getCurrentUser();
+                            progressDialog.dismiss();
                             userVerified(view);
                         }
                     }).addOnFailureListener(e -> {
-
+                        Toast.makeText(view.getContext(),"Bir hata oluştu. İnternet bağlantınızı kontrol ettikten sonra tekrar deneyiniz.",Toast.LENGTH_SHORT).show();
+                        progressDialog.dismiss();
                     });
                 } else {
+                    progressDialog.dismiss();
                     Exception exception = task.getException();
                     if (exception instanceof FirebaseAuthInvalidUserException) {
                         Toast.makeText(view.getContext(), "E-posta adresi kayıtlı değil.", Toast.LENGTH_SHORT).show();
                     } else if (exception instanceof FirebaseAuthInvalidCredentialsException) {
                         Toast.makeText(view.getContext(), "Geçersiz e-posta veya şifre.", Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(view.getContext(), "Giriş yaparken bir hata oluştu.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view.getContext(), "Giriş yaparken bir hata oluştu. Hata:["+exception+"]", Toast.LENGTH_SHORT).show();
                     }
                 }
+            }).addOnFailureListener(e -> {
+                progressDialog.dismiss();
             });
     }
 
@@ -138,7 +210,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void userVerified(View view){
-        if(auth.getCurrentUser().isEmailVerified()){
+        if(user.isEmailVerified()){
             Intent intent = new Intent(view.getContext(), MainActivity.class);
             startActivity(intent);
             requireActivity().finish();
@@ -146,6 +218,14 @@ public class LoginFragment extends Fragment {
             Toast.makeText(view.getContext(), "E-posta adresinizi doğrulamadınız.", Toast.LENGTH_SHORT).show();
             binding.confirmMail.setVisibility(View.VISIBLE);
         }
+    }
+
+    public static boolean isValidEmail(String email) {
+        if (TextUtils.isEmpty(email)) {
+            return false;
+        }
+
+        return Patterns.EMAIL_ADDRESS.matcher(email).matches();
     }
 
 

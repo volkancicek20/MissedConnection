@@ -48,6 +48,7 @@ import com.google.firebase.storage.StorageReference;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentEditProfileBinding;
+import com.socksapp.missedconnection.myclass.SharedPreferencesHelper;
 
 import java.io.InputStream;
 import java.util.HashMap;
@@ -68,6 +69,7 @@ public class EditProfileFragment extends Fragment {
     private Uri imageData;
     private String myUserName,myImageUrl,userMail;
     private MainActivity mainActivity;
+    private SharedPreferencesHelper sharedPreferencesHelper;
     public EditProfileFragment() {
         // Required empty public constructor
     }
@@ -97,6 +99,8 @@ public class EditProfileFragment extends Fragment {
 
         mainActivity.bottomNavigationView.setVisibility(View.GONE);
         mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_backspace);
+
+        sharedPreferencesHelper = new SharedPreferencesHelper(view.getContext());
 
         userMail = user.getEmail();
 
@@ -219,6 +223,7 @@ public class EditProfileFragment extends Fragment {
     }
 
     private void updateProfile(boolean nameCheck,String uploadName,String uploadImageUrl){
+        sharedPreferencesHelper.saveString("myMail", userMail);
         if(nameCheck){
             SharedPreferences.Editor editor = nameShared.edit();
             editor.putString("name",uploadName);
@@ -249,6 +254,7 @@ public class EditProfileFragment extends Fragment {
     }
 
     private void updateProfile(boolean nameCheck,String uploadName){
+        sharedPreferencesHelper.saveString("myMail", userMail);
         if(nameCheck){
             SharedPreferences.Editor editor = nameShared.edit();
             editor.putString("name",uploadName);
@@ -344,6 +350,8 @@ public class EditProfileFragment extends Fragment {
     }
 
     private void setProfile(View view){
+
+        binding.mailEdittext.setHint(userMail);
 
         String name = nameShared.getString("name","");
         String imageUrl = imageUrlShared.getString("imageUrl","");
