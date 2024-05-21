@@ -185,17 +185,17 @@ public class MyPostAdapter extends RecyclerView.Adapter {
         if(secondsElapsed < 0){
             elapsedTime = "şimdi";
         } else if (secondsElapsed >= 31536000) {
-            elapsedTime = "• " + (secondsElapsed / 31536000) + " yıl önce";
+            elapsedTime = "• " + (secondsElapsed / 31536000) + "yıl";
         } else if (secondsElapsed >= 2592000) {
-            elapsedTime = "• " + (secondsElapsed / 2592000) + " ay önce";
+            elapsedTime = "• " + (secondsElapsed / 2592000) + "at";
         } else if (secondsElapsed >= 86400) {
-            elapsedTime = "• " + (secondsElapsed / 86400) + " gün önce";
+            elapsedTime = "• " + (secondsElapsed / 86400) + "g";
         } else if (secondsElapsed >= 3600) {
-            elapsedTime = "• " + (secondsElapsed / 3600) + " saat önce";
+            elapsedTime = "• " + (secondsElapsed / 3600) + "sa";
         } else if (secondsElapsed >= 60) {
-            elapsedTime = "• " + (secondsElapsed / 60) + " dakika önce";
+            elapsedTime = "• " + (secondsElapsed / 60) + "d";
         } else {
-            elapsedTime = "• " + secondsElapsed + " saniye önce";
+            elapsedTime = "• " + secondsElapsed + "s";
         }
 
         holder.recyclerPostBinding.timestampTime.setText(elapsedTime);

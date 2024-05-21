@@ -32,7 +32,6 @@ public class RegisterFragment extends Fragment {
 
     private FragmentRegisterBinding binding;
     private FirebaseAuth auth;
-    private FirebaseUser user;
     private FirebaseFirestore firestore;
 
     public RegisterFragment() {
@@ -149,26 +148,6 @@ public class RegisterFragment extends Fragment {
                         binding.signupConfirmInputLayout.setError(null);
                     }
                 }
-
-
-//                if(!mailText.isEmpty() && !passwordText.isEmpty() && !passwordConfirmText.isEmpty()){
-//                    if(passwordText.equals(passwordConfirmText)){
-//                        sign(v,mailText,passwordText);
-//                    }else {
-//                        binding.signupConfirm.setError("Şifreler eşleşmiyor");
-//                    }
-//                }else {
-//                    if(mailText.isEmpty()){
-//                        binding.signupEmail.setError("E-posta adresinizi giriniz");
-//                    }
-//                    if(passwordText.isEmpty()){
-//                        binding.signupPassword.setError("Şifrenizi giriniz");
-//                    }
-//                    if(passwordConfirmText.isEmpty()){
-//                        binding.signupConfirm.setError("Şifrenizi tekrar giriniz");
-//                    }
-//                }
-
             }
         });
     }
@@ -182,7 +161,6 @@ public class RegisterFragment extends Fragment {
         auth.createUserWithEmailAndPassword(mail, password)
             .addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    user = auth.getCurrentUser();
                     progressDialog.dismiss();
                     sendEmailVerification(view);
                 } else {
@@ -200,7 +178,7 @@ public class RegisterFragment extends Fragment {
     }
 
     private void sendEmailVerification(View view) {
-        user.sendEmailVerification()
+        auth.getCurrentUser().sendEmailVerification()
             .addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     Toast.makeText(view.getContext(), "Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.", Toast.LENGTH_LONG).show();

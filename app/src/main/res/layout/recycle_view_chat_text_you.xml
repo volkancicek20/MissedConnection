@@ -20,7 +20,8 @@
         android:paddingBottom="10dp"
         app:layout_constraintWidth_max="wrap"
         android:textColor="@color/black"
-        android:textSize="13sp"
+        android:textSize="14sp"
+        android:fontFamily="@font/roboto_regular"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_percent="0.75"/>

@@ -121,7 +121,7 @@ public class PostAdapter extends RecyclerView.Adapter {
                 postHolder.recyclerPostBinding.baseConstraint.setClickable(true);
 
                 if(place.isEmpty()){
-                    postHolder.recyclerPostBinding.placeIcon.setVisibility(View.GONE);
+                    postHolder.recyclerPostBinding.verticalLine.setVisibility(View.GONE);
                 }
 
                 postHolder.recyclerPostBinding.recyclerProfileImage.setOnClickListener(v ->{
@@ -206,17 +206,17 @@ public class PostAdapter extends RecyclerView.Adapter {
         if(secondsElapsed < 0){
             elapsedTime = "şimdi";
         } else if (secondsElapsed >= 31536000) {
-            elapsedTime = "• " + (secondsElapsed / 31536000) + " yıl önce";
+            elapsedTime = "• " + (secondsElapsed / 31536000) + "yıl";
         } else if (secondsElapsed >= 2592000) {
-            elapsedTime = "• " + (secondsElapsed / 2592000) + " ay önce";
+            elapsedTime = "• " + (secondsElapsed / 2592000) + "ay";
         } else if (secondsElapsed >= 86400) {
-            elapsedTime = "• " + (secondsElapsed / 86400) + " gün önce";
+            elapsedTime = "• " + (secondsElapsed / 86400) + "g";
         } else if (secondsElapsed >= 3600) {
-            elapsedTime = "• " + (secondsElapsed / 3600) + " saat önce";
+            elapsedTime = "• " + (secondsElapsed / 3600) + "sa";
         } else if (secondsElapsed >= 60) {
-            elapsedTime = "• " + (secondsElapsed / 60) + " dakika önce";
+            elapsedTime = "• " + (secondsElapsed / 60) + "d";
         } else {
-            elapsedTime = "• " + secondsElapsed + " saniye önce";
+            elapsedTime = "• " + secondsElapsed + "s";
         }
 
         holder.recyclerPostBinding.timestampTime.setText(elapsedTime);

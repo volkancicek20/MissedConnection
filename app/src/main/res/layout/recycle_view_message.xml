@@ -11,8 +11,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/recyclerView_profilePhoto"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
         android:layout_margin="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -29,6 +29,7 @@
         android:text=""
         android:textColor="@color/white"
         android:textSize="14sp"
+        android:fontFamily="@font/roboto_regular"
         app:layout_constraintStart_toEndOf="@+id/recyclerView_profilePhoto"
         app:layout_constraintTop_toTopOf="@id/recyclerView_profilePhoto"
         tools:ignore="MissingConstraints" />
@@ -42,8 +43,9 @@
         android:maxLength="40"
         android:maxLines="1"
         android:text=""
-        android:textColor="@color/white"
-        android:textSize="12sp"
+        android:textColor="@color/gray"
+        android:textSize="13sp"
+        android:fontFamily="@font/roboto_regular"
         app:layout_constraintStart_toStartOf="@+id/recyclerView_name"
         app:layout_constraintTop_toBottomOf="@id/recyclerView_name"
         tools:ignore="MissingConstraints" />

@@ -38,7 +38,6 @@ public class LoginFragment extends Fragment {
 
     private FragmentLoginBinding binding;
     private FirebaseAuth auth;
-    private FirebaseUser user;
     private FirebaseFirestore firestore;
 
     public LoginFragment() {
@@ -70,8 +69,7 @@ public class LoginFragment extends Fragment {
             }
         });
         binding.confirmMail.setOnClickListener(v ->{
-            user.reload();
-            user.sendEmailVerification()
+            auth.getCurrentUser().sendEmailVerification()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(view.getContext(), "Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.", Toast.LENGTH_SHORT).show();
@@ -174,7 +172,6 @@ public class LoginFragment extends Fragment {
                             progressDialog.dismiss();
                             Toast.makeText(view.getContext(),"Bu hesap silinme aşamasındadır.",Toast.LENGTH_SHORT).show();
                         }else {
-                            user = auth.getCurrentUser();
                             progressDialog.dismiss();
                             userVerified(view);
                         }
@@ -210,7 +207,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void userVerified(View view){
-        if(user.isEmailVerified()){
+        if(auth.getCurrentUser().isEmailVerified()){
             Intent intent = new Intent(view.getContext(), MainActivity.class);
             startActivity(intent);
             requireActivity().finish();
