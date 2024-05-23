@@ -403,7 +403,7 @@ public class AddPostFragment extends Fragment {
         Double radius = rad;
         String city = binding.cityCompleteText.getText().toString();
         String district = binding.districtCompleteText.getText().toString();
-        String place = binding.place.getText().toString();
+//        String place = binding.place.getText().toString();
         String date1 = binding.dateEditText1.getText().toString();
         String time1 = binding.timeEditText1.getText().toString();
         String date2 = binding.dateEditText2.getText().toString();
@@ -413,7 +413,7 @@ public class AddPostFragment extends Fragment {
         boolean checkCity = !city.isEmpty();
         boolean checkDistrict = !district.isEmpty();
         boolean checkExplain = !explain.isEmpty();
-        boolean checkPlace = !place.isEmpty();
+//        boolean checkPlace = !place.isEmpty();
 
         boolean hasDate1 = !date1.isEmpty();
         boolean hasTime1 = !time1.isEmpty();
@@ -457,11 +457,11 @@ public class AddPostFragment extends Fragment {
                                 HashMap<String,Object> post = new HashMap<>();
                                 post.put("city",city);
                                 post.put("district",district);
-                                if(checkPlace){
-                                    post.put("place",place);
-                                }else {
-                                    post.put("place","");
-                                }
+//                                if(checkPlace){
+//                                    post.put("place",place);
+//                                }else {
+//                                    post.put("place","");
+//                                }
                                 post.put("date1",date1_long);
                                 post.put("time1",time1_long);
                                 post.put("time2",time2_long);
@@ -750,11 +750,11 @@ public class AddPostFragment extends Fragment {
                                 HashMap<String,Object> post = new HashMap<>();
                                 post.put("city",city);
                                 post.put("district",district);
-                                if(checkPlace){
-                                    post.put("place",place);
-                                }else {
-                                    post.put("place","");
-                                }
+//                                if(checkPlace){
+//                                    post.put("place",place);
+//                                }else {
+//                                    post.put("place","");
+//                                }
                                 post.put("date1",date1_long);
                                 post.put("time1",0);
                                 post.put("time2",0);
@@ -843,11 +843,11 @@ public class AddPostFragment extends Fragment {
                                 HashMap<String,Object> post = new HashMap<>();
                                 post.put("city",city);
                                 post.put("district",district);
-                                if(checkPlace){
-                                    post.put("place",place);
-                                }else {
-                                    post.put("place","");
-                                }
+//                                if(checkPlace){
+//                                    post.put("place",place);
+//                                }else {
+//                                    post.put("place","");
+//                                }
                                 post.put("date1",0);
                                 post.put("time1",time1_long);
                                 post.put("time2",time2_long);
@@ -916,11 +916,11 @@ public class AddPostFragment extends Fragment {
                 HashMap<String,Object> post = new HashMap<>();
                 post.put("city",city);
                 post.put("district",district);
-                if(checkPlace){
-                    post.put("place",place);
-                }else {
-                    post.put("place","");
-                }
+//                if(checkPlace){
+//                    post.put("place",place);
+//                }else {
+//                    post.put("place","");
+//                }
                 post.put("date1",0);
                 post.put("time1",0);
                 post.put("time2",0);
@@ -986,7 +986,7 @@ public class AddPostFragment extends Fragment {
         binding.districtCompleteText.setText("");
 
 
-        binding.place.setText("");
+//        binding.place.setText("");
 
         binding.explain.setText("");
 

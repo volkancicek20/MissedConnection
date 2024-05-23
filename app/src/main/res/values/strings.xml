@@ -55,6 +55,7 @@
     <string name="giris_yap">GİRİŞ YAP</string>
     <string name="hesabiniz_yok_mu">Hesabınız yok mu?</string>
     <string name="hesap_ac">Hesap oluştur</string>
+    <string name="do_rulama_linki_g_nder">Doğrulama linki gönder</string>
 
     <!-- fragment_profile -->
     <string name="profili_duzenle">Profili düzenle</string>

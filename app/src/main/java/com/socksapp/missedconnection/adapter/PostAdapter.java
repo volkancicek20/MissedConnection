@@ -106,7 +106,7 @@ public class PostAdapter extends RecyclerView.Adapter {
                 mail = arrayList.get(position).mail;
                 city = arrayList.get(position).city;
                 district = arrayList.get(position).district;
-                place = arrayList.get(position).place;
+//                place = arrayList.get(position).place;
                 date1 = arrayList.get(position).date1;
                 date2 = arrayList.get(position).date2;
                 time1 = arrayList.get(position).time1;
@@ -120,15 +120,15 @@ public class PostAdapter extends RecyclerView.Adapter {
 
                 postHolder.recyclerPostBinding.baseConstraint.setClickable(true);
 
-                if(place.isEmpty()){
-                    postHolder.recyclerPostBinding.verticalLine.setVisibility(View.GONE);
-                }
+//                if(place.isEmpty()){
+//                    postHolder.recyclerPostBinding.verticalLine.setVisibility(View.GONE);
+//                }
 
                 postHolder.recyclerPostBinding.recyclerProfileImage.setOnClickListener(v ->{
                     getImageShow(v,imageUrl);
                 });
 
-                getShow(imageUrl,name,city,district,place,explain,timestamp,postHolder);
+                getShow(imageUrl,name,city,district,explain,timestamp,postHolder);
 
                 ((PostHolder) holder).recyclerPostBinding.verticalMenu.setOnClickListener(v ->{
                     fragment.dialogShow(v,mail,name,lat,lng,radius,documentReference);
@@ -171,7 +171,7 @@ public class PostAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void getShow(String imageUrl,String name,String city,String district,String place,String explain,Timestamp timestamp,PostHolder holder){
+    public void getShow(String imageUrl,String name,String city,String district,String explain,Timestamp timestamp,PostHolder holder){
         if(imageUrl.isEmpty()){
             ImageView imageView;
             imageView = holder.recyclerPostBinding.recyclerProfileImage;
@@ -194,11 +194,11 @@ public class PostAdapter extends RecyclerView.Adapter {
         holder.recyclerPostBinding.recyclerName.setText(name);
         holder.recyclerPostBinding.recyclerExplain.setText(explain);
 
-        if(place != null){
-            holder.recyclerPostBinding.recyclerPlace.setText(place);
-        }else {
-            holder.recyclerPostBinding.placeIcon.setVisibility(View.GONE);
-        }
+//        if(place != null){
+//            holder.recyclerPostBinding.recyclerPlace.setText(place);
+//        }else {
+//            holder.recyclerPostBinding.placeIcon.setVisibility(View.GONE);
+//        }
 
         long secondsElapsed = (Timestamp.now().getSeconds() - timestamp.getSeconds());
         String elapsedTime;

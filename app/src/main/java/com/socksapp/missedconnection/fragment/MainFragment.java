@@ -132,7 +132,6 @@ public class MainFragment extends Fragment {
         if (args != null) {
             String city = args.getString("city","");
             String district = args.getString("district","");
-            String place = args.getString("place","");
             double radius = args.getDouble("radius",0);
             double latitude = args.getDouble("latitude",0);
             double longitude = args.getDouble("longitude",0);
@@ -141,7 +140,7 @@ public class MainFragment extends Fragment {
             String time1 = args.getString("time1","");
             String time2 = args.getString("time2","");
 
-            getData(city,district,place,date1,date2,time1,time2,radius,latitude,longitude);
+            getData(city,district,date1,date2,time1,time2,radius,latitude,longitude);
         }else {
             checkLocationPermission();
         }
@@ -284,18 +283,18 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private void getData(String cityFind,String districtFind,String placeFind,String date1Find,String date2Find,String time1Find,String time2Find,double radiusFind,double latFind,double lngFind){
+    private void getData(String cityFind,String districtFind,String date1Find,String date2Find,String time1Find,String time2Find,double radiusFind,double latFind,double lngFind){
 
         boolean checkDistrict,checkPlace,checkDate,checkTime,checkField;
         checkDistrict = !districtFind.isEmpty();
-        checkPlace = !placeFind.isEmpty();
+//        checkPlace = !placeFind.isEmpty();
         checkDate = !date1Find.isEmpty() && !date2Find.isEmpty();
         checkTime = !time1Find.isEmpty() && !time2Find.isEmpty();
         checkField = radiusFind != 0 && latFind != 0 && lngFind != 0;
 
         Query query = null;
 
-        if(checkDistrict && checkPlace && checkDate && checkTime && checkField){
+        if (checkDistrict && checkDate && checkTime && checkField) {
             postArrayList.clear();
             String collection = "post" + cityFind;
             try {
@@ -314,170 +313,11 @@ public class MainFragment extends Fragment {
                     long time2_long = time_2.getTime();
 
                     query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereEqualTo("place",placeFind)
-                        .whereLessThanOrEqualTo("date1",date2_long)
-                        .whereGreaterThanOrEqualTo("date2",date1_long)
-                        .whereLessThanOrEqualTo("time1",time2_long)
-                        .whereGreaterThanOrEqualTo("time2",time1_long);
-                }else {
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        else if (checkDistrict && checkPlace && checkDate && checkTime) {
-            postArrayList.clear();
-            String collection = "post" + cityFind;
-            try {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
-                Date date_1 = formatter_date.parse(date1Find);
-                Date date_2 = formatter_date.parse(date2Find);
-
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
-                Date time_1 = formatter_time.parse(time1Find);
-                Date time_2 = formatter_time.parse(time2Find);
-
-                if(date_1 != null && date_2 != null && time_1 != null && time_2 != null){
-                    long date1_long = date_1.getTime();
-                    long date2_long = date_2.getTime();
-                    long time1_long = time_1.getTime();
-                    long time2_long = time_2.getTime();
-
-                    query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereEqualTo("place",placeFind)
-                        .whereLessThanOrEqualTo("date1",date2_long)
-                        .whereGreaterThanOrEqualTo("date2",date1_long)
-                        .whereLessThanOrEqualTo("time1",time2_long)
-                        .whereGreaterThanOrEqualTo("time2",time1_long);
-                }else {
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        else if (checkDistrict && checkPlace && checkDate && checkField) {
-            postArrayList.clear();
-            String collection = "post" + cityFind;
-            try {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
-                Date date_1 = formatter_date.parse(date1Find);
-                Date date_2 = formatter_date.parse(date2Find);
-
-                if(date_1 != null && date_2 != null){
-                    long date1_long = date_1.getTime();
-                    long date2_long = date_2.getTime();
-
-                    query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereEqualTo("place",placeFind)
-                        .whereLessThanOrEqualTo("date1",date2_long)
-                        .whereGreaterThanOrEqualTo("date2",date1_long);
-                }else {
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        else if (checkDistrict && checkPlace && checkTime && checkField) {
-            postArrayList.clear();
-            String collection = "post" + cityFind;
-            try {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
-                Date time_1 = formatter_time.parse(time1Find);
-                Date time_2 = formatter_time.parse(time2Find);
-
-                if(time_1 != null && time_2 != null){
-
-                    long time1_long = time_1.getTime();
-                    long time2_long = time_2.getTime();
-
-                    query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereEqualTo("place",placeFind)
-                        .whereLessThanOrEqualTo("time1",time2_long)
-                        .whereGreaterThanOrEqualTo("time2",time1_long);
-
-                }else {
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        else if (checkDistrict && checkDate && checkTime && checkField) {
-            postArrayList.clear();
-            String collection = "post" + cityFind;
-            try {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
-                Date date_1 = formatter_date.parse(date1Find);
-                Date date_2 = formatter_date.parse(date2Find);
-
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
-                Date time_1 = formatter_time.parse(time1Find);
-                Date time_2 = formatter_time.parse(time2Find);
-
-                if(date_1 != null && date_2 != null && time_1 != null && time_2 != null){
-                    long date1_long = date_1.getTime();
-                    long date2_long = date_2.getTime();
-                    long time1_long = time_1.getTime();
-                    long time2_long = time_2.getTime();
-
-                    query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereLessThanOrEqualTo("date1",date2_long)
-                        .whereGreaterThanOrEqualTo("date2",date1_long)
-                        .whereLessThanOrEqualTo("time1",time2_long)
-                        .whereGreaterThanOrEqualTo("time2",time1_long);
-                }else {
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        else if (checkDistrict && checkPlace && checkDate) {
-            postArrayList.clear();
-            String collection = "post" + cityFind;
-            try {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
-                Date date_1 = formatter_date.parse(date1Find);
-                Date date_2 = formatter_date.parse(date2Find);
-
-
-                if(date_1 != null && date_2 != null){
-                    long date1_long = date_1.getTime();
-                    long date2_long = date_2.getTime();
-
-                    query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereEqualTo("place",placeFind)
-                        .whereLessThanOrEqualTo("date1",date2_long)
-                        .whereGreaterThanOrEqualTo("date2",date1_long);
-
-                }else {
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        else if (checkDistrict && checkPlace && checkTime) {
-            postArrayList.clear();
-            String collection = "post" + cityFind;
-            try {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
-                Date time_1 = formatter_time.parse(time1Find);
-                Date time_2 = formatter_time.parse(time2Find);
-
-                if(time_1 != null && time_2 != null){
-                    long time1_long = time_1.getTime();
-                    long time2_long = time_2.getTime();
-
-                    query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereEqualTo("place",placeFind)
-                        .whereLessThanOrEqualTo("time1",time2_long)
-                        .whereGreaterThanOrEqualTo("time2",time1_long);
-
+                            .whereEqualTo("district", districtFind)
+                            .whereLessThanOrEqualTo("date1",date2_long)
+                            .whereGreaterThanOrEqualTo("date2",date1_long)
+                            .whereLessThanOrEqualTo("time1",time2_long)
+                            .whereGreaterThanOrEqualTo("time2",time1_long);
                 }else {
                 }
             }catch (Exception e){
@@ -503,25 +343,17 @@ public class MainFragment extends Fragment {
                     long time2_long = time_2.getTime();
 
                     query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereLessThanOrEqualTo("date1",date2_long)
-                        .whereGreaterThanOrEqualTo("date2",date1_long)
-                        .whereLessThanOrEqualTo("time1",time2_long)
-                        .whereGreaterThanOrEqualTo("time2",time1_long);
+                            .whereEqualTo("district", districtFind)
+                            .whereLessThanOrEqualTo("date1",date2_long)
+                            .whereGreaterThanOrEqualTo("date2",date1_long)
+                            .whereLessThanOrEqualTo("time1",time2_long)
+                            .whereGreaterThanOrEqualTo("time2",time1_long);
 
                 }else {
                 }
             }catch (Exception e){
                 e.printStackTrace();
             }
-        }
-        else if (checkDistrict && checkPlace && checkField) {
-            postArrayList.clear();
-            String collection = "post" + cityFind;
-            query = firestore.collection(collection)
-                .whereEqualTo("district", districtFind)
-                .whereEqualTo("place",placeFind);
-
         }
         else if (checkDistrict && checkDate && checkField) {
             postArrayList.clear();
@@ -536,9 +368,9 @@ public class MainFragment extends Fragment {
                     long date2_long = date_2.getTime();
 
                     query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereLessThanOrEqualTo("date1",date2_long)
-                        .whereGreaterThanOrEqualTo("date2",date1_long);
+                            .whereEqualTo("district", districtFind)
+                            .whereLessThanOrEqualTo("date1",date2_long)
+                            .whereGreaterThanOrEqualTo("date2",date1_long);
 
                 }else {
                 }
@@ -560,9 +392,9 @@ public class MainFragment extends Fragment {
                     long time2_long = time_2.getTime();
 
                     query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereLessThanOrEqualTo("time1",time2_long)
-                        .whereGreaterThanOrEqualTo("time2",time1_long);
+                            .whereEqualTo("district", districtFind)
+                            .whereLessThanOrEqualTo("time1",time2_long)
+                            .whereGreaterThanOrEqualTo("time2",time1_long);
 
                 }else {
                 }
@@ -572,19 +404,11 @@ public class MainFragment extends Fragment {
             }
 
         }
-        else if (checkDistrict && checkPlace) {
-            postArrayList.clear();
-            String collection = "post" + cityFind;
-            query = firestore.collection(collection)
-                .whereEqualTo("district", districtFind)
-                .whereEqualTo("place", placeFind);
-
-        }
         else if (checkDistrict && checkField) {
             postArrayList.clear();
             String collection = "post" + cityFind;
             query = firestore.collection(collection)
-                .whereEqualTo("district", districtFind);
+                    .whereEqualTo("district", districtFind);
 
         }
         else if (checkDistrict && checkDate) {
@@ -600,9 +424,9 @@ public class MainFragment extends Fragment {
                     long date2_long = date_2.getTime();
 
                     query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereLessThanOrEqualTo("date1",date2_long)
-                        .whereGreaterThanOrEqualTo("date2",date1_long);
+                            .whereEqualTo("district", districtFind)
+                            .whereLessThanOrEqualTo("date1",date2_long)
+                            .whereGreaterThanOrEqualTo("date2",date1_long);
 
                 }else {
                 }
@@ -624,9 +448,9 @@ public class MainFragment extends Fragment {
                     long time2_long = time_2.getTime();
 
                     query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereLessThanOrEqualTo("time1",time2_long)
-                        .whereGreaterThanOrEqualTo("time2",time1_long);
+                            .whereEqualTo("district", districtFind)
+                            .whereLessThanOrEqualTo("time1",time2_long)
+                            .whereGreaterThanOrEqualTo("time2",time1_long);
 
                 }else {
                 }
@@ -638,7 +462,7 @@ public class MainFragment extends Fragment {
             postArrayList.clear();
             String collection = "post" + cityFind;
             query = firestore.collection(collection)
-                .whereEqualTo("district", districtFind);
+                    .whereEqualTo("district", districtFind);
 
         }
         else {
@@ -693,7 +517,7 @@ public class MainFragment extends Fragment {
                                 Long time2 = querySnapshot.getLong("time2");
                                 Long date1 = querySnapshot.getLong("date1");
                                 Long date2 = querySnapshot.getLong("date2");
-                                String place = querySnapshot.getString("place");
+//                                String place = querySnapshot.getString("place");
                                 String explain = querySnapshot.getString("explain");
                                 Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
                                 DocumentReference documentReference = querySnapshot.getReference();
@@ -725,7 +549,7 @@ public class MainFragment extends Fragment {
                                 } else {
                                     post.date2 = date2;
                                 }
-                                post.place = place;
+//                                post.place = place;
                                 post.explain = explain;
                                 post.timestamp = timestamp;
                                 post.lat = lat;
@@ -742,6 +566,16 @@ public class MainFragment extends Fragment {
                             }
                         }
                     }
+
+                    FindPost post = new FindPost();
+                    post.viewType = 2;
+
+                    postArrayList.add(post);
+                    binding.shimmerLayout.stopShimmer();
+                    binding.shimmerLayout.setVisibility(View.GONE);
+                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                    postAdapter.notifyDataSetChanged();
+                    mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                 })
                 .addOnFailureListener(e -> {
                     System.out.println("error : "+e.getLocalizedMessage());
@@ -763,6 +597,7 @@ public class MainFragment extends Fragment {
                         return;
                     }
                     for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+
                         String imageUrl = querySnapshot.getString("imageUrl");
                         String name = querySnapshot.getString("name");
                         String mail = querySnapshot.getString("mail");
@@ -772,7 +607,7 @@ public class MainFragment extends Fragment {
                         Long time2 = querySnapshot.getLong("time2");
                         Long date1 = querySnapshot.getLong("date1");
                         Long date2 = querySnapshot.getLong("date2");
-                        String place = querySnapshot.getString("place");
+//                        String place = querySnapshot.getString("place");
                         String explain = querySnapshot.getString("explain");
                         Double lat = querySnapshot.getDouble("lat");
                         Double lng = querySnapshot.getDouble("lng");
@@ -811,7 +646,7 @@ public class MainFragment extends Fragment {
                         } else {
                             post.date2 = date2;
                         }
-                        post.place = place;
+//                        post.place = place;
                         post.explain = explain;
                         post.timestamp = timestamp;
                         post.lat = lat;
@@ -826,6 +661,17 @@ public class MainFragment extends Fragment {
                         postAdapter.notifyDataSetChanged();
                         mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                     }
+
+                    FindPost post = new FindPost();
+                    post.viewType = 2;
+
+                    postArrayList.add(post);
+                    binding.shimmerLayout.stopShimmer();
+                    binding.shimmerLayout.setVisibility(View.GONE);
+                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                    postAdapter.notifyDataSetChanged();
+                    mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
+
                 })
                 .addOnFailureListener(e -> {
                     System.out.println("error : "+e.getLocalizedMessage());
@@ -852,7 +698,7 @@ public class MainFragment extends Fragment {
                 Long time2 = querySnapshot.getLong("time2");
                 Long date1 = querySnapshot.getLong("date1");
                 Long date2 = querySnapshot.getLong("date2");
-                String place = querySnapshot.getString("place");
+//                String place = querySnapshot.getString("place");
                 String explain = querySnapshot.getString("explain");
                 Double lat = querySnapshot.getDouble("lat");
                 Double lng = querySnapshot.getDouble("lng");
@@ -891,7 +737,7 @@ public class MainFragment extends Fragment {
                 } else {
                     post.date2 = date2;
                 }
-                post.place = place;
+//                post.place = place;
                 post.explain = explain;
                 post.timestamp = timestamp;
                 post.lat = lat;

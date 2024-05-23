@@ -141,6 +141,7 @@ public class MessageFragment extends Fragment implements ConversionListener{
                     String senderId = documentChange.getDocument().getString("senderId");
                     String receiverId = documentChange.getDocument().getString("receiverId");
                     ChatMessage chatMessage = new ChatMessage();
+                    chatMessage.viewType = 1;
                     chatMessage.senderId = senderId;
                     chatMessage.receiverId = receiverId;
                     chatMessage.message = documentChange.getDocument().getString("lastMessage");

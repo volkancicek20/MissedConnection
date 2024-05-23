@@ -56,6 +56,7 @@
     <string name="giris_yap">LOGIN</string>
     <string name="hesabiniz_yok_mu">Don\'t have an account?</string>
     <string name="hesap_ac">Create an account</string>
+    <string name="do_rulama_linki_g_nder">Send verification link</string>
 
     <!-- fragment_profile -->
     <string name="profili_duzenle">Edit profile</string>

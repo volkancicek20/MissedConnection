@@ -9,6 +9,8 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
@@ -51,6 +53,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -277,6 +280,38 @@ public class FindFragment extends Fragment {
             }
         });
 
+        binding.markedMapView.setText(address);
+
+        if(lat != 0.0 && lng != 0.0 && rad != 0.0){
+            setMarked();
+        }
+
+    }
+
+    private void setMarked(){
+        binding.mapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(@NonNull GoogleMap googleMap) {
+
+                disableMapInteractions(googleMap);
+
+                googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map));
+
+//                LatLng location = new LatLng(lat, lng);
+//                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+//                googleMap.addMarker(new MarkerOptions().position(location).title(address));
+
+                LatLng location = new LatLng(lat, lng);
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.person_active_96);
+                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false); // 50x50 boyutunda ikon
+                googleMap.addMarker(new MarkerOptions()
+                .position(location)
+                .title(address)
+                .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap))
+                );
+            }
+        });
     }
 
     private void disableMapInteractions(GoogleMap googleMap) {
@@ -310,7 +345,7 @@ public class FindFragment extends Fragment {
         Double radius = rad;
         String city = binding.cityCompleteText.getText().toString();
         String district = binding.districtCompleteText.getText().toString();
-        String place = binding.place.getText().toString();
+//        String place = binding.place.getText().toString();
         String date1 = binding.dateEditText1.getText().toString();
         String time1 = binding.timeEditText1.getText().toString();
         String date2 = binding.dateEditText2.getText().toString();
@@ -318,7 +353,7 @@ public class FindFragment extends Fragment {
 
         boolean checkCity = !city.isEmpty();
         boolean checkDistrict = !district.isEmpty();
-        boolean checkPlace = !place.isEmpty();
+//        boolean checkPlace = !place.isEmpty();
 
         boolean hasDate1 = !date1.isEmpty();
         boolean hasTime1 = !time1.isEmpty();
@@ -346,7 +381,7 @@ public class FindFragment extends Fragment {
                         Bundle args = new Bundle();
                         args.putString("city", city);
                         args.putString("district", district);
-                        args.putString("place", place);
+//                        args.putString("place", place);
                         args.putDouble("radius", radius);
                         args.putDouble("latitude", latitude);
                         args.putDouble("longitude", longitude);
@@ -605,7 +640,7 @@ public class FindFragment extends Fragment {
                         Bundle args = new Bundle();
                         args.putString("city", city);
                         args.putString("district", district);
-                        args.putString("place", place);
+//                        args.putString("place", place);
                         args.putDouble("radius", radius);
                         args.putDouble("latitude", latitude);
                         args.putDouble("longitude", longitude);
@@ -663,7 +698,7 @@ public class FindFragment extends Fragment {
                         Bundle args = new Bundle();
                         args.putString("city", city);
                         args.putString("district", district);
-                        args.putString("place", place);
+//                        args.putString("place", place);
                         args.putDouble("radius", radius);
                         args.putDouble("latitude", latitude);
                         args.putDouble("longitude", longitude);
@@ -711,7 +746,7 @@ public class FindFragment extends Fragment {
                 Bundle args = new Bundle();
                 args.putString("city", city);
                 args.putString("district", district);
-                args.putString("place", place);
+//                args.putString("place", place);
                 args.putDouble("radius", radius);
                 args.putDouble("latitude", latitude);
                 args.putDouble("longitude", longitude);

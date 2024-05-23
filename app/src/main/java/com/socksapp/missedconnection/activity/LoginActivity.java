@@ -11,7 +11,6 @@ import com.socksapp.missedconnection.R;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private FirebaseUser user;
     private FirebaseAuth auth;
 
     @Override
@@ -19,8 +18,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
-        if(user != null && user.isEmailVerified()){
+        if(auth.getCurrentUser() != null && auth.getCurrentUser().isEmailVerified()){
             Intent intent = new Intent(LoginActivity.this,MainActivity.class);
             startActivity(intent);
             finish();

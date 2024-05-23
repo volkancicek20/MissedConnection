@@ -32,6 +32,7 @@ public class RegisterFragment extends Fragment {
 
     private FragmentRegisterBinding binding;
     private FirebaseAuth auth;
+    private FirebaseUser user;
     private FirebaseFirestore firestore;
 
     public RegisterFragment() {
@@ -43,6 +44,7 @@ public class RegisterFragment extends Fragment {
         super.onCreate(savedInstanceState);
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
     }
 
     @Override
@@ -174,6 +176,7 @@ public class RegisterFragment extends Fragment {
                 }
             }).addOnFailureListener(e -> {
                 progressDialog.dismiss();
+//                Toast.makeText(view.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             });
     }
 
@@ -187,7 +190,6 @@ public class RegisterFragment extends Fragment {
                     Toast.makeText(view.getContext(), "Doğrulama e-postası gönderilirken bir hata oluştu.", Toast.LENGTH_SHORT).show();
                 }
             });
-
     }
 
     private static boolean hasUpperCase(String s) {

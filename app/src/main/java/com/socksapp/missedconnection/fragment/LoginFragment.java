@@ -64,7 +64,7 @@ public class LoginFragment extends Fragment {
             if(!binding.loginEmail.getText().toString().trim().isEmpty()){
                 resetPassword(v,binding.loginEmail.getText().toString().trim());
             }else {
-                binding.loginEmail.setError("Mail adresinizi giriniz");
+                binding.loginEmailInputLayout.setError("Mail adresinizi giriniz");
                 Toast.makeText(v.getContext(),"Şifre değişikliği için e-posta adresinizi giriniz.",Toast.LENGTH_SHORT).show();
             }
         });

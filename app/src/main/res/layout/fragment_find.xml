@@ -95,7 +95,7 @@
                     android:background="@drawable/bg_map_card_view"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/place_text_input"
+                    app:layout_constraintTop_toBottomOf="@id/date_card_view"
                     >
 
                     <LinearLayout
@@ -174,35 +174,35 @@
             </com.google.android.material.card.MaterialCardView>
 
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/place_text_input"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                android:fontFamily="@font/roboto_regular"
-                android:hint="@string/mekan"
-                android:textColorHint="@color/text_input_title_change"
-                app:hintTextColor="@color/text_input_title_change"
-                app:boxStrokeWidthFocused="1dp"
-                app:boxStrokeWidth="1dp"
-                app:boxStrokeColor="@color/text_input_stroke_change"
-                app:helperTextTextColor="@color/gray"
-                app:layout_constraintTop_toBottomOf="@id/map_card_view"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                style="@style/CustomTextInputLayout.Dark2"
-                >
-                <EditText
-                    android:id="@+id/place"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/white"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/roboto_regular"
-                    android:textColorHint="@color/gray"
-                    android:textCursorDrawable="@drawable/edittext_cursor_color"
-                    />
-            </com.google.android.material.textfield.TextInputLayout>
+<!--            <com.google.android.material.textfield.TextInputLayout-->
+<!--                android:id="@+id/place_text_input"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="16dp"-->
+<!--                android:fontFamily="@font/roboto_regular"-->
+<!--                android:hint="@string/mekan"-->
+<!--                android:textColorHint="@color/text_input_title_change"-->
+<!--                app:hintTextColor="@color/text_input_title_change"-->
+<!--                app:boxStrokeWidthFocused="1dp"-->
+<!--                app:boxStrokeWidth="1dp"-->
+<!--                app:boxStrokeColor="@color/text_input_stroke_change"-->
+<!--                app:helperTextTextColor="@color/gray"-->
+<!--                app:layout_constraintTop_toBottomOf="@id/map_card_view"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                style="@style/CustomTextInputLayout.Dark2"-->
+<!--                >-->
+<!--                <EditText-->
+<!--                    android:id="@+id/place"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:textColor="@color/white"-->
+<!--                    android:textSize="14sp"-->
+<!--                    android:fontFamily="@font/roboto_regular"-->
+<!--                    android:textColorHint="@color/gray"-->
+<!--                    android:textCursorDrawable="@drawable/edittext_cursor_color"-->
+<!--                    />-->
+<!--            </com.google.android.material.textfield.TextInputLayout>-->
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/date_card_view"
@@ -211,7 +211,7 @@
                 android:layout_margin="16dp"
                 android:elevation="20dp"
                 app:cardCornerRadius="5dp"
-                app:layout_constraintTop_toBottomOf="@id/place_text_input"
+                app:layout_constraintTop_toBottomOf="@id/map_card_view"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
 

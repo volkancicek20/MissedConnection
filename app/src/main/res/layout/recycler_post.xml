@@ -57,32 +57,6 @@
         app:layout_constraintStart_toEndOf="@id/recycler_profile_image"
         />
 
-    <TextView
-        android:id="@+id/vertical_line"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:text="-"
-        android:textSize="14sp"
-        android:textColor="@color/white"
-        android:fontFamily="@font/roboto_regular"
-        app:layout_constraintStart_toEndOf="@id/recycler_city_and_district"
-        app:layout_constraintTop_toTopOf="@id/recycler_city_and_district"
-        app:layout_constraintBottom_toBottomOf="@id/recycler_city_and_district"/>
-
-
-    <TextView
-        android:id="@+id/recycler_place"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Aydıner"
-        android:textSize="14sp"
-        android:textColor="@color/white"
-        android:fontFamily="@font/roboto_regular"
-        android:layout_marginStart="10dp"
-        app:layout_constraintStart_toEndOf="@id/vertical_line"
-        app:layout_constraintTop_toTopOf="@id/vertical_line"
-        app:layout_constraintBottom_toBottomOf="@id/vertical_line"/>
 
     <TextView
         android:id="@+id/timestamp_time"

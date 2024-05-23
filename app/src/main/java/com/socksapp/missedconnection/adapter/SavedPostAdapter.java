@@ -99,7 +99,7 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
                 mail = arrayList.get(position).mail;
                 city = arrayList.get(position).city;
                 district = arrayList.get(position).district;
-                place = arrayList.get(position).place;
+//                place = arrayList.get(position).place;
                 date1 = arrayList.get(position).date1;
                 date2 = arrayList.get(position).date2;
                 time1 = arrayList.get(position).time1;
@@ -113,11 +113,11 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
 
                 savedPostHolder.recyclerSavedPostBinding.baseConstraint.setClickable(true);
 
-                if(place.isEmpty()){
-                    savedPostHolder.recyclerSavedPostBinding.placeIcon.setVisibility(View.GONE);
-                }
+//                if(place.isEmpty()){
+//                    savedPostHolder.recyclerSavedPostBinding.placeIcon.setVisibility(View.GONE);
+//                }
 
-                getShow(imageUrl,name,city,district,place,explain,timestamp,savedPostHolder);
+                getShow(imageUrl,name,city,district,explain,timestamp,savedPostHolder);
 
                 savedPostHolder.recyclerSavedPostBinding.removeSavedMenu.setOnClickListener(v ->{
                     fragment.removeSaved(v,documentReference.getId(),holder.getAdapterPosition());
@@ -157,7 +157,7 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void getShow(String imageUrl, String name, String city, String district, String place, String explain, Timestamp timestamp, SavedPostAdapter.SavedPostHolder holder){
+    public void getShow(String imageUrl, String name, String city, String district, String explain, Timestamp timestamp, SavedPostAdapter.SavedPostHolder holder){
 
         if(imageUrl.isEmpty()){
             ImageView imageView;
@@ -182,11 +182,11 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         holder.recyclerSavedPostBinding.recyclerName.setText(name);
         holder.recyclerSavedPostBinding.recyclerExplain.setText(explain);
 
-        if(place != null){
-            holder.recyclerSavedPostBinding.recyclerPlace.setText(place);
-        }else {
-            holder.recyclerSavedPostBinding.verticalLine.setVisibility(View.GONE);
-        }
+//        if(place != null){
+//            holder.recyclerSavedPostBinding.recyclerPlace.setText(place);
+//        }else {
+//            holder.recyclerSavedPostBinding.verticalLine.setVisibility(View.GONE);
+//        }
 
         long secondsElapsed = (Timestamp.now().getSeconds() - timestamp.getSeconds());
         String elapsedTime;

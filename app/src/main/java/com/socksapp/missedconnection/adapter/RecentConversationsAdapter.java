@@ -1,5 +1,8 @@
 package com.socksapp.missedconnection.adapter;
 
+import static com.socksapp.missedconnection.model.FindPost.LAYOUT_EMPTY;
+import static com.socksapp.missedconnection.model.FindPost.LAYOUT_ONE;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -19,6 +22,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.RecycleViewMessageBinding;
+import com.socksapp.missedconnection.databinding.RecyclerEmptyMessageBinding;
+import com.socksapp.missedconnection.databinding.RecyclerEmptyPostBinding;
+import com.socksapp.missedconnection.databinding.RecyclerPostBinding;
 import com.socksapp.missedconnection.fragment.MessageFragment;
 import com.socksapp.missedconnection.model.ChatMessage;
 import com.socksapp.missedconnection.myclass.User;
@@ -27,7 +33,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class RecentConversationsAdapter extends RecyclerView.Adapter<RecentConversationsAdapter.ConversionViewHolder> {
+public class RecentConversationsAdapter extends RecyclerView.Adapter {
     private final List<ChatMessage> chatMessages;
     private final ConversionListener conversionListener;
     private final MessageFragment fragment;
@@ -39,43 +45,108 @@ public class RecentConversationsAdapter extends RecyclerView.Adapter<RecentConve
         this.context = context;
     }
 
+    @Override
+    public int getItemViewType(int position) {
+        if(chatMessages.isEmpty()){
+            return 2;
+        }else {
+            if (chatMessages.get(position).getViewType() == 1) {
+                return LAYOUT_ONE;
+            }
+            if (chatMessages.get(position).getViewType() == 2) {
+                return LAYOUT_EMPTY;
+            }
+            return -1;
+        }
+    }
+
     @NonNull
     @Override
-    public ConversionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ConversionViewHolder(
-            RecycleViewMessageBinding.inflate(
-                LayoutInflater.from(parent.getContext()),
-                parent,
-                false
-            )
-        );
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        switch (viewType){
+            case LAYOUT_ONE:
+                RecycleViewMessageBinding recycleViewMessageBinding = RecycleViewMessageBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+                return new ConversionViewHolder(recycleViewMessageBinding);
+            case LAYOUT_EMPTY:
+                RecyclerEmptyMessageBinding recyclerEmptyMessageBinding = RecyclerEmptyMessageBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+                return new ConversionEmptyViewHolder(recyclerEmptyMessageBinding);
+            default:
+                return null;
+
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ConversionViewHolder holder, int position) {
-        holder.setData(chatMessages.get(position));
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        switch (holder.getItemViewType()) {
+            case LAYOUT_ONE:
+                ConversionViewHolder conversionViewHolder = (ConversionViewHolder) holder;
 
-        holder.binding.recyclerViewProfilePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int pos = holder.getAdapterPosition();
-                getShow(holder.itemView,chatMessages.get(pos).conversionImage);
-            }
-        });
-        holder.binding.messageConstraintLayout.setOnLongClickListener(v -> {
-            int pos = holder.getAdapterPosition();
-            if(pos != RecyclerView.NO_POSITION){
-                String selectedItem = chatMessages.get(pos).conversionId;
-                if(fragment != null){
-                    fragment.choiceItem(holder.itemView,selectedItem,pos);
-                }
-            }
-            return true;
-        });
+                conversionViewHolder.setData(chatMessages.get(position));
+                conversionViewHolder.binding.recyclerViewProfilePhoto.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int pos = holder.getAdapterPosition();
+                        getShow(holder.itemView,chatMessages.get(pos).conversionImage);
+                    }
+                });
+                conversionViewHolder.binding.messageConstraintLayout.setOnLongClickListener(v -> {
+                    int pos = holder.getAdapterPosition();
+                    if(pos != RecyclerView.NO_POSITION){
+                        String selectedItem = chatMessages.get(pos).conversionId;
+                        if(fragment != null){
+                            fragment.choiceItem(holder.itemView,selectedItem,pos);
+                        }
+                    }
+                    return true;
+                });
+                break;
+            case LAYOUT_EMPTY:
 
+                break;
+        }
     }
+
+    //    @NonNull
+//    @Override
+//    public ConversionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//
+//        return new ConversionViewHolder(
+//            RecycleViewMessageBinding.inflate(
+//                LayoutInflater.from(parent.getContext()),
+//                parent,
+//                false
+//            )
+//        );
+//    }
+//
+//    @Override
+//    public void onBindViewHolder(@NonNull ConversionViewHolder holder, int position) {
+//        holder.setData(chatMessages.get(position));
+//        FirebaseAuth auth = FirebaseAuth.getInstance();
+//        FirebaseUser user = auth.getCurrentUser();
+//
+//        holder.binding.recyclerViewProfilePhoto.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                int pos = holder.getAdapterPosition();
+//                getShow(holder.itemView,chatMessages.get(pos).conversionImage);
+//            }
+//        });
+//        holder.binding.messageConstraintLayout.setOnLongClickListener(v -> {
+//            int pos = holder.getAdapterPosition();
+//            if(pos != RecyclerView.NO_POSITION){
+//                String selectedItem = chatMessages.get(pos).conversionId;
+//                if(fragment != null){
+//                    fragment.choiceItem(holder.itemView,selectedItem,pos);
+//                }
+//            }
+//            return true;
+//        });
+//
+//    }
+
+
 
     @Override
     public int getItemCount() {
@@ -110,6 +181,17 @@ public class RecentConversationsAdapter extends RecyclerView.Adapter<RecentConve
             });
         }
     }
+
+    public static class ConversionEmptyViewHolder extends RecyclerView.ViewHolder {
+
+        RecyclerEmptyMessageBinding recyclerEmptyMessageBinding;
+        public ConversionEmptyViewHolder(RecyclerEmptyMessageBinding recyclerEmptyMessageBinding) {
+            super(recyclerEmptyMessageBinding.getRoot());
+            this.recyclerEmptyMessageBinding = recyclerEmptyMessageBinding;
+        }
+    }
+
+
     public void getShow(View view,String imageUrl){
 //        LayoutInflater inflater = LayoutInflater.from(view.getContext());
 //        View popupView = inflater.inflate(R.layout.popup_image, null);
