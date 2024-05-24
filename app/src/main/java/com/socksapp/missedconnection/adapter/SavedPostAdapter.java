@@ -82,7 +82,7 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        String imageUrl,name,mail,city,district,place,explain;
+        String imageUrl,name,mail,city,district,place,explain,galleryUrl;
         double lat,lng;
         double radius;
         long date1,date2,time1,time2;
@@ -95,11 +95,11 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
                 SavedPostHolder savedPostHolder = (SavedPostHolder) holder;
 
                 imageUrl = arrayList.get(position).imageUrl;
+                galleryUrl = arrayList.get(position).galleryUrl;
                 name = arrayList.get(position).name;
                 mail = arrayList.get(position).mail;
                 city = arrayList.get(position).city;
                 district = arrayList.get(position).district;
-//                place = arrayList.get(position).place;
                 date1 = arrayList.get(position).date1;
                 date2 = arrayList.get(position).date2;
                 time1 = arrayList.get(position).time1;
@@ -113,11 +113,13 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
 
                 savedPostHolder.recyclerSavedPostBinding.baseConstraint.setClickable(true);
 
-//                if(place.isEmpty()){
-//                    savedPostHolder.recyclerSavedPostBinding.placeIcon.setVisibility(View.GONE);
-//                }
+                if(galleryUrl != null && !galleryUrl.isEmpty()){
+                    savedPostHolder.recyclerSavedPostBinding.galleryImage.setVisibility(View.VISIBLE);
+                }else {
+                    savedPostHolder.recyclerSavedPostBinding.galleryImage.setVisibility(View.GONE);
+                }
 
-                getShow(imageUrl,name,city,district,explain,timestamp,savedPostHolder);
+                getShow(imageUrl,galleryUrl,name,city,district,explain,timestamp,savedPostHolder);
 
                 savedPostHolder.recyclerSavedPostBinding.removeSavedMenu.setOnClickListener(v ->{
                     fragment.removeSaved(v,documentReference.getId(),holder.getAdapterPosition());
@@ -157,20 +159,32 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void getShow(String imageUrl, String name, String city, String district, String explain, Timestamp timestamp, SavedPostAdapter.SavedPostHolder holder){
+    public void getShow(String imageUrl,String galleryUrl, String name, String city, String district, String explain, Timestamp timestamp, SavedPostAdapter.SavedPostHolder holder){
 
         if(imageUrl.isEmpty()){
             ImageView imageView;
             imageView = holder.recyclerSavedPostBinding.recyclerProfileImage;
-            imageView.setImageResource(R.drawable.icon_person);
+            imageView.setImageResource(R.drawable.person_active_96);
         }else {
-
             Glide.with(context)
                 .load(imageUrl)
                 .apply(new RequestOptions()
                 .error(R.drawable.person_active_96)
                 .centerCrop())
                 .into(holder.recyclerSavedPostBinding.recyclerProfileImage);
+        }
+
+        if(!galleryUrl.isEmpty()){
+            int screenWidth = getScreenWidth(context);
+
+            Glide.with(context)
+                .load(galleryUrl)
+                .apply(new RequestOptions()
+                .error(R.drawable.icon_loading)
+                .fitCenter()
+                .centerCrop())
+                .override(screenWidth, 500)
+                .into(holder.recyclerSavedPostBinding.galleryImage);
         }
 
         String location = city;
@@ -182,11 +196,6 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         holder.recyclerSavedPostBinding.recyclerName.setText(name);
         holder.recyclerSavedPostBinding.recyclerExplain.setText(explain);
 
-//        if(place != null){
-//            holder.recyclerSavedPostBinding.recyclerPlace.setText(place);
-//        }else {
-//            holder.recyclerSavedPostBinding.verticalLine.setVisibility(View.GONE);
-//        }
 
         long secondsElapsed = (Timestamp.now().getSeconds() - timestamp.getSeconds());
         String elapsedTime;
@@ -209,5 +218,9 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
 
         holder.recyclerSavedPostBinding.timestampTime.setText(elapsedTime);
 
+    }
+
+    private int getScreenWidth(Context context) {
+        return context.getResources().getDisplayMetrics().widthPixels;
     }
 }

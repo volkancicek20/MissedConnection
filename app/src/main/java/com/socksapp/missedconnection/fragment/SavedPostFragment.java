@@ -154,6 +154,7 @@ public class SavedPostFragment extends Fragment {
                     firestore.collection(mail).document(ref).get().addOnSuccessListener(querySnapshot -> {
                         if(querySnapshot.exists()){
                             String imageUrl = querySnapshot.getString("imageUrl");
+                            String galleryUrl = querySnapshot.getString("galleryUrl");
                             String name = querySnapshot.getString("name");
                             String city = querySnapshot.getString("city");
                             String district = querySnapshot.getString("district");
@@ -176,6 +177,7 @@ public class SavedPostFragment extends Fragment {
                             FindPost post = new FindPost();
                             post.viewType = 1;
                             post.imageUrl = imageUrl;
+                            post.galleryUrl = galleryUrl;
                             post.name = name;
                             post.mail = mail;
                             post.city = city;

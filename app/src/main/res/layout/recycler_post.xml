@@ -23,7 +23,7 @@
         android:id="@+id/recycler_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Volkan"
+        android:text=""
         android:textSize="14sp"
         android:textColor="@color/white"
         android:textStyle="bold"
@@ -37,7 +37,7 @@
         android:id="@+id/recycler_city_and_district"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="İstanbul/Arnavutköy"
+        android:text=""
         android:textSize="14sp"
         android:textColor="@color/white"
         android:layout_marginStart="4dp"
@@ -63,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:text="• 6h"
+        android:text=""
         android:textSize="14sp"
         android:textColor="@color/gray"
         android:fontFamily="@font/roboto_regular"
@@ -91,15 +91,31 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:layout_marginStart="8dp"
-        android:text="Merhaba merhaba merhaba merhaba"
+        android:text=""
         android:textColor="@color/white"
         android:textSize="14sp"
         android:textStyle="normal"
         android:fontFamily="@font/roboto_regular"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/recycler_profile_image"
         app:layout_constraintTop_toBottomOf="@id/recycler_profile_image" />
+
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/galleryImage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/recycler_profile_image"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recycler_explain"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:shapeAppearanceOverlay="@style/RoundCorner"/>
 
 
     <View

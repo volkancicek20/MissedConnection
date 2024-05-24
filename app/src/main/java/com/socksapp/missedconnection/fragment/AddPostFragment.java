@@ -1,30 +1,44 @@
 package com.socksapp.missedconnection.fragment;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.ImageDecoder;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.util.Pair;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.Navigation;
 
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -51,8 +65,10 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -60,11 +76,13 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentAddPostBinding;
 import com.socksapp.missedconnection.model.FindPost;
 
+import java.io.InputStream;
 import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -73,6 +91,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,6 +101,8 @@ public class AddPostFragment extends Fragment {
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
     private FirebaseUser user;
+    private FirebaseStorage firebaseStorage;
+    private StorageReference storageReference;
     private String[] cityNames,districtNames;
     private ArrayAdapter<String> cityAdapter,districtAdapter;
     private AutoCompleteTextView cityCompleteTextView,districtCompleteTextView;
@@ -94,6 +115,11 @@ public class AddPostFragment extends Fragment {
     private TimePickerDialog timePickerDialog,timePickerDialog2;
     private int mYear,mMonth,mDay;
     private MainActivity mainActivity;
+    public ActivityResultLauncher<Intent> activityResultLauncher;
+    public ActivityResultLauncher<String> permissionLauncher;
+    private Bitmap selectedBitmap;
+    private Uri imageData;
+    private String uniqueID;
 
     public static MapView mapView;
 
@@ -105,6 +131,8 @@ public class AddPostFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         firestore = FirebaseFirestore.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
+        storageReference = firebaseStorage.getReference();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
@@ -143,6 +171,13 @@ public class AddPostFragment extends Fragment {
         cityCompleteTextView.setAdapter(cityAdapter);
 
         userMail = user.getEmail();
+
+        imageData = null;
+
+        registerLauncher(view);
+
+        binding.galleryImage.setOnClickListener(v -> setImage(view));
+
         myUserName = nameShared.getString("name","");
         myImageUrl = imageUrlShared.getString("imageUrl","");
 
@@ -160,6 +195,17 @@ public class AddPostFragment extends Fragment {
             }else {
                 binding.visibleDatePicker.setVisibility(View.GONE);
             }
+            return false;
+        });
+
+        binding.topImageLinear.setOnTouchListener((v, event) -> {
+            int checkVisible = binding.galleryImage.getVisibility();
+            if(checkVisible == View.GONE){
+                binding.galleryImage.setVisibility(View.VISIBLE);
+            }else {
+                binding.galleryImage.setVisibility(View.GONE);
+            }
+
             return false;
         });
 
@@ -403,7 +449,6 @@ public class AddPostFragment extends Fragment {
         Double radius = rad;
         String city = binding.cityCompleteText.getText().toString();
         String district = binding.districtCompleteText.getText().toString();
-//        String place = binding.place.getText().toString();
         String date1 = binding.dateEditText1.getText().toString();
         String time1 = binding.timeEditText1.getText().toString();
         String date2 = binding.dateEditText2.getText().toString();
@@ -413,7 +458,6 @@ public class AddPostFragment extends Fragment {
         boolean checkCity = !city.isEmpty();
         boolean checkDistrict = !district.isEmpty();
         boolean checkExplain = !explain.isEmpty();
-//        boolean checkPlace = !place.isEmpty();
 
         boolean hasDate1 = !date1.isEmpty();
         boolean hasTime1 = !time1.isEmpty();
@@ -454,41 +498,85 @@ public class AddPostFragment extends Fragment {
                                 long time1_long = time_1.getTime();
                                 long time2_long = time_2.getTime();
 
-                                HashMap<String,Object> post = new HashMap<>();
-                                post.put("city",city);
-                                post.put("district",district);
-//                                if(checkPlace){
-//                                    post.put("place",place);
-//                                }else {
-//                                    post.put("place","");
-//                                }
-                                post.put("date1",date1_long);
-                                post.put("time1",time1_long);
-                                post.put("time2",time2_long);
-                                post.put("date2",date2_long);
-                                post.put("lat",latitude);
-                                post.put("lng",longitude);
-                                post.put("radius",radius);
-                                post.put("explain",explain);
-                                post.put("timestamp",new Date());
-                                post.put("name",myUserName);
-                                post.put("imageUrl",myImageUrl);
-                                post.put("mail",userMail);
+                                if(imageData != null){
+                                    uniqueID = UUID.randomUUID().toString();
+                                    storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
+                                            .addOnSuccessListener(taskSnapshot -> {
+                                                Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
+                                                downloadUrlTask.addOnCompleteListener(task -> {
+                                                    String galleryUrl = task.getResult().toString();
 
-                                WriteBatch batch = firestore.batch();
+                                                    HashMap<String,Object> post = new HashMap<>();
+                                                    post.put("city",city);
+                                                    post.put("district",district);
+                                                    post.put("date1",date1_long);
+                                                    post.put("time1",time1_long);
+                                                    post.put("time2",time2_long);
+                                                    post.put("date2",date2_long);
+                                                    post.put("lat",latitude);
+                                                    post.put("lng",longitude);
+                                                    post.put("radius",radius);
+                                                    post.put("explain",explain);
+                                                    post.put("timestamp",new Date());
+                                                    post.put("name",myUserName);
+                                                    post.put("imageUrl",myImageUrl);
+                                                    post.put("galleryUrl",galleryUrl);
+                                                    post.put("mail",userMail);
 
-                                DocumentReference newPostRef = firestore.collection("post" + city).document();
-                                batch.set(newPostRef, post);
+                                                    WriteBatch batch = firestore.batch();
 
-                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
-                                batch.set(newPostRef2, post);
+                                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                                    batch.set(newPostRef, post);
 
-                                batch.commit().addOnSuccessListener(aVoid -> {
-                                    resetAction();
-                                    showToastShort("Eklendi");
-                                }).addOnFailureListener(e -> {
-                                    showToastShort(e.getLocalizedMessage());
-                                });
+                                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                                    batch.set(newPostRef2, post);
+
+                                                    batch.commit()
+                                                        .addOnSuccessListener(aVoid -> {
+                                                            resetAction();
+                                                            showToastShort("Eklendi");
+                                                        })
+                                                        .addOnFailureListener(e -> {
+                                                            showToastShort(e.getLocalizedMessage());
+                                                        });
+                                                });
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                showToastShort(e.getLocalizedMessage());
+                                            });
+                                }else {
+                                    HashMap<String,Object> post = new HashMap<>();
+                                    post.put("city",city);
+                                    post.put("district",district);
+                                    post.put("date1",date1_long);
+                                    post.put("time1",time1_long);
+                                    post.put("time2",time2_long);
+                                    post.put("date2",date2_long);
+                                    post.put("lat",latitude);
+                                    post.put("lng",longitude);
+                                    post.put("radius",radius);
+                                    post.put("explain",explain);
+                                    post.put("timestamp",new Date());
+                                    post.put("name",myUserName);
+                                    post.put("imageUrl",myImageUrl);
+                                    post.put("galleryUrl","");
+                                    post.put("mail",userMail);
+
+                                    WriteBatch batch = firestore.batch();
+
+                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                    batch.set(newPostRef, post);
+
+                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                    batch.set(newPostRef2, post);
+
+                                    batch.commit().addOnSuccessListener(aVoid -> {
+                                        resetAction();
+                                        showToastShort("Eklendi");
+                                    }).addOnFailureListener(e -> {
+                                        showToastShort(e.getLocalizedMessage());
+                                    });
+                                }
 
                             }else {
 
@@ -747,41 +835,88 @@ public class AddPostFragment extends Fragment {
                                 long date1_long = date_1.getTime();
                                 long date2_long = date_2.getTime();
 
-                                HashMap<String,Object> post = new HashMap<>();
-                                post.put("city",city);
-                                post.put("district",district);
-//                                if(checkPlace){
-//                                    post.put("place",place);
-//                                }else {
-//                                    post.put("place","");
-//                                }
-                                post.put("date1",date1_long);
-                                post.put("time1",0);
-                                post.put("time2",0);
-                                post.put("date2",date2_long);
-                                post.put("lat",latitude);
-                                post.put("lng",longitude);
-                                post.put("radius",radius);
-                                post.put("explain",explain);
-                                post.put("timestamp",new Date());
-                                post.put("name",myUserName);
-                                post.put("imageUrl",myImageUrl);
-                                post.put("mail",userMail);
 
-                                WriteBatch batch = firestore.batch();
+                                if(imageData != null){
+                                    uniqueID = UUID.randomUUID().toString();
+                                    storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
+                                        .addOnSuccessListener(taskSnapshot -> {
+                                            Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
+                                            downloadUrlTask.addOnCompleteListener(task -> {
+                                                String galleryUrl = task.getResult().toString();
 
-                                DocumentReference newPostRef = firestore.collection("post" + city).document();
-                                batch.set(newPostRef, post);
+                                                HashMap<String,Object> post = new HashMap<>();
+                                                post.put("city",city);
+                                                post.put("district",district);
+                                                post.put("date1",date1_long);
+                                                post.put("time1",0);
+                                                post.put("time2",0);
+                                                post.put("date2",date2_long);
+                                                post.put("lat",latitude);
+                                                post.put("lng",longitude);
+                                                post.put("radius",radius);
+                                                post.put("explain",explain);
+                                                post.put("timestamp",new Date());
+                                                post.put("name",myUserName);
+                                                post.put("imageUrl",myImageUrl);
+                                                post.put("galleryUrl",galleryUrl);
+                                                post.put("mail",userMail);
 
-                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
-                                batch.set(newPostRef2, post);
+                                                WriteBatch batch = firestore.batch();
 
-                                batch.commit().addOnSuccessListener(aVoid -> {
-                                    resetAction();
-                                    showToastShort("Eklendi");
-                                }).addOnFailureListener(e -> {
-                                    showToastShort(e.getLocalizedMessage());
-                                });
+                                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                                batch.set(newPostRef, post);
+
+                                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                                batch.set(newPostRef2, post);
+
+                                                batch.commit()
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        resetAction();
+                                                        showToastShort("Eklendi");
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        showToastShort(e.getLocalizedMessage());
+                                                    });
+                                            });
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            showToastShort(e.getLocalizedMessage());
+                                        });
+                                }else {
+
+                                    HashMap<String,Object> post = new HashMap<>();
+                                    post.put("city",city);
+                                    post.put("district",district);
+                                    post.put("date1",date1_long);
+                                    post.put("time1",0);
+                                    post.put("time2",0);
+                                    post.put("date2",date2_long);
+                                    post.put("lat",latitude);
+                                    post.put("lng",longitude);
+                                    post.put("radius",radius);
+                                    post.put("explain",explain);
+                                    post.put("timestamp",new Date());
+                                    post.put("name",myUserName);
+                                    post.put("imageUrl",myImageUrl);
+                                    post.put("galleryUrl","");
+                                    post.put("mail",userMail);
+
+                                    WriteBatch batch = firestore.batch();
+
+                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                    batch.set(newPostRef, post);
+
+                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                    batch.set(newPostRef2, post);
+
+                                    batch.commit().addOnSuccessListener(aVoid -> {
+                                        resetAction();
+                                        showToastShort("Eklendi");
+                                    }).addOnFailureListener(e -> {
+                                        showToastShort(e.getLocalizedMessage());
+                                    });
+                                }
+
 
                             }else {
 
@@ -840,41 +975,86 @@ public class AddPostFragment extends Fragment {
                                 long time1_long = time_1.getTime();
                                 long time2_long = time_2.getTime();
 
-                                HashMap<String,Object> post = new HashMap<>();
-                                post.put("city",city);
-                                post.put("district",district);
-//                                if(checkPlace){
-//                                    post.put("place",place);
-//                                }else {
-//                                    post.put("place","");
-//                                }
-                                post.put("date1",0);
-                                post.put("time1",time1_long);
-                                post.put("time2",time2_long);
-                                post.put("date2",0);
-                                post.put("lat",latitude);
-                                post.put("lng",longitude);
-                                post.put("radius",radius);
-                                post.put("explain",explain);
-                                post.put("timestamp",new Date());
-                                post.put("name",myUserName);
-                                post.put("imageUrl",myImageUrl);
-                                post.put("mail",userMail);
+                                if(imageData != null){
+                                    uniqueID = UUID.randomUUID().toString();
+                                    storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
+                                        .addOnSuccessListener(taskSnapshot -> {
+                                            Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
+                                            downloadUrlTask.addOnCompleteListener(task -> {
+                                                String galleryUrl = task.getResult().toString();
 
-                                WriteBatch batch = firestore.batch();
+                                                HashMap<String,Object> post = new HashMap<>();
+                                                post.put("city",city);
+                                                post.put("district",district);
+                                                post.put("date1",0);
+                                                post.put("time1",time1_long);
+                                                post.put("time2",time2_long);
+                                                post.put("date2",0);
+                                                post.put("lat",latitude);
+                                                post.put("lng",longitude);
+                                                post.put("radius",radius);
+                                                post.put("explain",explain);
+                                                post.put("timestamp",new Date());
+                                                post.put("name",myUserName);
+                                                post.put("imageUrl",myImageUrl);
+                                                post.put("galleryUrl",galleryUrl);
+                                                post.put("mail",userMail);
 
-                                DocumentReference newPostRef = firestore.collection("post" + city).document();
-                                batch.set(newPostRef, post);
+                                                WriteBatch batch = firestore.batch();
 
-                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
-                                batch.set(newPostRef2, post);
+                                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                                batch.set(newPostRef, post);
 
-                                batch.commit().addOnSuccessListener(aVoid -> {
-                                    resetAction();
-                                    showToastShort("Eklendi");
-                                }).addOnFailureListener(e -> {
-                                    showToastShort(e.getLocalizedMessage());
-                                });
+                                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                                batch.set(newPostRef2, post);
+
+                                                batch.commit()
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        resetAction();
+                                                        showToastShort("Eklendi");
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        showToastShort(e.getLocalizedMessage());
+                                                    });
+                                            });
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            showToastShort(e.getLocalizedMessage());
+                                        });
+                                }else {
+
+                                    HashMap<String,Object> post = new HashMap<>();
+                                    post.put("city",city);
+                                    post.put("district",district);
+                                    post.put("date1",0);
+                                    post.put("time1",time1_long);
+                                    post.put("time2",time2_long);
+                                    post.put("date2",0);
+                                    post.put("lat",latitude);
+                                    post.put("lng",longitude);
+                                    post.put("radius",radius);
+                                    post.put("explain",explain);
+                                    post.put("timestamp",new Date());
+                                    post.put("name",myUserName);
+                                    post.put("imageUrl",myImageUrl);
+                                    post.put("galleryUrl","");
+                                    post.put("mail",userMail);
+
+                                    WriteBatch batch = firestore.batch();
+
+                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                    batch.set(newPostRef, post);
+
+                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                    batch.set(newPostRef2, post);
+
+                                    batch.commit().addOnSuccessListener(aVoid -> {
+                                        resetAction();
+                                        showToastShort("Eklendi");
+                                    }).addOnFailureListener(e -> {
+                                        showToastShort(e.getLocalizedMessage());
+                                    });
+                                }
 
                             }else {
 
@@ -913,41 +1093,88 @@ public class AddPostFragment extends Fragment {
             }
 
             if(!hasDate1 && !hasDate2 && !hasTime1 && !hasTime2){
-                HashMap<String,Object> post = new HashMap<>();
-                post.put("city",city);
-                post.put("district",district);
-//                if(checkPlace){
-//                    post.put("place",place);
-//                }else {
-//                    post.put("place","");
-//                }
-                post.put("date1",0);
-                post.put("time1",0);
-                post.put("time2",0);
-                post.put("date2",0);
-                post.put("lat",latitude);
-                post.put("lng",longitude);
-                post.put("radius",radius);
-                post.put("explain",explain);
-                post.put("timestamp",new Date());
-                post.put("name",myUserName);
-                post.put("imageUrl",myImageUrl);
-                post.put("mail",userMail);
 
-                WriteBatch batch = firestore.batch();
+                if(imageData != null){
+                    uniqueID = UUID.randomUUID().toString();
+                    storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
+                        .addOnSuccessListener(taskSnapshot -> {
+                            Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
+                            downloadUrlTask.addOnCompleteListener(task -> {
+                                String galleryUrl = task.getResult().toString();
 
-                DocumentReference newPostRef = firestore.collection("post" + city).document();
-                batch.set(newPostRef, post);
+                                HashMap<String,Object> post = new HashMap<>();
+                                post.put("city",city);
+                                post.put("district",district);
+                                post.put("date1",0);
+                                post.put("time1",0);
+                                post.put("time2",0);
+                                post.put("date2",0);
+                                post.put("lat",latitude);
+                                post.put("lng",longitude);
+                                post.put("radius",radius);
+                                post.put("explain",explain);
+                                post.put("timestamp",new Date());
+                                post.put("name",myUserName);
+                                post.put("imageUrl",myImageUrl);
+                                post.put("galleryUrl",galleryUrl);
+                                post.put("mail",userMail);
 
-                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
-                batch.set(newPostRef2, post);
+                                WriteBatch batch = firestore.batch();
 
-                batch.commit().addOnSuccessListener(aVoid -> {
-                    resetAction();
-                    showToastShort("Eklendi");
-                }).addOnFailureListener(e -> {
-                    showToastShort(e.getLocalizedMessage());
-                });
+                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                batch.set(newPostRef, post);
+
+                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                batch.set(newPostRef2, post);
+
+                                batch.commit()
+                                    .addOnSuccessListener(aVoid -> {
+                                        resetAction();
+                                        showToastShort("Eklendi");
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        showToastShort(e.getLocalizedMessage());
+                                    });
+                            });
+                        })
+                        .addOnFailureListener(e -> {
+                            showToastShort(e.getLocalizedMessage());
+                        });
+                }else {
+
+                    HashMap<String,Object> post = new HashMap<>();
+                    post.put("city",city);
+                    post.put("district",district);
+                    post.put("date1",0);
+                    post.put("time1",0);
+                    post.put("time2",0);
+                    post.put("date2",0);
+                    post.put("lat",latitude);
+                    post.put("lng",longitude);
+                    post.put("radius",radius);
+                    post.put("explain",explain);
+                    post.put("timestamp",new Date());
+                    post.put("name",myUserName);
+                    post.put("imageUrl",myImageUrl);
+                    post.put("galleryUrl","");
+                    post.put("mail",userMail);
+
+                    WriteBatch batch = firestore.batch();
+
+                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+                    batch.set(newPostRef, post);
+
+                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                    batch.set(newPostRef2, post);
+
+                    batch.commit().addOnSuccessListener(aVoid -> {
+                        resetAction();
+                        showToastShort("Eklendi");
+                    }).addOnFailureListener(e -> {
+                        showToastShort(e.getLocalizedMessage());
+                    });
+                }
+
             }
 
         }
@@ -985,8 +1212,7 @@ public class AddPostFragment extends Fragment {
 
         binding.districtCompleteText.setText("");
 
-
-//        binding.place.setText("");
+        imageData = null;
 
         binding.explain.setText("");
 
@@ -1675,6 +1901,85 @@ public class AddPostFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         binding.mapView.onSaveInstanceState(outState);
+    }
+
+    private void setImage(View view) {
+        String[] permissions;
+        String rationaleMessage;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions = new String[]{Manifest.permission.READ_MEDIA_IMAGES};
+        }else {
+            permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
+        }
+
+        rationaleMessage = "Galeriye gitmek için izin gerekli";
+
+        if (ContextCompat.checkSelfPermission(view.getContext(), permissions[0]) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), permissions[0])) {
+                Snackbar.make(view, rationaleMessage, Snackbar.LENGTH_INDEFINITE).setAction("İzin ver", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        permissionLauncher.launch(permissions[0]);
+                    }
+                }).show();
+            } else {
+                permissionLauncher.launch(permissions[0]);
+            }
+        } else {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            activityResultLauncher.launch(intent);
+        }
+    }
+
+    private void registerLauncher(View view){
+        activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+            @Override
+            public void onActivityResult(ActivityResult result) {
+                if(result.getResultCode() == Activity.RESULT_OK){
+                    Intent intentForResult = result.getData();
+                    if(intentForResult != null){
+                        imageData = intentForResult.getData();
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                            try {
+                                ImageDecoder.Source source = ImageDecoder.createSource(view.getContext().getContentResolver(),imageData);
+                                selectedBitmap = ImageDecoder.decodeBitmap(source);
+                                binding.galleryImage.setImageBitmap(selectedBitmap);
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                        }else {
+                            try {
+                                InputStream inputStream = view.getContext().getContentResolver().openInputStream(imageData);
+                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                binding.galleryImage.setImageBitmap(bitmap);
+                                if (inputStream != null) {
+                                    inputStream.close();
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                    }
+                }
+            }
+        });
+        permissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
+            @Override
+            public void onActivityResult(Boolean result) {
+                if(result){
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    activityResultLauncher.launch(intent);
+                }else{
+                    showToastShort("İzinleri aktif etmeniz gerekiyor");
+                    Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", requireActivity().getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                }
+            }
+        });
     }
 
     @Override

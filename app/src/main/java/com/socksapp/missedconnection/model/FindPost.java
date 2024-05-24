@@ -8,6 +8,7 @@ public class FindPost {
     public static final int LAYOUT_EMPTY = 2;
     public int viewType;
     public String imageUrl;
+    public String galleryUrl;
     public String name;
     public String mail;
     public String city;
@@ -26,6 +27,14 @@ public class FindPost {
 
     public FindPost (){
 
+    }
+
+    public String getGalleryUrl() {
+        return galleryUrl;
+    }
+
+    public void setGalleryUrl(String galleryUrl) {
+        this.galleryUrl = galleryUrl;
     }
 
     public int getViewType() {

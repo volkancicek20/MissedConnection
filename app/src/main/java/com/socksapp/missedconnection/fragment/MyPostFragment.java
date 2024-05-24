@@ -204,6 +204,7 @@ public class MyPostFragment extends Fragment {
 //                    String imageUrl = querySnapshot.getString("imageUrl");
 //                    String name = querySnapshot.getString("name");
 //                    String mail = querySnapshot.getString("mail");
+                String galleryUrl = querySnapshot.getString("galleryUrl");
                 String city = querySnapshot.getString("city");
                 String district = querySnapshot.getString("district");
                 Long time1 = querySnapshot.getLong("time1");
@@ -225,6 +226,7 @@ public class MyPostFragment extends Fragment {
                 FindPost post = new FindPost();
                 post.viewType = 1;
                 post.imageUrl = imageUrlShared.getString("imageUrl","");
+                post.galleryUrl = galleryUrl;
                 post.name = nameShared.getString("name","");
                 post.mail = userMail;
                 post.city = city;

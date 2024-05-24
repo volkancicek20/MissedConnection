@@ -424,9 +424,9 @@ public class MainFragment extends Fragment {
                     long date2_long = date_2.getTime();
 
                     query = firestore.collection(collection)
-                            .whereEqualTo("district", districtFind)
-                            .whereLessThanOrEqualTo("date1",date2_long)
-                            .whereGreaterThanOrEqualTo("date2",date1_long);
+                        .whereEqualTo("district", districtFind)
+                        .whereLessThanOrEqualTo("date1",date2_long)
+                        .whereGreaterThanOrEqualTo("date2",date1_long);
 
                 }else {
                 }
@@ -509,6 +509,7 @@ public class MainFragment extends Fragment {
                             boolean isIntersecting = distance <= radiusSum;
                             if (isIntersecting) {
                                 String imageUrl = querySnapshot.getString("imageUrl");
+                                String galleryUrl = querySnapshot.getString("galleryUrl");
                                 String name = querySnapshot.getString("name");
                                 String mail = querySnapshot.getString("mail");
                                 String city = querySnapshot.getString("city");
@@ -517,7 +518,6 @@ public class MainFragment extends Fragment {
                                 Long time2 = querySnapshot.getLong("time2");
                                 Long date1 = querySnapshot.getLong("date1");
                                 Long date2 = querySnapshot.getLong("date2");
-//                                String place = querySnapshot.getString("place");
                                 String explain = querySnapshot.getString("explain");
                                 Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
                                 DocumentReference documentReference = querySnapshot.getReference();
@@ -525,6 +525,7 @@ public class MainFragment extends Fragment {
                                 FindPost post = new FindPost();
                                 post.viewType = 1;
                                 post.imageUrl = imageUrl;
+                                post.galleryUrl = galleryUrl;
                                 post.name = name;
                                 post.mail = mail;
                                 post.city = city;
@@ -549,7 +550,6 @@ public class MainFragment extends Fragment {
                                 } else {
                                     post.date2 = date2;
                                 }
-//                                post.place = place;
                                 post.explain = explain;
                                 post.timestamp = timestamp;
                                 post.lat = lat;
@@ -599,6 +599,7 @@ public class MainFragment extends Fragment {
                     for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
 
                         String imageUrl = querySnapshot.getString("imageUrl");
+                        String galleryUrl = querySnapshot.getString("galleryUrl");
                         String name = querySnapshot.getString("name");
                         String mail = querySnapshot.getString("mail");
                         String city = querySnapshot.getString("city");
@@ -607,7 +608,6 @@ public class MainFragment extends Fragment {
                         Long time2 = querySnapshot.getLong("time2");
                         Long date1 = querySnapshot.getLong("date1");
                         Long date2 = querySnapshot.getLong("date2");
-//                        String place = querySnapshot.getString("place");
                         String explain = querySnapshot.getString("explain");
                         Double lat = querySnapshot.getDouble("lat");
                         Double lng = querySnapshot.getDouble("lng");
@@ -622,6 +622,7 @@ public class MainFragment extends Fragment {
                         FindPost post = new FindPost();
                         post.viewType = 1;
                         post.imageUrl = imageUrl;
+                        post.galleryUrl = galleryUrl;
                         post.name = name;
                         post.mail = mail;
                         post.city = city;
@@ -646,7 +647,6 @@ public class MainFragment extends Fragment {
                         } else {
                             post.date2 = date2;
                         }
-//                        post.place = place;
                         post.explain = explain;
                         post.timestamp = timestamp;
                         post.lat = lat;
@@ -690,6 +690,7 @@ public class MainFragment extends Fragment {
             for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
                 found = true;
                 String imageUrl = querySnapshot.getString("imageUrl");
+                String galleryUrl = querySnapshot.getString("galleryUrl");
                 String name = querySnapshot.getString("name");
                 String mail = querySnapshot.getString("mail");
                 String city = querySnapshot.getString("city");
@@ -698,7 +699,6 @@ public class MainFragment extends Fragment {
                 Long time2 = querySnapshot.getLong("time2");
                 Long date1 = querySnapshot.getLong("date1");
                 Long date2 = querySnapshot.getLong("date2");
-//                String place = querySnapshot.getString("place");
                 String explain = querySnapshot.getString("explain");
                 Double lat = querySnapshot.getDouble("lat");
                 Double lng = querySnapshot.getDouble("lng");
@@ -713,6 +713,7 @@ public class MainFragment extends Fragment {
                 FindPost post = new FindPost();
                 post.viewType = 1;
                 post.imageUrl = imageUrl;
+                post.galleryUrl = galleryUrl;
                 post.name = name;
                 post.mail = mail;
                 post.city = city;
@@ -737,7 +738,6 @@ public class MainFragment extends Fragment {
                 } else {
                     post.date2 = date2;
                 }
-//                post.place = place;
                 post.explain = explain;
                 post.timestamp = timestamp;
                 post.lat = lat;

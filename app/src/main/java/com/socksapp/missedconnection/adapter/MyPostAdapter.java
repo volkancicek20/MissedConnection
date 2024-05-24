@@ -75,7 +75,7 @@ public class MyPostAdapter extends RecyclerView.Adapter {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        String imageUrl,name,mail,city,district,place,explain;
+        String imageUrl,name,mail,city,district,place,explain,galleryUrl;
         double lat,lng;
         double radius;
         long date1,date2,time1,time2;
@@ -88,11 +88,11 @@ public class MyPostAdapter extends RecyclerView.Adapter {
                 MyPostHolder myPostHolder = (MyPostHolder) holder;
 
                 imageUrl = arrayList.get(position).imageUrl;
+                galleryUrl = arrayList.get(position).galleryUrl;
                 name = arrayList.get(position).name;
                 mail = arrayList.get(position).mail;
                 city = arrayList.get(position).city;
                 district = arrayList.get(position).district;
-//                place = arrayList.get(position).place;
                 date1 = arrayList.get(position).date1;
                 date2 = arrayList.get(position).date2;
                 time1 = arrayList.get(position).time1;
@@ -106,11 +106,13 @@ public class MyPostAdapter extends RecyclerView.Adapter {
 
                 myPostHolder.recyclerPostBinding.baseConstraint.setClickable(true);
 
-//                if(place.isEmpty()){
-//                    myPostHolder.recyclerPostBinding.placeIcon.setVisibility(View.GONE);
-//                }
+                if(galleryUrl != null && !galleryUrl.isEmpty()){
+                    myPostHolder.recyclerPostBinding.galleryImage.setVisibility(View.VISIBLE);
+                }else {
+                    myPostHolder.recyclerPostBinding.galleryImage.setVisibility(View.GONE);
+                }
 
-                getShow(imageUrl,name,city,district,explain,timestamp,myPostHolder);
+                getShow(imageUrl,galleryUrl,name,city,district,explain,timestamp,myPostHolder);
 
                 ((MyPostHolder) holder).recyclerPostBinding.verticalMenu.setOnClickListener(v ->{
                     fragment.dialogShow(v,city,lat,lng,radius,documentReference,holder.getAdapterPosition());
@@ -149,7 +151,7 @@ public class MyPostAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void getShow(String imageUrl,String name,String city,String district,String explain,Timestamp timestamp,MyPostHolder holder){
+    public void getShow(String imageUrl,String galleryUrl,String name,String city,String district,String explain,Timestamp timestamp,MyPostHolder holder){
 
         if(imageUrl.isEmpty()){
             ImageView imageView;
@@ -163,6 +165,19 @@ public class MyPostAdapter extends RecyclerView.Adapter {
                 .error(R.drawable.person_active_96)
                 .centerCrop())
                 .into(holder.recyclerPostBinding.recyclerProfileImage);
+        }
+
+        if(!galleryUrl.isEmpty()){
+            int screenWidth = getScreenWidth(context);
+
+            Glide.with(context)
+                .load(galleryUrl)
+                .apply(new RequestOptions()
+                .error(R.drawable.icon_loading)
+                .fitCenter()
+                .centerCrop())
+                .override(screenWidth, 500)
+                .into(holder.recyclerPostBinding.galleryImage);
         }
 
         String location = city;
@@ -201,5 +216,9 @@ public class MyPostAdapter extends RecyclerView.Adapter {
 
         holder.recyclerPostBinding.timestampTime.setText(elapsedTime);
 
+    }
+
+    private int getScreenWidth(Context context) {
+        return context.getResources().getDisplayMetrics().widthPixels;
     }
 }
