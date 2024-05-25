@@ -33,6 +33,7 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
+import com.socksapp.missedconnection.FCM.FCMNotificationSender;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.ChatAdapter;
@@ -135,7 +136,7 @@ public class ChatFragment extends Fragment {
         public void onClick(View view) {
             String message = binding.inputMessage.getText().toString().trim();
             if (!message.isEmpty()) {
-                sendMessage(message);
+                sendMessage(message,view);
                 binding.inputMessage.setText("");
             }
         }
@@ -149,7 +150,7 @@ public class ChatFragment extends Fragment {
         return uuid;
     }
 
-    private void sendMessage(String msg){
+    private void sendMessage(String msg,View view){
         firebaseFirestore.collection("chatsId").document(myMail).get().addOnSuccessListener(documentSnapshot -> {
             if(documentSnapshot.exists()){
                 Map<String,Object> data = documentSnapshot.getData();
@@ -183,8 +184,20 @@ public class ChatFragment extends Fragment {
                                 }
 
                                 batch.commit().addOnSuccessListener(aVoid -> {
+                                    firebaseFirestore.collection("users").document(anotherMail).get().addOnSuccessListener(documentSnapshot1 -> {
+                                        if(documentSnapshot1.exists()){
+                                            String token = documentSnapshot1.getString("fcmToken");
+                                            String name;
+                                            name = documentSnapshot1.getString("name");
+                                            if(name == null) name = "";
+                                            FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,name,msg,view.getContext());
+                                            fcmNotificationSender.SendNotification();
+                                        }
+                                    });
                                     binding.inputMessage.setText("");
                                 });
+
+
                             }
                         }else {
                             String auto_id = generateAlphanumericUUID();
@@ -226,6 +239,16 @@ public class ChatFragment extends Fragment {
                             }
 
                             batch.commit().addOnSuccessListener(aVoid -> {
+                                firebaseFirestore.collection("users").document(anotherMail).get().addOnSuccessListener(documentSnapshot1 -> {
+                                    if(documentSnapshot1.exists()){
+                                        String token = documentSnapshot1.getString("fcmToken");
+                                        String name;
+                                        name = documentSnapshot1.getString("name");
+                                        if(name == null) name = "";
+                                        FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,name,msg,view.getContext());
+                                        fcmNotificationSender.SendNotification();
+                                    }
+                                });
                                 binding.inputMessage.setText("");
                             });
                         }
@@ -269,6 +292,16 @@ public class ChatFragment extends Fragment {
                         }
 
                         batch.commit().addOnSuccessListener(aVoid -> {
+                            firebaseFirestore.collection("users").document(anotherMail).get().addOnSuccessListener(documentSnapshot1 -> {
+                                if(documentSnapshot1.exists()){
+                                    String token = documentSnapshot1.getString("fcmToken");
+                                    String name;
+                                    name = documentSnapshot1.getString("name");
+                                    if(name == null) name = "";
+                                    FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,name,msg,view.getContext());
+                                    fcmNotificationSender.SendNotification();
+                                }
+                            });
                             refreshFragment();
                             binding.inputMessage.setText("");
                         });
@@ -314,6 +347,16 @@ public class ChatFragment extends Fragment {
                 }
 
                 batch.commit().addOnSuccessListener(aVoid -> {
+                    firebaseFirestore.collection("users").document(anotherMail).get().addOnSuccessListener(documentSnapshot1 -> {
+                        if(documentSnapshot1.exists()){
+                            String token = documentSnapshot1.getString("fcmToken");
+                            String name;
+                            name = documentSnapshot1.getString("name");
+                            if(name == null) name = "";
+                            FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,name,msg,view.getContext());
+                            fcmNotificationSender.SendNotification();
+                        }
+                    });
                     refreshFragment();
                     binding.inputMessage.setText("");
                 });

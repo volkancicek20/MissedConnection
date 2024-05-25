@@ -138,7 +138,7 @@ public class PostAdapter extends RecyclerView.Adapter {
                 });
 
                 if(!myMail.isEmpty() && !myMail.equals(mail)){
-                    fragment.setActivityNotification(mail,documentReference);
+                    fragment.setActivityNotification(mail,documentReference,context);
                 }
 
                 break;

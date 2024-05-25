@@ -13,17 +13,25 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.socksapp.missedconnection.FCM.AccessToken;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.ActivityMainBinding;
 import com.socksapp.missedconnection.fragment.AboutUsFragment;
@@ -212,6 +220,12 @@ public class MainActivity extends AppCompatActivity {
 
         getDataUser();
 
+        getFCMToken();
+
+    }
+
+    private void getFCMToken(){
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> firestore.collection("users").document(userMail).update("fcmToken",task.getResult()));
     }
 
     private void setLanguage() {

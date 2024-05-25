@@ -41,6 +41,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.socksapp.missedconnection.FCM.FCMNotificationSender;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.PostAdapter;
@@ -777,7 +778,7 @@ public class MainFragment extends Fragment {
         });
     }
 
-    public void setActivityNotification(String mail, DocumentReference ref){
+    public void setActivityNotification(String mail, DocumentReference ref,Context context){
 
         if(!myUserName.isEmpty()){
             String refId = ref.getId();
@@ -795,7 +796,13 @@ public class MainFragment extends Fragment {
                 DocumentReference documentReference = firestore.collection("views").document(mail).collection(mail).document();
 
                 documentReference.set(viewData,SetOptions.merge()).addOnSuccessListener(unused -> {
-                    Toast.makeText(requireContext(),"Bildirildi",Toast.LENGTH_SHORT).show();
+                    firestore.collection("users").document(mail).get().addOnSuccessListener(documentSnapshot1 -> {
+                        if(documentSnapshot1.exists()){
+                            String token = documentSnapshot1.getString("fcmToken");
+                            FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,"","Paylaşımınız "+myUserName+" tarafından görüntülendi.",context);
+                            fcmNotificationSender.SendNotification();
+                        }
+                    });
                 });
             }else {
                 // Veri bulundu ve süresi dolmamış

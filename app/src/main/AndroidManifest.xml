@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -40,6 +42,19 @@
 
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="@string/mapApi"/>
+
+        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="Notification"/>
+
+        <service android:name=".FCM.MessageService"
+            android:exported="false"
+            android:permission="TODO">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
 
     </application>
 

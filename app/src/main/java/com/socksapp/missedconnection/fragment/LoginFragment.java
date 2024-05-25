@@ -29,10 +29,15 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.LoginActivity;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentLoginBinding;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 public class LoginFragment extends Fragment {
 
@@ -154,17 +159,6 @@ public class LoginFragment extends Fragment {
                         binding.loginPasswordInputLayout.setError(null);
                     }
                 }
-
-//                if(!mailText.isEmpty() && !passwordText.isEmpty()){
-//                    login(v,mailText,passwordText);
-//                }else {
-//                    if(mailText.isEmpty()){
-//                        binding.loginEmail.setError("E-posta adresinizi giriniz");
-//                    }
-//                    if(passwordText.isEmpty()){
-//                        binding.loginPassword.setError("Şifrenizi giriniz");
-//                    }
-//                }
             }
         });
     }
@@ -183,8 +177,7 @@ public class LoginFragment extends Fragment {
                             progressDialog.dismiss();
                             Toast.makeText(view.getContext(),"Bu hesap silinme aşamasındadır.",Toast.LENGTH_SHORT).show();
                         }else {
-                            progressDialog.dismiss();
-                            userVerified(view);
+                            userVerified(view,progressDialog);
                         }
                     }).addOnFailureListener(e -> {
                         Toast.makeText(view.getContext(),"Bir hata oluştu. İnternet bağlantınızı kontrol ettikten sonra tekrar deneyiniz.",Toast.LENGTH_SHORT).show();
@@ -217,12 +210,43 @@ public class LoginFragment extends Fragment {
             });
     }
 
-    private void userVerified(View view){
+    private void userVerified(View view,ProgressDialog progressDialog){
         if(auth.getCurrentUser().isEmailVerified()){
-            Intent intent = new Intent(view.getContext(), MainActivity.class);
-            startActivity(intent);
-            requireActivity().finish();
+            firestore.collection("users")
+                .document(auth.getCurrentUser().getEmail()).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if(documentSnapshot.exists()){
+                        progressDialog.dismiss();
+                        Intent intent = new Intent(view.getContext(), MainActivity.class);
+                        startActivity(intent);
+                        requireActivity().finish();
+                    }else {
+                        Map<String,Object> data = new HashMap<>();
+                        Random random = new Random();
+                        int fourDigitNumber = 1000 + random.nextInt(9000);
+                        String name = "User"+ fourDigitNumber;
+                        String imageUrl = "https://firebasestorage.googleapis.com/v0/b/missedconnection-c000f.appspot.com/o/icon_person_url.png?alt=media&token=427b2c8d-2e7f-4ea5-97df-79e16beec535";
+                        data.put("name",name);
+                        data.put("imageUrl",imageUrl);
+
+                        firestore.collection("users")
+                            .document(auth.getCurrentUser().getEmail())
+                            .set(data, SetOptions.merge()).addOnSuccessListener(unused -> {
+                                progressDialog.dismiss();
+                                Intent intent = new Intent(view.getContext(), MainActivity.class);
+                                startActivity(intent);
+                                requireActivity().finish();
+                        }).addOnFailureListener(e -> {
+                            progressDialog.dismiss();
+                            Toast.makeText(view.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                }).addOnFailureListener(e -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(view.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                });
         }else {
+            progressDialog.dismiss();
             Toast.makeText(view.getContext(), "E-posta adresinizi doğrulamadınız.", Toast.LENGTH_SHORT).show();
             binding.confirmMail.setVisibility(View.VISIBLE);
         }
