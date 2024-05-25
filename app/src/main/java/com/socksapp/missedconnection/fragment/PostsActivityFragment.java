@@ -27,6 +27,7 @@ import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.PostNotificationAdapter;
 import com.socksapp.missedconnection.databinding.FragmentPostsActivityBinding;
+import com.socksapp.missedconnection.model.FindPost;
 import com.socksapp.missedconnection.model.PostNotification;
 
 import java.util.ArrayList;
@@ -100,25 +101,35 @@ public class PostsActivityFragment extends Fragment {
                 return;
             }
             for (QueryDocumentSnapshot queryDocumentSnapshot : queryDocumentSnapshots){
-                String name = queryDocumentSnapshot.getString("name");
-                String type = queryDocumentSnapshot.getString("type");
-                Timestamp timestamp = queryDocumentSnapshot.getTimestamp("timestamp");
+                String other_name = queryDocumentSnapshot.getString("name");
+                String action_explain = queryDocumentSnapshot.getString("type");
+                Timestamp timestamp2 = queryDocumentSnapshot.getTimestamp("timestamp");
                 String refId = queryDocumentSnapshot.getString("refId");
                 if(refId != null && !refId.isEmpty()){
                     firestore.collection(myMail).document(refId).get().addOnSuccessListener(documentSnapshot -> {
                         if(documentSnapshot.exists()){
+                            String imageUrl = documentSnapshot.getString("imageUrl");
+                            String galleryUrl = documentSnapshot.getString("galleryUrl");
+                            String name = documentSnapshot.getString("name");
+                            String mail = documentSnapshot.getString("mail");
                             String city = documentSnapshot.getString("city");
                             String district = documentSnapshot.getString("district");
-                            String explainPost = documentSnapshot.getString("explain");
+                            String explain = documentSnapshot.getString("explain");
+                            Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
 
                             PostNotification postNotification = new PostNotification();
                             postNotification.viewType = 1;
+                            postNotification.imageUrl = imageUrl;
+                            postNotification.galleryUrl = galleryUrl;
+                            postNotification.mail = mail;
                             postNotification.name = name;
+                            postNotification.other_name = other_name;
                             postNotification.city = city;
                             postNotification.district = district;
-                            postNotification.explain = type;
-                            postNotification.explain_post = explainPost;
+                            postNotification.action_explain = action_explain;
+                            postNotification.explain = explain;
                             postNotification.timestamp = timestamp;
+                            postNotification.timestamp2 = timestamp2;
 
                             postNotificationArrayList.add(postNotification);
                             postNotificationAdapter.notifyDataSetChanged();

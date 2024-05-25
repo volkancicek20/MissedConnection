@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -184,7 +185,13 @@ public class RegisterFragment extends Fragment {
         auth.getCurrentUser().sendEmailVerification()
             .addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    Toast.makeText(view.getContext(), "Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.", Toast.LENGTH_LONG).show();
+
+                    Bundle args = new Bundle();
+                    args.putString("mail", auth.getCurrentUser().getEmail());
+
+                    NavController navController = Navigation.findNavController(view);
+                    navController.navigate(R.id.action_registerFragment_to_loginFragment, args);
+
                 } else {
 //                    Exception exception = task.getException();
                     Toast.makeText(view.getContext(), "Doğrulama e-postası gönderilirken bir hata oluştu.", Toast.LENGTH_SHORT).show();

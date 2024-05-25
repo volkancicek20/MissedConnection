@@ -6,13 +6,18 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.RecyclerEmptyPostBinding;
 import com.socksapp.missedconnection.databinding.RecyclerPostBinding;
 import com.socksapp.missedconnection.databinding.RecyclerViewEmptyPostNotificationBinding;
@@ -80,37 +85,25 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
         user = auth.getCurrentUser();
         sharedPreferencesHelper = new SharedPreferencesHelper(context);
         String myMail = sharedPreferencesHelper.getString("myMail", "");
-        String name,explain,explain_post,city,district;
-        Timestamp timestamp;
+        String name,other_name,explain,action_explain,city,district,imageUrl,galleryUrl;
+        Timestamp timestamp,timestamp2;
         switch (holder.getItemViewType()) {
             case LAYOUT_ONE:
 
                 PostNotificationHolder postNotificationHolder = (PostNotificationHolder) holder;
 
+                imageUrl = arrayList.get(position).imageUrl;
+                galleryUrl = arrayList.get(position).galleryUrl;
                 name = arrayList.get(position).name;
+                other_name = arrayList.get(position).other_name;
                 city = arrayList.get(position).city;
                 district = arrayList.get(position).district;
                 explain = arrayList.get(position).explain;
-                explain_post = arrayList.get(position).explain_post;
+                action_explain = arrayList.get(position).action_explain;
                 timestamp = arrayList.get(position).timestamp;
+                timestamp2 = arrayList.get(position).timestamp2;
 
-                if(explain.equals("view")){
-                    explain = "gönderinizi gördü";
-                }
-
-                String formattedTime = TimestampFormatter.formatTime(timestamp);
-                String formattedDate = TimestampFormatter.formatDate(timestamp);
-
-                String time = formattedTime + " | " + formattedDate;
-
-                String city_and_district = city + "/" + district;
-
-                postNotificationHolder.recyclerViewNotificationBinding.recyclerViewName.setText(name);
-                postNotificationHolder.recyclerViewNotificationBinding.recyclerViewCityDistrict.setText(city_and_district);
-                postNotificationHolder.recyclerViewNotificationBinding.recyclerViewExplain.setText(explain);
-                postNotificationHolder.recyclerViewNotificationBinding.recyclerViewExplainPost.setText(explain_post);
-                postNotificationHolder.recyclerViewNotificationBinding.recyclerViewTime.setText(time);
-
+                getShow(name,other_name,imageUrl,galleryUrl,explain,action_explain,city,district,timestamp,timestamp2,postNotificationHolder);
 
                 break;
             case LAYOUT_EMPTY:
@@ -147,19 +140,92 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public static class TimestampFormatter {
-        public static String formatTime(Timestamp timestamp) {
-            Date date = timestamp.toDate();
-            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            return timeFormat.format(date);
+    private void getShow(String name,String other_name,String imageUrl,String galleryUrl,String explain,String action_explain,String city,String district,Timestamp timestamp,Timestamp timestamp2,PostNotificationHolder holder){
+        if(action_explain.equals("view")){
+            action_explain = "tarafından görüntülendi";
         }
 
-        public static String formatDate(Timestamp timestamp) {
-            Date date = timestamp.toDate();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("d MMMM yyyy", new Locale("tr"));
-            return dateFormat.format(date);
+        String city_and_district = city + "/" + district;
+
+        holder.recyclerViewNotificationBinding.recyclerName.setText(name);
+        holder.recyclerViewNotificationBinding.recyclerOtherName.setText(other_name);
+        holder.recyclerViewNotificationBinding.recyclerCityAndDistrict.setText(city_and_district);
+        holder.recyclerViewNotificationBinding.recyclerExplain.setText(explain);
+        holder.recyclerViewNotificationBinding.recyclerActionExplain.setText(action_explain);
+
+        if(imageUrl.isEmpty()){
+            ImageView imageView;
+            imageView = holder.recyclerViewNotificationBinding.recyclerProfileImage;
+            imageView.setImageResource(R.drawable.person_active_96);
+        }else {
+            Glide.with(context)
+                .load(imageUrl)
+                .apply(new RequestOptions()
+                .error(R.drawable.person_active_96)
+                .centerCrop())
+                .into(holder.recyclerViewNotificationBinding.recyclerProfileImage);
         }
+
+        if(!galleryUrl.isEmpty()){
+            int screenWidth = getScreenWidth(context);
+
+            Glide.with(context)
+                .load(galleryUrl)
+                .apply(new RequestOptions()
+                .error(R.drawable.icon_loading)
+                .fitCenter()
+                .centerCrop())
+                .override(screenWidth, 500)
+                .into(holder.recyclerViewNotificationBinding.galleryImage);
+        }
+
+
+
+        long secondsElapsed = (Timestamp.now().getSeconds() - timestamp.getSeconds());
+        String elapsedTime;
+
+        if(secondsElapsed < 0){
+            elapsedTime = "şimdi";
+        } else if (secondsElapsed >= 31536000) {
+            elapsedTime = "• " + (secondsElapsed / 31536000) + "yıl";
+        } else if (secondsElapsed >= 2592000) {
+            elapsedTime = "• " + (secondsElapsed / 2592000) + "ay";
+        } else if (secondsElapsed >= 86400) {
+            elapsedTime = "• " + (secondsElapsed / 86400) + "g";
+        } else if (secondsElapsed >= 3600) {
+            elapsedTime = "• " + (secondsElapsed / 3600) + "sa";
+        } else if (secondsElapsed >= 60) {
+            elapsedTime = "• " + (secondsElapsed / 60) + "d";
+        } else {
+            elapsedTime = "• " + secondsElapsed + "s";
+        }
+
+        holder.recyclerViewNotificationBinding.timestampTime.setText(elapsedTime);
+
+
+        long secondsElapsed2 = (Timestamp.now().getSeconds() - timestamp2.getSeconds());
+        String elapsedTime2;
+
+        if(secondsElapsed < 0){
+            elapsedTime2 = "şimdi";
+        } else if (secondsElapsed2 >= 31536000) {
+            elapsedTime2 = "• " + (secondsElapsed2 / 31536000) + "yıl";
+        } else if (secondsElapsed2 >= 2592000) {
+            elapsedTime2 = "• " + (secondsElapsed2 / 2592000) + "ay";
+        } else if (secondsElapsed2 >= 86400) {
+            elapsedTime2 = "• " + (secondsElapsed2 / 86400) + "g";
+        } else if (secondsElapsed2 >= 3600) {
+            elapsedTime2 = "• " + (secondsElapsed2 / 3600) + "sa";
+        } else if (secondsElapsed2 >= 60) {
+            elapsedTime2 = "• " + (secondsElapsed2 / 60) + "d";
+        } else {
+            elapsedTime2 = "• " + secondsElapsed2 + "s";
+        }
+
+        holder.recyclerViewNotificationBinding.recyclerTimestampTime.setText(elapsedTime2);
     }
 
-
+    private int getScreenWidth(Context context) {
+        return context.getResources().getDisplayMetrics().widthPixels;
+    }
 }

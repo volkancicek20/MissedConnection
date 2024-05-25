@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -54,6 +55,8 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -278,7 +281,7 @@ public class AddPostFragment extends Fragment {
 
         binding.addPost.setOnClickListener(v ->{
             if(!myUserName.isEmpty()){
-                addData();
+                addData(view);
             }else {
                 showToastShort("Profilinizi tamamlayınız");
             }
@@ -410,9 +413,9 @@ public class AddPostFragment extends Fragment {
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.person_active_96);
                 Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false); // 50x50 boyutunda ikon
                 googleMap.addMarker(new MarkerOptions()
-                        .position(location)
-                        .title(address)
-                        .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap))
+                    .position(location)
+                    .title(address)
+                    .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap))
                 );
             }
         });
@@ -443,7 +446,7 @@ public class AddPostFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    private void addData(){
+    private void addData(View view){
         Double latitude = lat;
         Double longitude = lng;
         Double radius = rad;
@@ -499,6 +502,12 @@ public class AddPostFragment extends Fragment {
                                 long time2_long = time_2.getTime();
 
                                 if(imageData != null){
+                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+                                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.setInverseBackgroundForced(false);
+                                    progressDialog.show();
+
                                     uniqueID = UUID.randomUUID().toString();
                                     storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
                                             .addOnSuccessListener(taskSnapshot -> {
@@ -533,18 +542,30 @@ public class AddPostFragment extends Fragment {
 
                                                     batch.commit()
                                                         .addOnSuccessListener(aVoid -> {
+                                                            progressDialog.dismiss();
                                                             resetAction();
                                                             showToastShort("Eklendi");
                                                         })
                                                         .addOnFailureListener(e -> {
+                                                            progressDialog.dismiss();
                                                             showToastShort(e.getLocalizedMessage());
                                                         });
+                                                }).addOnFailureListener(e -> {
+                                                    progressDialog.dismiss();
+                                                    showToastShort(e.getLocalizedMessage());
                                                 });
                                             })
                                             .addOnFailureListener(e -> {
+                                                progressDialog.dismiss();
                                                 showToastShort(e.getLocalizedMessage());
                                             });
                                 }else {
+                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+                                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.setInverseBackgroundForced(false);
+                                    progressDialog.show();
+
                                     HashMap<String,Object> post = new HashMap<>();
                                     post.put("city",city);
                                     post.put("district",district);
@@ -571,9 +592,11 @@ public class AddPostFragment extends Fragment {
                                     batch.set(newPostRef2, post);
 
                                     batch.commit().addOnSuccessListener(aVoid -> {
+                                        progressDialog.dismiss();
                                         resetAction();
                                         showToastShort("Eklendi");
                                     }).addOnFailureListener(e -> {
+                                        progressDialog.dismiss();
                                         showToastShort(e.getLocalizedMessage());
                                     });
                                 }
@@ -837,6 +860,12 @@ public class AddPostFragment extends Fragment {
 
 
                                 if(imageData != null){
+                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+                                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.setInverseBackgroundForced(false);
+                                    progressDialog.show();
+
                                     uniqueID = UUID.randomUUID().toString();
                                     storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
                                         .addOnSuccessListener(taskSnapshot -> {
@@ -871,18 +900,29 @@ public class AddPostFragment extends Fragment {
 
                                                 batch.commit()
                                                     .addOnSuccessListener(aVoid -> {
+                                                        progressDialog.dismiss();
                                                         resetAction();
                                                         showToastShort("Eklendi");
                                                     })
                                                     .addOnFailureListener(e -> {
+                                                        progressDialog.dismiss();
                                                         showToastShort(e.getLocalizedMessage());
                                                     });
+                                            }).addOnFailureListener(e -> {
+                                                progressDialog.dismiss();
+                                                showToastShort(e.getLocalizedMessage());
                                             });
                                         })
                                         .addOnFailureListener(e -> {
+                                            progressDialog.dismiss();
                                             showToastShort(e.getLocalizedMessage());
                                         });
                                 }else {
+                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+                                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.setInverseBackgroundForced(false);
+                                    progressDialog.show();
 
                                     HashMap<String,Object> post = new HashMap<>();
                                     post.put("city",city);
@@ -910,9 +950,11 @@ public class AddPostFragment extends Fragment {
                                     batch.set(newPostRef2, post);
 
                                     batch.commit().addOnSuccessListener(aVoid -> {
+                                        progressDialog.dismiss();
                                         resetAction();
                                         showToastShort("Eklendi");
                                     }).addOnFailureListener(e -> {
+                                        progressDialog.dismiss();
                                         showToastShort(e.getLocalizedMessage());
                                     });
                                 }
@@ -976,6 +1018,12 @@ public class AddPostFragment extends Fragment {
                                 long time2_long = time_2.getTime();
 
                                 if(imageData != null){
+                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+                                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.setInverseBackgroundForced(false);
+                                    progressDialog.show();
+
                                     uniqueID = UUID.randomUUID().toString();
                                     storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
                                         .addOnSuccessListener(taskSnapshot -> {
@@ -1010,18 +1058,29 @@ public class AddPostFragment extends Fragment {
 
                                                 batch.commit()
                                                     .addOnSuccessListener(aVoid -> {
+                                                        progressDialog.dismiss();
                                                         resetAction();
                                                         showToastShort("Eklendi");
                                                     })
                                                     .addOnFailureListener(e -> {
+                                                        progressDialog.dismiss();
                                                         showToastShort(e.getLocalizedMessage());
                                                     });
+                                            }).addOnFailureListener(e -> {
+                                                progressDialog.dismiss();
+                                                showToastShort(e.getLocalizedMessage());
                                             });
                                         })
                                         .addOnFailureListener(e -> {
+                                            progressDialog.dismiss();
                                             showToastShort(e.getLocalizedMessage());
                                         });
                                 }else {
+                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+                                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                                    progressDialog.setCancelable(false);
+                                    progressDialog.setInverseBackgroundForced(false);
+                                    progressDialog.show();
 
                                     HashMap<String,Object> post = new HashMap<>();
                                     post.put("city",city);
@@ -1049,9 +1108,11 @@ public class AddPostFragment extends Fragment {
                                     batch.set(newPostRef2, post);
 
                                     batch.commit().addOnSuccessListener(aVoid -> {
+                                        progressDialog.dismiss();
                                         resetAction();
                                         showToastShort("Eklendi");
                                     }).addOnFailureListener(e -> {
+                                        progressDialog.dismiss();
                                         showToastShort(e.getLocalizedMessage());
                                     });
                                 }
@@ -1095,6 +1156,12 @@ public class AddPostFragment extends Fragment {
             if(!hasDate1 && !hasDate2 && !hasTime1 && !hasTime2){
 
                 if(imageData != null){
+                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                    progressDialog.setCancelable(false);
+                    progressDialog.setInverseBackgroundForced(false);
+                    progressDialog.show();
+
                     uniqueID = UUID.randomUUID().toString();
                     storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
                         .addOnSuccessListener(taskSnapshot -> {
@@ -1129,18 +1196,30 @@ public class AddPostFragment extends Fragment {
 
                                 batch.commit()
                                     .addOnSuccessListener(aVoid -> {
+                                        progressDialog.dismiss();
                                         resetAction();
                                         showToastShort("Eklendi");
                                     })
                                     .addOnFailureListener(e -> {
+                                        progressDialog.dismiss();
                                         showToastShort(e.getLocalizedMessage());
                                     });
+                            }).addOnFailureListener(e -> {
+                                progressDialog.dismiss();
+                                showToastShort(e.getLocalizedMessage());
                             });
                         })
                         .addOnFailureListener(e -> {
+                            progressDialog.dismiss();
                             showToastShort(e.getLocalizedMessage());
                         });
                 }else {
+
+                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                    progressDialog.setCancelable(false);
+                    progressDialog.setInverseBackgroundForced(false);
+                    progressDialog.show();
 
                     HashMap<String,Object> post = new HashMap<>();
                     post.put("city",city);
@@ -1168,9 +1247,11 @@ public class AddPostFragment extends Fragment {
                     batch.set(newPostRef2, post);
 
                     batch.commit().addOnSuccessListener(aVoid -> {
+                        progressDialog.dismiss();
                         resetAction();
                         showToastShort("Eklendi");
                     }).addOnFailureListener(e -> {
+                        progressDialog.dismiss();
                         showToastShort(e.getLocalizedMessage());
                     });
                 }
@@ -1204,6 +1285,10 @@ public class AddPostFragment extends Fragment {
 
     }
 
+    private int getScreenWidth(Context context) {
+        return context.getResources().getDisplayMetrics().widthPixels;
+    }
+
     private void resetAction(){
         binding.mapView.setVisibility(View.GONE);
         binding.visibleDatePicker.setVisibility(View.GONE);
@@ -1213,6 +1298,7 @@ public class AddPostFragment extends Fragment {
         binding.districtCompleteText.setText("");
 
         imageData = null;
+        binding.galleryImage.setImageResource(R.drawable.add_gallery);
 
         binding.explain.setText("");
 
@@ -1942,20 +2028,44 @@ public class AddPostFragment extends Fragment {
                         imageData = intentForResult.getData();
                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
                             try {
-                                ImageDecoder.Source source = ImageDecoder.createSource(view.getContext().getContentResolver(),imageData);
-                                selectedBitmap = ImageDecoder.decodeBitmap(source);
-                                binding.galleryImage.setImageBitmap(selectedBitmap);
+//                                ImageDecoder.Source source = ImageDecoder.createSource(view.getContext().getContentResolver(),imageData);
+//                                selectedBitmap = ImageDecoder.decodeBitmap(source);
+//                                binding.galleryImage.setImageBitmap(selectedBitmap);
+
+                                int screenWidth = getScreenWidth(view.getContext());
+
+                                Glide.with(view.getContext())
+                                    .load(imageData)
+                                    .apply(new RequestOptions()
+                                    .error(R.drawable.icon_loading)
+                                    .fitCenter()
+                                    .centerCrop())
+                                    .override(screenWidth, 500)
+                                    .into(binding.galleryImage);
+
                             }catch (Exception e){
                                 e.printStackTrace();
                             }
                         }else {
                             try {
-                                InputStream inputStream = view.getContext().getContentResolver().openInputStream(imageData);
-                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                                binding.galleryImage.setImageBitmap(bitmap);
-                                if (inputStream != null) {
-                                    inputStream.close();
-                                }
+//                                InputStream inputStream = view.getContext().getContentResolver().openInputStream(imageData);
+//                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+//                                binding.galleryImage.setImageBitmap(bitmap);
+//                                if (inputStream != null) {
+//                                    inputStream.close();
+//                                }
+
+                                int screenWidth = getScreenWidth(view.getContext());
+
+                                Glide.with(view.getContext())
+                                    .load(imageData)
+                                    .apply(new RequestOptions()
+                                    .error(R.drawable.icon_loading)
+                                    .fitCenter()
+                                    .centerCrop())
+                                    .override(screenWidth, 500)
+                                    .into(binding.galleryImage);
+
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }

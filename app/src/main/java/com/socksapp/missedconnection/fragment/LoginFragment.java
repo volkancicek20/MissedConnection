@@ -60,6 +60,17 @@ public class LoginFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        Bundle args = getArguments();
+        if (args != null) {
+            String mail = args.getString("mail","");
+            if(!mail.isEmpty()){
+                binding.loginEmail.setText(mail);
+                Toast.makeText(view.getContext(), "Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.", Toast.LENGTH_LONG).show();
+            }
+
+        }
+
         binding.forgotpassword.setOnClickListener(v ->{
             if(!binding.loginEmail.getText().toString().trim().isEmpty()){
                 resetPassword(v,binding.loginEmail.getText().toString().trim());

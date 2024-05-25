@@ -137,7 +137,7 @@ public class PostAdapter extends RecyclerView.Adapter {
                     fragment.dialogShow(v,mail,name,lat,lng,radius,documentReference);
                 });
 
-                if(!myMail.equals(mail)){
+                if(!myMail.isEmpty() && !myMail.equals(mail)){
                     fragment.setActivityNotification(mail,documentReference);
                 }
 

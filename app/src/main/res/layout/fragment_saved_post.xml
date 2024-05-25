@@ -22,11 +22,13 @@
             android:orientation="vertical">
 
             <include layout="@layout/shimmer_layout"/>
+            <include layout="@layout/shimmer_layout_2"/>
             <include layout="@layout/shimmer_layout"/>
+            <include layout="@layout/shimmer_layout_2"/>
             <include layout="@layout/shimmer_layout"/>
+            <include layout="@layout/shimmer_layout_2"/>
             <include layout="@layout/shimmer_layout"/>
-            <include layout="@layout/shimmer_layout"/>
-            <include layout="@layout/shimmer_layout"/>
+            <include layout="@layout/shimmer_layout_2"/>
             <include layout="@layout/shimmer_layout"/>
 
         </LinearLayout>

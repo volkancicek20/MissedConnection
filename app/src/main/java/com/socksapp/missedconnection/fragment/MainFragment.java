@@ -487,6 +487,7 @@ public class MainFragment extends Fragment {
                         mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                         return;
                     }
+                    boolean empty = true;
                     for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
 
                         double lat = 0,lng = 0;
@@ -508,6 +509,7 @@ public class MainFragment extends Fragment {
                             double radiusSum = radiusFind/1000 + radius/1000;
                             boolean isIntersecting = distance <= radiusSum;
                             if (isIntersecting) {
+                                empty = false;
                                 String imageUrl = querySnapshot.getString("imageUrl");
                                 String galleryUrl = querySnapshot.getString("galleryUrl");
                                 String name = querySnapshot.getString("name");
@@ -567,15 +569,17 @@ public class MainFragment extends Fragment {
                         }
                     }
 
-                    FindPost post = new FindPost();
-                    post.viewType = 2;
+                    if(empty){
+                        FindPost post = new FindPost();
+                        post.viewType = 2;
 
-                    postArrayList.add(post);
-                    binding.shimmerLayout.stopShimmer();
-                    binding.shimmerLayout.setVisibility(View.GONE);
-                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                    postAdapter.notifyDataSetChanged();
-                    mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
+                        postArrayList.add(post);
+                        binding.shimmerLayout.stopShimmer();
+                        binding.shimmerLayout.setVisibility(View.GONE);
+                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                        postAdapter.notifyDataSetChanged();
+                        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
+                    }
                 })
                 .addOnFailureListener(e -> {
                     System.out.println("error : "+e.getLocalizedMessage());
@@ -596,8 +600,9 @@ public class MainFragment extends Fragment {
                         mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                         return;
                     }
+                    boolean empty = true;
                     for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-
+                        empty = false;
                         String imageUrl = querySnapshot.getString("imageUrl");
                         String galleryUrl = querySnapshot.getString("galleryUrl");
                         String name = querySnapshot.getString("name");
@@ -662,15 +667,17 @@ public class MainFragment extends Fragment {
                         mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                     }
 
-                    FindPost post = new FindPost();
-                    post.viewType = 2;
+                    if(empty){
+                        FindPost post = new FindPost();
+                        post.viewType = 2;
 
-                    postArrayList.add(post);
-                    binding.shimmerLayout.stopShimmer();
-                    binding.shimmerLayout.setVisibility(View.GONE);
-                    binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                    postAdapter.notifyDataSetChanged();
-                    mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
+                        postArrayList.add(post);
+                        binding.shimmerLayout.stopShimmer();
+                        binding.shimmerLayout.setVisibility(View.GONE);
+                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                        postAdapter.notifyDataSetChanged();
+                        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
+                    }
 
                 })
                 .addOnFailureListener(e -> {
@@ -772,25 +779,27 @@ public class MainFragment extends Fragment {
 
     public void setActivityNotification(String mail, DocumentReference ref){
 
-        String refId = ref.getId();
-        String value = timedDataManager.getData(refId,"");
+        if(!myUserName.isEmpty()){
+            String refId = ref.getId();
+            String value = timedDataManager.getData(refId,"");
 
-        if(value.isEmpty()){
-            timedDataManager.saveData(refId, "view");
+            if(value.isEmpty()){
+                timedDataManager.saveData(refId, "view");
 
-            Map<String, Object> viewData = new HashMap<>();
-            viewData.put("name", myUserName);
-            viewData.put("refId", refId);
-            viewData.put("type", "view");
-            viewData.put("timestamp", FieldValue.serverTimestamp());
+                Map<String, Object> viewData = new HashMap<>();
+                viewData.put("name", myUserName);
+                viewData.put("refId", refId);
+                viewData.put("type", "view");
+                viewData.put("timestamp", FieldValue.serverTimestamp());
 
-            DocumentReference documentReference = firestore.collection("views").document(mail).collection(mail).document();
+                DocumentReference documentReference = firestore.collection("views").document(mail).collection(mail).document();
 
-            documentReference.set(viewData,SetOptions.merge()).addOnSuccessListener(unused -> {
-                Toast.makeText(requireContext(),"Bildirildi",Toast.LENGTH_SHORT).show();
-            });
-        }else {
-            // Veri bulundu ve süresi dolmamış
+                documentReference.set(viewData,SetOptions.merge()).addOnSuccessListener(unused -> {
+                    Toast.makeText(requireContext(),"Bildirildi",Toast.LENGTH_SHORT).show();
+                });
+            }else {
+                // Veri bulundu ve süresi dolmamış
+            }
         }
     }
 
