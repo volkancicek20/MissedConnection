@@ -4,7 +4,6 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.socksapp.missedconnection.databinding.RecycleViewChatTextMeBinding;
 import com.socksapp.missedconnection.databinding.RecycleViewChatTextYouBinding;
 import com.socksapp.missedconnection.model.ChatMessage;
@@ -16,7 +15,6 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private final String senderId;
     public static final int VIEW_TYPE_SENT = 1;
     public static final int VIEW_TYPE_RECEIVED = 2;
-
 
     public ChatAdapter(List<ChatMessage> chatMessages, String senderId) {
         this.chatMessages = chatMessages;

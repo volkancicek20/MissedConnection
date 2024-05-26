@@ -189,29 +189,23 @@ public class MyPostAdapter extends RecyclerView.Adapter {
         holder.recyclerPostBinding.recyclerName.setText(name);
         holder.recyclerPostBinding.recyclerExplain.setText(explain);
 
-//        if(place != null){
-//            holder.recyclerPostBinding.recyclerPlace.setText(place);
-//        }else {
-//            holder.recyclerPostBinding.placeIcon.setVisibility(View.GONE);
-//        }
-
         long secondsElapsed = (Timestamp.now().getSeconds() - timestamp.getSeconds());
         String elapsedTime;
 
         if(secondsElapsed < 0){
-            elapsedTime = "şimdi";
+            elapsedTime = context.getString(R.string.azonce);
         } else if (secondsElapsed >= 31536000) {
-            elapsedTime = "• " + (secondsElapsed / 31536000) + "yıl";
+            elapsedTime = "• " + (secondsElapsed / 31536000) + context.getString(R.string.yil);
         } else if (secondsElapsed >= 2592000) {
-            elapsedTime = "• " + (secondsElapsed / 2592000) + "at";
+            elapsedTime = "• " + (secondsElapsed / 2592000) + context.getString(R.string.ay);
         } else if (secondsElapsed >= 86400) {
-            elapsedTime = "• " + (secondsElapsed / 86400) + "g";
+            elapsedTime = "• " + (secondsElapsed / 86400) + context.getString(R.string.g);
         } else if (secondsElapsed >= 3600) {
-            elapsedTime = "• " + (secondsElapsed / 3600) + "sa";
+            elapsedTime = "• " + (secondsElapsed / 3600) + context.getString(R.string.sa);
         } else if (secondsElapsed >= 60) {
-            elapsedTime = "• " + (secondsElapsed / 60) + "d";
+            elapsedTime = "• " + (secondsElapsed / 60) + context.getString(R.string.d);
         } else {
-            elapsedTime = "• " + secondsElapsed + "s";
+            elapsedTime = "• " + secondsElapsed + context.getString(R.string.s);
         }
 
         holder.recyclerPostBinding.timestampTime.setText(elapsedTime);

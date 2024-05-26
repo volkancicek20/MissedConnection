@@ -93,6 +93,51 @@
     <string name="no_activity_explain">Paylaşımlarınız kullanıcılar tarafından henüz gösterilmedi veya aratılmadı. Filtrelemelerinizi daha iyi düzenleyerek gösterilme oranınızı arttırabilirsiniz.</string>
     <string name="yeni_g_nderi_payla">Yeni gönderi paylaş</string>
 
+    <!-- MainActivity -->
+    <string name="log_out_text_title">Hesaptan çıkış yapılıyor..</string>
+    <string name="log_out_text">Çıkış yap</string>
+    <string name="iptal">Geri</string>
+
+    <!-- MyPostAdapter -->
+    <string name="azonce">az önce</string>
+    <string name="yil">yıl</string>
+    <string name="ay">ay</string>
+    <string name="g">g</string>
+    <string name="sa">sa</string>
+    <string name="d">d</string>
+    <string name="s">s</string>
+
+    <!-- PustNotificationAdapter -->
+    <string name="taraf_ndan_g_r_nt_lendi">tarafından görüntülendi</string>
+
+    <!-- AddPostFragment -->
+    <string name="l_ve_il_eyi_girmeniz_gerekmektedir">İl ve ilçeyi girmeniz gerekmektedir</string>
+    <string name="g_nderi_payla_mak_i_in_profilinizi_tamamlamal_s_n_z">Gönderi paylaşmak için profilinizi tamamlamalısınız</string>
+    <string name="g_nderiniz_payla_l_yor">Gönderiniz paylaşılıyor..</string>
+    <string name="g_nderiniz_payla_ld">Gönderiniz paylaşıldı</string>
+    <string name="_2_girdi_iniz_tarihten_b_y_k_olamaz">2. girdiğiniz tarihten büyük olamaz</string>
+    <string name="_2_girdi_iniz_saatten_b_y_k_olamaz">2. girdiğiniz saatten büyük olamaz</string>
+    <string name="g_n_ay_y_l_format_na_uygun_giriniz">Gün/Ay/Yıl formatına uygun giriniz</string>
+    <string name="saat_dakika_format_na_uygun_giriniz">Saat:Dakika formatına uygun giriniz</string>
+    <string name="saat_aral_n_eksiksiz_giriniz">Saat aralığını eksiksiz giriniz</string>
+    <string name="tarih_aral_n_eksiksiz_giriniz">Tarih aralığını eksiksiz giriniz</string>
+    <string name="il_bos_birakilamaz">İl boş bırakılamaz</string>
+    <string name="ilce_bos_birakilamaz">İlçe boş bırakılamaz</string>
+    <string name="aciklama_bos_birakilamaz">Açıklama boş bırakılamaz</string>
+    <string name="galeriye_gitmek_i_in_izin_gerekli">Galeriye gitmek için izin gerekli</string>
+    <string name="izin_ver">İzin ver</string>
+    <string name="izinleri_aktif_etmeniz_gerekiyor">İzinleri aktif etmeniz gerekiyor</string>
+
+    <!-- ChangePasswordFragment -->
+    <string name="gecersiz_sifre">Geçersiz şifre</string>
+    <string name="sifre_girme_kurali">Şifre en az 6 karakter uzunluğunda olmalı, en az 1 büyük harf, 1 küçük harf ve 1 rakam içermelidir.</string>
+    <string name="sifreler_eslesmiyor">Şifreler eşleşmiyor</string>
+    <string name="sifreniz_g_ncellendi_tekrar_giri_yap_n_z">Şifreniz güncellendi. Tekrar giriş yapınız.</string>
+    <string name="bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz">Bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.</string>
+    <string name="sifrenizi_yanl_girdiniz">Şifrenizi yanlış girdiniz</string>
+
+
+
 
     <string-array name="city_names">
         <item>İstanbul</item>

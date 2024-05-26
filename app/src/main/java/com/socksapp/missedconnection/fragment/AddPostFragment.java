@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
@@ -15,14 +14,11 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.ImageDecoder;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -33,28 +29,20 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.util.Pair;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.Navigation;
-
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -66,13 +54,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -83,10 +66,6 @@ import com.google.firebase.storage.StorageReference;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentAddPostBinding;
-import com.socksapp.missedconnection.model.FindPost;
-
-import java.io.InputStream;
-import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -272,7 +251,7 @@ public class AddPostFragment extends Fragment {
                             fragmentTransaction.addToBackStack(null);
                             fragmentTransaction.commit();
                         }else {
-                            Toast.makeText(requireContext(),"İl ve ilçeyi girmeniz gerekmektedir",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), getString(R.string.l_ve_il_eyi_girmeniz_gerekmektedir),Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -283,7 +262,7 @@ public class AddPostFragment extends Fragment {
             if(!myUserName.isEmpty()){
                 addData(view);
             }else {
-                showToastShort("Profilinizi tamamlayınız");
+                showToastShort(getString(R.string.g_nderi_payla_mak_i_in_profilinizi_tamamlamal_s_n_z));
             }
         });
 
@@ -503,7 +482,7 @@ public class AddPostFragment extends Fragment {
 
                                 if(imageData != null){
                                     ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
                                     progressDialog.setCancelable(false);
                                     progressDialog.setInverseBackgroundForced(false);
                                     progressDialog.show();
@@ -544,7 +523,7 @@ public class AddPostFragment extends Fragment {
                                                         .addOnSuccessListener(aVoid -> {
                                                             progressDialog.dismiss();
                                                             resetAction();
-                                                            showToastShort("Eklendi");
+                                                            showToastShort(getString(R.string.g_nderiniz_payla_ld));
                                                         })
                                                         .addOnFailureListener(e -> {
                                                             progressDialog.dismiss();
@@ -561,7 +540,7 @@ public class AddPostFragment extends Fragment {
                                             });
                                 }else {
                                     ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
                                     progressDialog.setCancelable(false);
                                     progressDialog.setInverseBackgroundForced(false);
                                     progressDialog.show();
@@ -594,7 +573,7 @@ public class AddPostFragment extends Fragment {
                                     batch.commit().addOnSuccessListener(aVoid -> {
                                         progressDialog.dismiss();
                                         resetAction();
-                                        showToastShort("Eklendi");
+                                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
                                     }).addOnFailureListener(e -> {
                                         progressDialog.dismiss();
                                         showToastShort(e.getLocalizedMessage());
@@ -611,7 +590,8 @@ public class AddPostFragment extends Fragment {
                     }
                     else {
                         if(!checkComparesDate){
-                            binding.errorDate1Text.setText("2. girdiğiniz tarihten büyük olamaz");
+                            String text = getString(R.string._2_girdi_iniz_tarihten_b_y_k_olamaz);
+                            binding.errorDate1Text.setText(text);
                             binding.dateEditText1.setTextColor(Color.RED);
                             binding.visibleDatePicker.setVisibility(View.VISIBLE);
                         }else {
@@ -620,8 +600,9 @@ public class AddPostFragment extends Fragment {
                             binding.dateEditText1.setTextColor(Color.WHITE);
                         }
                         if(!checkComparesTime){
+                            String text = getString(R.string._2_girdi_iniz_saatten_b_y_k_olamaz);
                             binding.errorTime2Text.setText("");
-                            binding.errorTime1Text.setText("2. girdiğiniz saatten büyük olamaz");
+                            binding.errorTime1Text.setText(text);
                             binding.timeEditText1.setTextColor(Color.RED);
                             binding.visibleDatePicker.setVisibility(View.VISIBLE);
                         }else {
@@ -634,28 +615,32 @@ public class AddPostFragment extends Fragment {
                 }
                 else {
                     if(!checkFormatDate1){
-                        binding.errorDate1Text.setText("Gün/Ay/Yıl formatına uygun giriniz");
+                        String text = getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz);
+                        binding.errorDate1Text.setText(text);
                         binding.dateEditText1.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
                         binding.dateEditText1.setError(null);
                     }
                     if(!checkFormatDate2){
-                        binding.errorDate2Text.setText("Gün/Ay/Yıl formatına uygun giriniz");
+                        String text = getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz);
+                        binding.errorDate2Text.setText(text);
                         binding.dateEditText2.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
                         binding.dateEditText2.setError(null);
                     }
                     if(!checkFormatTime1){
-                        binding.errorTime1Text.setText("Saat:Dakika formatına uygun giriniz");
+                        String text = getString(R.string.saat_dakika_format_na_uygun_giriniz);
+                        binding.errorTime1Text.setText(text);
                         binding.timeEditText1.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
                         binding.timeEditText1.setError(null);
                     }
                     if(!checkFormatTime2){
-                        binding.errorTime2Text.setText("Saat:Dakika formatına uygun giriniz");
+                        String text = getString(R.string.saat_dakika_format_na_uygun_giriniz);
+                        binding.errorTime2Text.setText(text);
                         binding.timeEditText2.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
@@ -675,7 +660,8 @@ public class AddPostFragment extends Fragment {
                 binding.dateEditText2.setTextColor(Color.WHITE);
                 binding.timeEditText1.setTextColor(Color.WHITE);
 
-                binding.errorTime2Text.setText("Saat aralığını eksiksiz giriniz");
+                String text = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+                binding.errorTime2Text.setText(text);
                 binding.timeEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -688,8 +674,8 @@ public class AddPostFragment extends Fragment {
                 binding.dateEditText2.setTextColor(Color.WHITE);
                 binding.timeEditText2.setTextColor(Color.WHITE);
 
-
-                binding.errorTime1Text.setText("Saat aralığını eksiksiz giriniz");
+                String text = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+                binding.errorTime1Text.setText(text);
                 binding.timeEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -702,7 +688,8 @@ public class AddPostFragment extends Fragment {
                 binding.timeEditText1.setTextColor(Color.WHITE);
                 binding.timeEditText2.setTextColor(Color.WHITE);
 
-                binding.errorDate2Text.setText("Tarih aralığını eksiksiz giriniz");
+                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+                binding.errorDate2Text.setText(text);
                 binding.dateEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -715,7 +702,8 @@ public class AddPostFragment extends Fragment {
                 binding.timeEditText1.setTextColor(Color.WHITE);
                 binding.timeEditText2.setTextColor(Color.WHITE);
 
-                binding.errorDate1Text.setText("Tarih aralığını eksiksiz giriniz");
+                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+                binding.errorDate1Text.setText(text);
                 binding.dateEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -728,7 +716,8 @@ public class AddPostFragment extends Fragment {
                 binding.timeEditText2.setHintTextColor(Color.GRAY);
                 binding.dateEditText1.setTextColor(Color.WHITE);
 
-                binding.errorDate2Text.setText("Tarih aralığını eksiksiz giriniz");
+                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+                binding.errorDate2Text.setText(text);
                 binding.dateEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -741,7 +730,8 @@ public class AddPostFragment extends Fragment {
                 binding.timeEditText2.setHintTextColor(Color.GRAY);
                 binding.dateEditText2.setTextColor(Color.WHITE);
 
-                binding.errorDate1Text.setText("Tarih aralığını eksiksiz giriniz");
+                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+                binding.errorDate1Text.setText(text);
                 binding.dateEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -754,7 +744,8 @@ public class AddPostFragment extends Fragment {
                 binding.dateEditText2.setHintTextColor(Color.GRAY);
                 binding.timeEditText1.setTextColor(Color.WHITE);
 
-                binding.errorTime2Text.setText("Saat aralığını eksiksiz giriniz");
+                String text = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+                binding.errorTime2Text.setText(text);
                 binding.timeEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -767,7 +758,8 @@ public class AddPostFragment extends Fragment {
                 binding.dateEditText2.setHintTextColor(Color.GRAY);
                 binding.timeEditText2.setTextColor(Color.WHITE);
 
-                binding.errorTime1Text.setText("Saat aralığını eksiksiz giriniz");
+                String text = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+                binding.errorTime1Text.setText(text);
                 binding.timeEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -778,11 +770,13 @@ public class AddPostFragment extends Fragment {
                 binding.dateEditText1.setTextColor(Color.WHITE);
                 binding.timeEditText2.setTextColor(Color.WHITE);
 
-                binding.errorDate2Text.setText("Tarih aralığını eksiksiz giriniz");
+                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+                binding.errorDate2Text.setText(text);
                 binding.dateEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
 
-                binding.errorTime1Text.setText("Saat aralığını eksiksiz giriniz");
+                String text2 = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+                binding.errorTime1Text.setText(text2);
                 binding.timeEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -793,11 +787,13 @@ public class AddPostFragment extends Fragment {
                 binding.dateEditText1.setTextColor(Color.WHITE);
                 binding.timeEditText1.setTextColor(Color.WHITE);
 
-                binding.errorDate2Text.setText("Tarih aralığını eksiksiz giriniz");
+                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+                binding.errorDate2Text.setText(text);
                 binding.dateEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
 
-                binding.errorTime2Text.setText("Saat aralığını eksiksiz giriniz");
+                String text2 = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+                binding.errorTime2Text.setText(text2);
                 binding.timeEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -808,11 +804,13 @@ public class AddPostFragment extends Fragment {
                 binding.dateEditText2.setTextColor(Color.WHITE);
                 binding.timeEditText2.setTextColor(Color.WHITE);
 
-                binding.errorDate1Text.setText("Tarih aralığını eksiksiz giriniz");
+                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+                binding.errorDate1Text.setText(text);
                 binding.dateEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
 
-                binding.errorTime1Text.setText("Saat aralığını eksiksiz giriniz");
+                String text2 = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+                binding.errorTime1Text.setText(text2);
                 binding.timeEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -823,11 +821,13 @@ public class AddPostFragment extends Fragment {
                 binding.dateEditText2.setTextColor(Color.WHITE);
                 binding.timeEditText1.setTextColor(Color.WHITE);
 
-                binding.errorDate1Text.setText("Tarih aralığını eksiksiz giriniz");
+                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+                binding.errorDate1Text.setText(text);
                 binding.dateEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
 
-                binding.errorTime2Text.setText("Saat aralığını eksiksiz giriniz");
+                String text2 = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+                binding.errorTime2Text.setText(text2);
                 binding.timeEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -861,7 +861,7 @@ public class AddPostFragment extends Fragment {
 
                                 if(imageData != null){
                                     ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
                                     progressDialog.setCancelable(false);
                                     progressDialog.setInverseBackgroundForced(false);
                                     progressDialog.show();
@@ -902,7 +902,7 @@ public class AddPostFragment extends Fragment {
                                                     .addOnSuccessListener(aVoid -> {
                                                         progressDialog.dismiss();
                                                         resetAction();
-                                                        showToastShort("Eklendi");
+                                                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
                                                     })
                                                     .addOnFailureListener(e -> {
                                                         progressDialog.dismiss();
@@ -919,7 +919,7 @@ public class AddPostFragment extends Fragment {
                                         });
                                 }else {
                                     ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
                                     progressDialog.setCancelable(false);
                                     progressDialog.setInverseBackgroundForced(false);
                                     progressDialog.show();
@@ -952,7 +952,7 @@ public class AddPostFragment extends Fragment {
                                     batch.commit().addOnSuccessListener(aVoid -> {
                                         progressDialog.dismiss();
                                         resetAction();
-                                        showToastShort("Eklendi");
+                                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
                                     }).addOnFailureListener(e -> {
                                         progressDialog.dismiss();
                                         showToastShort(e.getLocalizedMessage());
@@ -969,7 +969,8 @@ public class AddPostFragment extends Fragment {
                         }
                     }
                     else {
-                        binding.errorDate1Text.setText("2. girdiğiniz tarihten büyük olamaz");
+                        String text = getString(R.string._2_girdi_iniz_tarihten_b_y_k_olamaz);
+                        binding.errorDate1Text.setText(text);
                         binding.dateEditText1.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }
@@ -977,14 +978,16 @@ public class AddPostFragment extends Fragment {
                 }
                 else {
                     if(!checkFormatDate1){
-                        binding.errorDate1Text.setText("Gün/Ay/Yıl formatına uygun giriniz");
+                        String text = getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz);
+                        binding.errorDate1Text.setText(text);
                         binding.dateEditText1.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
                         binding.dateEditText1.setError(null);
                     }
                     if(!checkFormatDate2){
-                        binding.errorDate2Text.setText("Gün/Ay/Yıl formatına uygun giriniz");
+                        String text = getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz);
+                        binding.errorDate2Text.setText(text);
                         binding.dateEditText2.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
@@ -1019,7 +1022,7 @@ public class AddPostFragment extends Fragment {
 
                                 if(imageData != null){
                                     ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
                                     progressDialog.setCancelable(false);
                                     progressDialog.setInverseBackgroundForced(false);
                                     progressDialog.show();
@@ -1060,7 +1063,7 @@ public class AddPostFragment extends Fragment {
                                                     .addOnSuccessListener(aVoid -> {
                                                         progressDialog.dismiss();
                                                         resetAction();
-                                                        showToastShort("Eklendi");
+                                                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
                                                     })
                                                     .addOnFailureListener(e -> {
                                                         progressDialog.dismiss();
@@ -1077,7 +1080,7 @@ public class AddPostFragment extends Fragment {
                                         });
                                 }else {
                                     ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
                                     progressDialog.setCancelable(false);
                                     progressDialog.setInverseBackgroundForced(false);
                                     progressDialog.show();
@@ -1110,7 +1113,7 @@ public class AddPostFragment extends Fragment {
                                     batch.commit().addOnSuccessListener(aVoid -> {
                                         progressDialog.dismiss();
                                         resetAction();
-                                        showToastShort("Eklendi");
+                                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
                                     }).addOnFailureListener(e -> {
                                         progressDialog.dismiss();
                                         showToastShort(e.getLocalizedMessage());
@@ -1126,7 +1129,8 @@ public class AddPostFragment extends Fragment {
                         }
                     }
                     else {
-                        binding.errorTime1Text.setText("2. girdiğiniz saatten büyük olamaz");
+                        String text = getString(R.string._2_girdi_iniz_saatten_b_y_k_olamaz);
+                        binding.errorTime1Text.setText(text);
                         binding.timeEditText1.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }
@@ -1134,7 +1138,8 @@ public class AddPostFragment extends Fragment {
                 }
                 else {
                     if(!checkFormatTime1){
-                        binding.errorTime1Text.setText("Saat:Dakika formatına uygun giriniz");
+                        String text = getString(R.string.saat_dakika_format_na_uygun_giriniz);
+                        binding.errorTime1Text.setText(text);
                         binding.timeEditText1.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
@@ -1143,7 +1148,8 @@ public class AddPostFragment extends Fragment {
                         binding.timeEditText1.setTextColor(Color.WHITE);
                     }
                     if(!checkFormatTime2){
-                        binding.errorTime2Text.setText("Saat:Dakika formatına uygun giriniz");
+                        String text = getString(R.string.saat_dakika_format_na_uygun_giriniz);
+                        binding.errorTime2Text.setText(text);
                         binding.timeEditText2.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
@@ -1157,7 +1163,7 @@ public class AddPostFragment extends Fragment {
 
                 if(imageData != null){
                     ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
                     progressDialog.setCancelable(false);
                     progressDialog.setInverseBackgroundForced(false);
                     progressDialog.show();
@@ -1198,7 +1204,7 @@ public class AddPostFragment extends Fragment {
                                     .addOnSuccessListener(aVoid -> {
                                         progressDialog.dismiss();
                                         resetAction();
-                                        showToastShort("Eklendi");
+                                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
                                     })
                                     .addOnFailureListener(e -> {
                                         progressDialog.dismiss();
@@ -1216,7 +1222,7 @@ public class AddPostFragment extends Fragment {
                 }else {
 
                     ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                    progressDialog.setMessage("Gönderiniz paylaşılıyor..");
+                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
                     progressDialog.setCancelable(false);
                     progressDialog.setInverseBackgroundForced(false);
                     progressDialog.show();
@@ -1249,7 +1255,7 @@ public class AddPostFragment extends Fragment {
                     batch.commit().addOnSuccessListener(aVoid -> {
                         progressDialog.dismiss();
                         resetAction();
-                        showToastShort("Eklendi");
+                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
                     }).addOnFailureListener(e -> {
                         progressDialog.dismiss();
                         showToastShort(e.getLocalizedMessage());
@@ -1261,21 +1267,24 @@ public class AddPostFragment extends Fragment {
         }
         else {
             if(!checkCity){
-                binding.cityTextInput.setError("İl boş bırakılamaz");
+                String text = getString(R.string.il_bos_birakilamaz);
+                binding.cityTextInput.setError(text);
                 binding.cityTextInput.setErrorIconDrawable(null);
             }else {
                 binding.cityTextInput.setError(null);
                 binding.cityTextInput.setErrorIconDrawable(null);
             }
             if(!checkDistrict){
-                binding.districtTextInput.setError("İlçe boş bırakılamaz");
+                String text = getString(R.string.ilce_bos_birakilamaz);
+                binding.districtTextInput.setError(text);
                 binding.districtTextInput.setErrorIconDrawable(null);
             }else {
                 binding.districtTextInput.setError(null);
                 binding.districtTextInput.setErrorIconDrawable(null);
             }
             if(!checkExplain){
-                binding.explainTextInput.setError("Açıklama boş bırakılamaz");
+                String text = getString(R.string.aciklama_bos_birakilamaz);
+                binding.explainTextInput.setError(text);
                 binding.explainTextInput.setErrorIconDrawable(null);
             }else {
                 binding.explainTextInput.setError(null);
@@ -2004,11 +2013,11 @@ public class AddPostFragment extends Fragment {
             permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
         }
 
-        rationaleMessage = "Galeriye gitmek için izin gerekli";
+        rationaleMessage = getString(R.string.galeriye_gitmek_i_in_izin_gerekli);
 
         if (ContextCompat.checkSelfPermission(view.getContext(), permissions[0]) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), permissions[0])) {
-                Snackbar.make(view, rationaleMessage, Snackbar.LENGTH_INDEFINITE).setAction("İzin ver", new View.OnClickListener() {
+                Snackbar.make(view, rationaleMessage, Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.izin_ver), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         permissionLauncher.launch(permissions[0]);
@@ -2087,7 +2096,7 @@ public class AddPostFragment extends Fragment {
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     activityResultLauncher.launch(intent);
                 }else{
-                    showToastShort("İzinleri aktif etmeniz gerekiyor");
+                    showToastShort(getString(R.string.izinleri_aktif_etmeniz_gerekiyor));
                     Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     Uri uri = Uri.fromParts("package", requireActivity().getPackageName(), null);
                     intent.setData(uri);

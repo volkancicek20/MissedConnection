@@ -36,7 +36,7 @@
     <string name="saat_araligi">Time range</string>
     <string name="gg_aa_yyyy">dd/mm/yyyy</string>
     <string name="ss_dd">hh:mm</string>
-    <string name="aciklama">Explanation</string>
+    <string name="aciklama">Description</string>
     <string name="ekle">ADD</string>
 
     <!-- fragment_chat -->
@@ -94,6 +94,48 @@
     <string name="no_activity_explain">Your posts have not yet been shown or searched by users. You can increase your exposure by better organizing your filters.</string>
     <string name="yeni_g_nderi_payla">Share new post</string>
 
+    <!-- MainActivity -->
+    <string name="log_out_text_title">Logging out of account..</string>
+    <string name="log_out_text">Log out</string>
+    <string name="iptal">Cancel</string>
+
+    <!-- MyPostAdapter -->
+    <string name="azonce">just now</string>
+    <string name="yil">y</string>
+    <string name="ay">mo</string>
+    <string name="g">d</string>
+    <string name="sa">h</string>
+    <string name="d">m</string>
+    <string name="s">s</string>
+
+    <!-- PustNotificationAdapter -->
+    <string name="taraf_ndan_g_r_nt_lendi">viewed by</string>
+
+    <!-- AddPostFragment -->
+    <string name="l_ve_il_eyi_girmeniz_gerekmektedir">You must enter the city and district</string>
+    <string name="g_nderi_payla_mak_i_in_profilinizi_tamamlamal_s_n_z">You must complete your profile to post</string>
+    <string name="g_nderiniz_payla_l_yor">Your post is being shared..</string>
+    <string name="g_nderiniz_payla_ld">Your post has been shared</string>
+    <string name="_2_girdi_iniz_tarihten_b_y_k_olamaz">2. It cannot be greater than the date you entered.</string>
+    <string name="_2_girdi_iniz_saatten_b_y_k_olamaz">2. It cannot be greater than the time you entered.</string>
+    <string name="g_n_ay_y_l_format_na_uygun_giriniz">Enter in accordance with the Day/Month/Year format</string>
+    <string name="saat_dakika_format_na_uygun_giriniz">Enter the hour:minute format.</string>
+    <string name="saat_aral_n_eksiksiz_giriniz">Enter the exact time range</string>
+    <string name="tarih_aral_n_eksiksiz_giriniz">Enter the complete date range</string>
+    <string name="il_bos_birakilamaz">City cannot be left blank</string>
+    <string name="ilce_bos_birakilamaz">District cannot be left blank</string>
+    <string name="aciklama_bos_birakilamaz">Description cannot be left blank</string>
+    <string name="galeriye_gitmek_i_in_izin_gerekli">Permission required to go to the gallery</string>
+    <string name="izin_ver">Allow</string>
+    <string name="izinleri_aktif_etmeniz_gerekiyor">You need to enable permissions</string>
+
+    <!-- ChangePasswordFragment -->
+    <string name="gecersiz_sifre">Invalid password</string>
+    <string name="sifre_girme_kurali">The password must be at least 6 characters long and contain at least 1 uppercase letter, 1 lowercase letter and 1 number.</string>
+    <string name="sifreler_eslesmiyor">Passwords do not match</string>
+    <string name="sifreniz_g_ncellendi_tekrar_giri_yap_n_z">Your password has been updated. Log in again.</string>
+    <string name="bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz">Something went wrong. Please try again later.</string>
+    <string name="sifrenizi_yanl_girdiniz">You entered your password incorrectly</string>
 
     <string-array name="city_names">
         <item>İstanbul</item>

@@ -2,36 +2,28 @@ package com.socksapp.missedconnection.adapter;
 
 import static com.socksapp.missedconnection.model.FindPost.LAYOUT_EMPTY;
 import static com.socksapp.missedconnection.model.FindPost.LAYOUT_ONE;
-
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.PopupWindow;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.RecycleViewMessageBinding;
 import com.socksapp.missedconnection.databinding.RecyclerEmptyMessageBinding;
-import com.socksapp.missedconnection.databinding.RecyclerEmptyPostBinding;
-import com.socksapp.missedconnection.databinding.RecyclerPostBinding;
 import com.socksapp.missedconnection.fragment.MessageFragment;
 import com.socksapp.missedconnection.model.ChatMessage;
 import com.socksapp.missedconnection.myclass.User;
 import com.socksapp.missedconnection.myinterface.ConversionListener;
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RecentConversationsAdapter extends RecyclerView.Adapter {
     private final List<ChatMessage> chatMessages;
@@ -107,47 +99,6 @@ public class RecentConversationsAdapter extends RecyclerView.Adapter {
         }
     }
 
-    //    @NonNull
-//    @Override
-//    public ConversionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-//
-//        return new ConversionViewHolder(
-//            RecycleViewMessageBinding.inflate(
-//                LayoutInflater.from(parent.getContext()),
-//                parent,
-//                false
-//            )
-//        );
-//    }
-//
-//    @Override
-//    public void onBindViewHolder(@NonNull ConversionViewHolder holder, int position) {
-//        holder.setData(chatMessages.get(position));
-//        FirebaseAuth auth = FirebaseAuth.getInstance();
-//        FirebaseUser user = auth.getCurrentUser();
-//
-//        holder.binding.recyclerViewProfilePhoto.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                int pos = holder.getAdapterPosition();
-//                getShow(holder.itemView,chatMessages.get(pos).conversionImage);
-//            }
-//        });
-//        holder.binding.messageConstraintLayout.setOnLongClickListener(v -> {
-//            int pos = holder.getAdapterPosition();
-//            if(pos != RecyclerView.NO_POSITION){
-//                String selectedItem = chatMessages.get(pos).conversionId;
-//                if(fragment != null){
-//                    fragment.choiceItem(holder.itemView,selectedItem,pos);
-//                }
-//            }
-//            return true;
-//        });
-//
-//    }
-
-
-
     @Override
     public int getItemCount() {
         return chatMessages.size();
@@ -193,21 +144,25 @@ public class RecentConversationsAdapter extends RecyclerView.Adapter {
 
 
     public void getShow(View view,String imageUrl){
-//        LayoutInflater inflater = LayoutInflater.from(view.getContext());
-//        View popupView = inflater.inflate(R.layout.popup_image, null);
-//        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-//
-//        popupWindow.setOutsideTouchable(true);
-//        popupWindow.setFocusable(true);
-//        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-//
-//        ImageView imageView = popupView.findViewById(R.id.popup_circle_image);
-//        if (imageUrl != null && !imageUrl.isEmpty() && !imageUrl.equals("image")) {
-//            Picasso.get().load(imageUrl).into(imageView);
-//        }else {
-//            imageView.setImageResource(R.drawable.user);
-//        }
-//        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+        LayoutInflater inflater = LayoutInflater.from(view.getContext());
+        View popupView = inflater.inflate(R.layout.show_image, null);
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+
+        ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
+        constraintLayout.setOnClickListener(v -> {
+            popupWindow.dismiss();
+        });
+
+        CircleImageView imageView = popupView.findViewById(R.id.show_image);
+
+        Glide.with(view.getContext())
+            .load(imageUrl)
+            .apply(new RequestOptions()
+            .error(R.drawable.person_active_96)
+            .centerCrop())
+            .into(imageView);
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
 }

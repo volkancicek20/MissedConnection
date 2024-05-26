@@ -142,7 +142,7 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
 
     private void getShow(String name,String other_name,String imageUrl,String galleryUrl,String explain,String action_explain,String city,String district,Timestamp timestamp,Timestamp timestamp2,PostNotificationHolder holder){
         if(action_explain.equals("view")){
-            action_explain = "tarafından görüntülendi";
+            action_explain = context.getString(R.string.taraf_ndan_g_r_nt_lendi);
         }
 
         String city_and_district = city + "/" + district;
@@ -185,19 +185,19 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
         String elapsedTime;
 
         if(secondsElapsed < 0){
-            elapsedTime = "şimdi";
+            elapsedTime = context.getString(R.string.azonce);
         } else if (secondsElapsed >= 31536000) {
-            elapsedTime = "• " + (secondsElapsed / 31536000) + "yıl";
+            elapsedTime = "• " + (secondsElapsed / 31536000) + context.getString(R.string.yil);
         } else if (secondsElapsed >= 2592000) {
-            elapsedTime = "• " + (secondsElapsed / 2592000) + "ay";
+            elapsedTime = "• " + (secondsElapsed / 2592000) + context.getString(R.string.ay);
         } else if (secondsElapsed >= 86400) {
-            elapsedTime = "• " + (secondsElapsed / 86400) + "g";
+            elapsedTime = "• " + (secondsElapsed / 86400) + context.getString(R.string.g);
         } else if (secondsElapsed >= 3600) {
-            elapsedTime = "• " + (secondsElapsed / 3600) + "sa";
+            elapsedTime = "• " + (secondsElapsed / 3600) + context.getString(R.string.sa);
         } else if (secondsElapsed >= 60) {
-            elapsedTime = "• " + (secondsElapsed / 60) + "d";
+            elapsedTime = "• " + (secondsElapsed / 60) + context.getString(R.string.d);
         } else {
-            elapsedTime = "• " + secondsElapsed + "s";
+            elapsedTime = "• " + secondsElapsed + context.getString(R.string.s);
         }
 
         holder.recyclerViewNotificationBinding.timestampTime.setText(elapsedTime);
@@ -206,20 +206,20 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
         long secondsElapsed2 = (Timestamp.now().getSeconds() - timestamp2.getSeconds());
         String elapsedTime2;
 
-        if(secondsElapsed < 0){
-            elapsedTime2 = "şimdi";
+        if(secondsElapsed2 < 0){
+            elapsedTime2 = context.getString(R.string.azonce);
         } else if (secondsElapsed2 >= 31536000) {
-            elapsedTime2 = "• " + (secondsElapsed2 / 31536000) + "yıl";
+            elapsedTime2 = "• " + (secondsElapsed2 / 31536000) + context.getString(R.string.yil);
         } else if (secondsElapsed2 >= 2592000) {
-            elapsedTime2 = "• " + (secondsElapsed2 / 2592000) + "ay";
+            elapsedTime2 = "• " + (secondsElapsed2 / 2592000) + context.getString(R.string.ay);
         } else if (secondsElapsed2 >= 86400) {
-            elapsedTime2 = "• " + (secondsElapsed2 / 86400) + "g";
+            elapsedTime2 = "• " + (secondsElapsed2 / 86400) + context.getString(R.string.g);
         } else if (secondsElapsed2 >= 3600) {
-            elapsedTime2 = "• " + (secondsElapsed2 / 3600) + "sa";
+            elapsedTime2 = "• " + (secondsElapsed2 / 3600) + context.getString(R.string.sa);
         } else if (secondsElapsed2 >= 60) {
-            elapsedTime2 = "• " + (secondsElapsed2 / 60) + "d";
+            elapsedTime2 = "• " + (secondsElapsed2 / 60) + context.getString(R.string.d);
         } else {
-            elapsedTime2 = "• " + secondsElapsed2 + "s";
+            elapsedTime2 = "• " + secondsElapsed2 + context.getString(R.string.s);
         }
 
         holder.recyclerViewNotificationBinding.recyclerTimestampTime.setText(elapsedTime2);

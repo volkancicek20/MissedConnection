@@ -2,23 +2,18 @@ package com.socksapp.missedconnection.adapter;
 
 import static com.socksapp.missedconnection.model.FindPost.LAYOUT_EMPTY;
 import static com.socksapp.missedconnection.model.FindPost.LAYOUT_ONE;
-
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,7 +26,6 @@ import com.socksapp.missedconnection.databinding.RecyclerPostBinding;
 import com.socksapp.missedconnection.fragment.MainFragment;
 import com.socksapp.missedconnection.model.FindPost;
 import com.socksapp.missedconnection.myclass.SharedPreferencesHelper;
-
 import java.util.ArrayList;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -221,19 +215,19 @@ public class PostAdapter extends RecyclerView.Adapter {
         String elapsedTime;
 
         if(secondsElapsed < 0){
-            elapsedTime = "şimdi";
+            elapsedTime = context.getString(R.string.azonce);
         } else if (secondsElapsed >= 31536000) {
-            elapsedTime = "• " + (secondsElapsed / 31536000) + "yıl";
+            elapsedTime = "• " + (secondsElapsed / 31536000) + context.getString(R.string.yil);
         } else if (secondsElapsed >= 2592000) {
-            elapsedTime = "• " + (secondsElapsed / 2592000) + "ay";
+            elapsedTime = "• " + (secondsElapsed / 2592000) + context.getString(R.string.ay);
         } else if (secondsElapsed >= 86400) {
-            elapsedTime = "• " + (secondsElapsed / 86400) + "g";
+            elapsedTime = "• " + (secondsElapsed / 86400) + context.getString(R.string.g);
         } else if (secondsElapsed >= 3600) {
-            elapsedTime = "• " + (secondsElapsed / 3600) + "sa";
+            elapsedTime = "• " + (secondsElapsed / 3600) + context.getString(R.string.sa);
         } else if (secondsElapsed >= 60) {
-            elapsedTime = "• " + (secondsElapsed / 60) + "d";
+            elapsedTime = "• " + (secondsElapsed / 60) + context.getString(R.string.d);
         } else {
-            elapsedTime = "• " + secondsElapsed + "s";
+            elapsedTime = "• " + secondsElapsed + context.getString(R.string.s);
         }
 
         holder.recyclerPostBinding.timestampTime.setText(elapsedTime);
@@ -244,21 +238,11 @@ public class PostAdapter extends RecyclerView.Adapter {
         LayoutInflater inflater = LayoutInflater.from(view.getContext());
         View popupView = inflater.inflate(R.layout.show_image, null);
         PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
-//
-//        ImageView cancel = popupView.findViewById(R.id.cancel_image);
-//
-//        cancel.setOnClickListener(v -> {
-//            popupWindow.dismiss();
-//        });
 
         ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
         constraintLayout.setOnClickListener(v -> {
             popupWindow.dismiss();
         });
-
-//        popupWindow.setOutsideTouchable(true);
-//        popupWindow.setFocusable(true);
-//        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         CircleImageView imageView = popupView.findViewById(R.id.show_image);
 
@@ -277,20 +261,10 @@ public class PostAdapter extends RecyclerView.Adapter {
         View popupView = inflater.inflate(R.layout.show_gallery, null);
         PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
 
-//        ImageView cancel = popupView.findViewById(R.id.cancel_image);
-
-//        cancel.setOnClickListener(v -> {
-//            popupWindow.dismiss();
-//        });
-
         ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
         constraintLayout.setOnClickListener(v -> {
             popupWindow.dismiss();
         });
-
-//        popupWindow.setOutsideTouchable(true);
-//        popupWindow.setFocusable(true);
-//        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         ShapeableImageView imageView = popupView.findViewById(R.id.show_image);
 

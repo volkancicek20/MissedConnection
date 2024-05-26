@@ -240,8 +240,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void signOut(){
         new AlertDialog.Builder(MainActivity.this)
-            .setMessage("Hesaptan çıkış yapılıyor..")
-            .setPositiveButton("Çıkış yap", new DialogInterface.OnClickListener() {
+            .setMessage(getString(R.string.log_out_text_title))
+            .setPositiveButton(getString(R.string.log_out_text), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     SharedPreferences.Editor editor = nameShared.edit();
                     clearShared(editor);
@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                     drawerLayout.closeDrawers();
                 }
             })
-            .setNegativeButton("Hayır", null).show();
+            .setNegativeButton(getString(R.string.iptal), null).show();
     }
 
     private void clearShared(SharedPreferences.Editor editor){

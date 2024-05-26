@@ -3,22 +3,16 @@ package com.socksapp.missedconnection.fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -138,19 +132,19 @@ public class ChangePasswordFragment extends Fragment {
             updatePassword(view,password, newPassword);
         } else {
             if (!isPasswordValid) {
-                binding.oldPasswordInputLayout.setError("Geçersiz şifre");
+                binding.oldPasswordInputLayout.setError(getString(R.string.gecersiz_sifre));
             } else {
                 binding.oldPasswordInputLayout.setError(null);
             }
 
             if (!isNewPasswordValid) {
-                binding.newPasswordInputLayout.setError("Şifre en az 6 karakter uzunluğunda olmalı, en az 1 büyük harf, 1 küçük harf ve 1 rakam içermelidir.");
+                binding.newPasswordInputLayout.setError(getString(R.string.sifre_girme_kurali));
             } else {
                 binding.newPasswordInputLayout.setError(null);
             }
 
             if (!passwordsMatch) {
-                binding.newPasswordConfirmInputLayout.setError("Şifreler eşleşmiyor");
+                binding.newPasswordConfirmInputLayout.setError(getString(R.string.sifreler_eslesmiyor));
             } else {
                 binding.newPasswordConfirmInputLayout.setError(null);
             }
@@ -162,16 +156,16 @@ public class ChangePasswordFragment extends Fragment {
         user.reauthenticate(credential).addOnCompleteListener(authTask -> {
             if (authTask.isSuccessful()) {
                 user.updatePassword(newPassword).addOnSuccessListener(unused -> {
-                    Toast.makeText(view.getContext(),"Şifreniz güncellendi. Tekrar giriş yapınız.",Toast.LENGTH_LONG).show();
+                    Toast.makeText(view.getContext(), getString(R.string.sifreniz_g_ncellendi_tekrar_giri_yap_n_z),Toast.LENGTH_LONG).show();
                     auth.signOut();
                     Intent intent = new Intent(requireActivity(), LoginActivity.class);
                     startActivity(intent);
                     requireActivity().finish();
                 }).addOnFailureListener(e -> {
-                    Toast.makeText(view.getContext(),"Bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(view.getContext(), getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz),Toast.LENGTH_SHORT).show();
                 });
             } else {
-                binding.oldPasswordInputLayout.setError("Şifrenizi yanlış girdiniz");
+                binding.oldPasswordInputLayout.setError(getString(R.string.sifrenizi_yanl_girdiniz));
             }
         });
     }

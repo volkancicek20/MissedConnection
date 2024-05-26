@@ -1,10 +1,8 @@
 package com.socksapp.missedconnection.FCM;
 
 import android.util.Log;
-
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.common.collect.Lists;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;

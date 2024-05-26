@@ -15,7 +15,6 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
-import com.socksapp.missedconnection.myclass.SharedPreferencesHelper;
 import com.socksapp.missedconnection.myclass.SharedPreferencesHelperMessage;
 import com.socksapp.missedconnection.myclass.SharedPreferencesHelperPost;
 import java.util.List;
