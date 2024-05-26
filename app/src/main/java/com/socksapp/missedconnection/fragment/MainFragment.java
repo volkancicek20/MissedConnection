@@ -62,8 +62,8 @@ public class MainFragment extends Fragment {
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
     private FirebaseUser user;
-    private SharedPreferences nameShared,imageUrlShared;
-    private String userMail,myUserName,myImageUrl,city;
+    private SharedPreferences nameShared,imageUrlShared,myLocationCity,myLocationDistrict;
+    private String userMail,myUserName,myImageUrl,userLocationCity,userLocationDistrict;
     private MainActivity mainActivity;
     public PostAdapter postAdapter;
     public ArrayList<FindPost> postArrayList;
@@ -71,6 +71,7 @@ public class MainFragment extends Fragment {
     private TimedDataManager timedDataManager;
     private FusedLocationProviderClient fusedLocationClient;
     private static final int LOCATION_REQUEST_CODE = 100;
+    public double checkRadius = 0,checkLat = 0,checkLng = 0;
     public MainFragment() {
         // Required empty public constructor
     }
@@ -87,6 +88,8 @@ public class MainFragment extends Fragment {
 
         nameShared = requireActivity().getSharedPreferences("Name", Context.MODE_PRIVATE);
         imageUrlShared = requireActivity().getSharedPreferences("ImageUrl", Context.MODE_PRIVATE);
+        myLocationCity = requireActivity().getSharedPreferences("MyLocationCity", Context.MODE_PRIVATE);
+        myLocationDistrict = requireActivity().getSharedPreferences("MyLocationDistrict", Context.MODE_PRIVATE);
 
     }
 
@@ -121,6 +124,8 @@ public class MainFragment extends Fragment {
 
         myUserName = nameShared.getString("name","");
         myImageUrl = nameShared.getString("imageUrl","");
+        userLocationCity = myLocationCity.getString("myLocationCity","");
+        userLocationDistrict = myLocationDistrict.getString("myLocationDistrict","");
 
         binding.recyclerViewMain.setLayoutManager(new LinearLayoutManager(view.getContext()));
         postAdapter = new PostAdapter(postArrayList,view.getContext(),MainFragment.this);
@@ -136,6 +141,9 @@ public class MainFragment extends Fragment {
             double radius = args.getDouble("radius",0);
             double latitude = args.getDouble("latitude",0);
             double longitude = args.getDouble("longitude",0);
+            checkRadius = radius;
+            checkLat = latitude;
+            checkLng = longitude;
             String date1 = args.getString("date1","");
             String date2 = args.getString("date2","");
             String time1 = args.getString("time1","");
@@ -177,16 +185,32 @@ public class MainFragment extends Fragment {
                 try {
                     List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
                     if (addresses != null && !addresses.isEmpty()) {
-                        city = addresses.get(0).getAdminArea();
+                        userLocationCity = addresses.get(0).getAdminArea();
+                        SharedPreferences.Editor editor = myLocationCity.edit();
+                        editor.putString("myLocationCity",userLocationCity);
+                        editor.apply();
+
+                        userLocationDistrict = addresses.get(0).getSubAdminArea();
+                        SharedPreferences.Editor editor2 = myLocationDistrict.edit();
+                        editor2.putString("myLocationDistrict",userLocationDistrict);
+                        editor2.apply();
                         getData();
-                        System.out.println("city: "+addresses);
-                        Toast.makeText(requireActivity(),city,Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireActivity(),userLocationCity+"/"+userLocationDistrict,Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }else {
-                city = "İstanbul";
+                userLocationCity = "İstanbul";
+                SharedPreferences.Editor editor = myLocationCity.edit();
+                editor.putString("myLocationCity",userLocationCity);
+                editor.apply();
+
+                userLocationDistrict = "Fatih";
+                SharedPreferences.Editor editor2 = myLocationDistrict.edit();
+                editor2.putString("myLocationDistrict",userLocationDistrict);
+                editor2.apply();
+
                 getData();
             }
         });
@@ -202,9 +226,18 @@ public class MainFragment extends Fragment {
         if(requestCode == LOCATION_REQUEST_CODE){
             if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
                 getUserLocation();
-                Toast.makeText(requireActivity(),"Permission accepted",Toast.LENGTH_SHORT).show();
             }else {
-                Toast.makeText(requireActivity(),"Permission rejected",Toast.LENGTH_SHORT).show();
+                userLocationCity = "İstanbul";
+                SharedPreferences.Editor editor = myLocationCity.edit();
+                editor.putString("myLocationCity",userLocationCity);
+                editor.apply();
+
+                userLocationDistrict = "Fatih";
+                SharedPreferences.Editor editor2 = myLocationDistrict.edit();
+                editor2.putString("myLocationDistrict",userLocationDistrict);
+                editor2.apply();
+
+                getData();
             }
         }
     }
@@ -693,7 +726,7 @@ public class MainFragment extends Fragment {
     }
 
     private void getData(){
-        firestore.collection("post"+city).get().addOnSuccessListener(queryDocumentSnapshots -> {
+        firestore.collection("post"+userLocationCity).whereEqualTo("district",userLocationDistrict).get().addOnSuccessListener(queryDocumentSnapshots -> {
             boolean found = false;
             for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
                 found = true;
@@ -780,7 +813,9 @@ public class MainFragment extends Fragment {
 
     public void setActivityNotification(String mail, DocumentReference ref,Context context){
 
-        if(!myUserName.isEmpty()){
+        boolean checkField = checkRadius != 0 && checkLat != 0 && checkLng != 0;
+
+        if(!myUserName.isEmpty() && checkField){
             String refId = ref.getId();
             String value = timedDataManager.getData(refId,"");
 
@@ -804,6 +839,7 @@ public class MainFragment extends Fragment {
                         }
                     });
                 });
+                Toast.makeText(context,"Bildirildi",Toast.LENGTH_LONG).show();
             }else {
                 // Veri bulundu ve süresi dolmamış
             }
@@ -836,7 +872,6 @@ public class MainFragment extends Fragment {
     public double toRadians(double deg) {
         return deg * (Math.PI/180);
     }
-
 
     @Override
     public void onResume() {

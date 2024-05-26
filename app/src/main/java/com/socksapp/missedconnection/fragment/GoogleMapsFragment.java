@@ -119,7 +119,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
                         .title(location));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
                 }else {
-                    Toast.makeText(requireContext(),"Yer bulunamadı.",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(),"Aradığınız yer bulunamadı",Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
@@ -151,9 +151,9 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
             CircleOptions circleOptions = new CircleOptions();
             circleOptions.center(location);
             circleOptions.radius(mainRadius);
-            circleOptions.strokeColor(Color.BLACK);
+            circleOptions.strokeColor(Color.RED);
             circleOptions.fillColor(0x30ff0000);
-            circleOptions.strokeWidth(2);
+            circleOptions.strokeWidth(1);
             mMap.addCircle(circleOptions);
             mMap.setOnMapClickListener(null);
         }else {
@@ -202,9 +202,9 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
                             CircleOptions circleOptions = new CircleOptions();
                             circleOptions.center(latLng);
                             circleOptions.radius(radius);
-                            circleOptions.strokeColor(Color.BLACK);
+                            circleOptions.strokeColor(Color.RED);
                             circleOptions.fillColor(0x30ff0000);
-                            circleOptions.strokeWidth(2);
+                            circleOptions.strokeWidth(1);
                             currentCircle = mMap.addCircle(circleOptions);
                         }else {
                             Toast.makeText(requireContext(),city+","+district+" alanının dışına çıkamazsınız",Toast.LENGTH_SHORT).show();

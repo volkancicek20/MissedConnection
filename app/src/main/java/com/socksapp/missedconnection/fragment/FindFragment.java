@@ -303,7 +303,7 @@ public class FindFragment extends Fragment {
 
                 LatLng location = new LatLng(lat, lng);
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.person_active_96);
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_location_mark_100);
                 Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false); // 50x50 boyutunda ikon
                 googleMap.addMarker(new MarkerOptions()
                 .position(location)

@@ -29,6 +29,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -152,18 +153,34 @@ public class MyPostFragment extends Fragment {
                     batch.delete(firestore.collection(userMail).document(documentReference.getId()));
                     batch.delete(firestore.collection("post"+city).document(documentReference.getId()));
 
-                    batch.commit()
-                        .addOnSuccessListener(aVoid -> {
-                            mainActivity.refDataAccess.deleteRef(documentReference.getId());
-                            myPostAdapter.notifyItemRemoved(position);
-                            postArrayList.remove(position);
-                            myPostAdapter.notifyDataSetChanged();
+                    CollectionReference subCollectionRef = firestore.collection("views").document(userMail).collection(userMail);
+                    Query query = subCollectionRef.whereEqualTo("refId", documentReference.getId());
+
+                    query.get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                batch.delete(document.getReference());
+                            }
+                            batch.commit()
+                                .addOnSuccessListener(aVoid -> {
+                                    mainActivity.refDataAccess.deleteRef(documentReference.getId());
+                                    myPostAdapter.notifyItemRemoved(position);
+                                    postArrayList.remove(position);
+                                    myPostAdapter.notifyDataSetChanged();
+                                    dialog.dismiss();
+                                    dialog2.dismiss();
+                                })
+                                .addOnFailureListener(e -> {
+                                    dialog.dismiss();
+                                    dialog2.dismiss();
+                                    Toast.makeText(view.getContext(),"Gönderi silinemedi. Lütfen internet bağlantınızı kontrol edin",Toast.LENGTH_SHORT).show();
+                                });
+                        } else {
                             dialog.dismiss();
                             dialog2.dismiss();
-                        })
-                        .addOnFailureListener(e -> {
-
-                        });
+                            Toast.makeText(view.getContext(),"Gönderi silinemedi. Lütfen internet bağlantınızı kontrol edin",Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             });
             builder.setNegativeButton("Geri", new DialogInterface.OnClickListener() {

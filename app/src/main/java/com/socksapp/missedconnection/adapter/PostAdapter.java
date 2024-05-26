@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -131,6 +132,10 @@ public class PostAdapter extends RecyclerView.Adapter {
                     getImageShow(v,imageUrl);
                 });
 
+                postHolder.recyclerPostBinding.galleryImage.setOnClickListener(v ->{
+                    getGalleryShow(v,galleryUrl);
+                });
+
                 getShow(imageUrl,galleryUrl,name,city,district,explain,timestamp,postHolder);
 
                 ((PostHolder) holder).recyclerPostBinding.verticalMenu.setOnClickListener(v ->{
@@ -235,20 +240,16 @@ public class PostAdapter extends RecyclerView.Adapter {
 
     }
 
-    private int getScreenWidth(Context context) {
-        return context.getResources().getDisplayMetrics().widthPixels;
-    }
-
     private void getImageShow(View view,String imageUrl){
         LayoutInflater inflater = LayoutInflater.from(view.getContext());
         View popupView = inflater.inflate(R.layout.show_image, null);
         PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
-
-        ImageView cancel = popupView.findViewById(R.id.cancel_image);
-
-        cancel.setOnClickListener(v -> {
-            popupWindow.dismiss();
-        });
+//
+//        ImageView cancel = popupView.findViewById(R.id.cancel_image);
+//
+//        cancel.setOnClickListener(v -> {
+//            popupWindow.dismiss();
+//        });
 
         ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
         constraintLayout.setOnClickListener(v -> {
@@ -269,5 +270,45 @@ public class PostAdapter extends RecyclerView.Adapter {
             .into(imageView);
 
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    private void getGalleryShow(View view,String galleryUrl){
+        LayoutInflater inflater = LayoutInflater.from(view.getContext());
+        View popupView = inflater.inflate(R.layout.show_gallery, null);
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+
+//        ImageView cancel = popupView.findViewById(R.id.cancel_image);
+
+//        cancel.setOnClickListener(v -> {
+//            popupWindow.dismiss();
+//        });
+
+        ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
+        constraintLayout.setOnClickListener(v -> {
+            popupWindow.dismiss();
+        });
+
+//        popupWindow.setOutsideTouchable(true);
+//        popupWindow.setFocusable(true);
+//        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        ShapeableImageView imageView = popupView.findViewById(R.id.show_image);
+
+        int screenWidth = getScreenWidth(context);
+
+        Glide.with(context)
+            .load(galleryUrl)
+            .apply(new RequestOptions()
+            .error(R.drawable.icon_loading)
+            .fitCenter()
+            .centerCrop())
+            .override(screenWidth, 500)
+            .into(imageView);
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    private int getScreenWidth(Context context) {
+        return context.getResources().getDisplayMetrics().widthPixels;
     }
 }

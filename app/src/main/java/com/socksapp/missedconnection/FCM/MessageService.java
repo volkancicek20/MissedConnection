@@ -15,18 +15,18 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
-
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.socksapp.missedconnection.myclass.SharedPreferencesHelper;
+import com.socksapp.missedconnection.myclass.SharedPreferencesHelperMessage;
+import com.socksapp.missedconnection.myclass.SharedPreferencesHelperPost;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class MessageService extends FirebaseMessagingService {
     private static final String CHANNEL_ID = "Notification";
     private static final int NOTIFICATION_ID = 100;
     private NotificationManager notificationManager;
-    private Map<String, NotificationCompat.Builder> groupedNotifications;
+    private SharedPreferencesHelperMessage sharedPreferencesHelperMessage;
+    private SharedPreferencesHelperPost sharedPreferencesHelperPost;
 
     @Override
     public void onNewToken(@NonNull String token) {
@@ -39,11 +39,10 @@ public class MessageService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage message) {
         super.onMessageReceived(message);
 
-        if (!isAppInForeground(this)) {
+        String title = Objects.requireNonNull(message.getNotification()).getTitle();
+        String body = message.getNotification().getBody();
 
-//            if (groupedNotifications == null) {
-//                groupedNotifications = new HashMap<>();
-//            }
+        if (!isAppInForeground(this)) {
 
             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             long[] pattern = {0, 10, 100, 200};
@@ -54,9 +53,13 @@ public class MessageService extends FirebaseMessagingService {
             Intent resultIntent = new Intent(this, MainActivity.class);
             PendingIntent pendingIntent;
             pendingIntent = PendingIntent.getActivity(this,1,resultIntent,PendingIntent.FLAG_IMMUTABLE); //özel bir yere gitmek için kullan
-            builder.setContentTitle(Objects.requireNonNull(message.getNotification()).getTitle());
-            builder.setContentText(message.getNotification().getBody());
-            builder.setStyle(new NotificationCompat.BigTextStyle().bigText(message.getNotification().getBody()));
+            if(title != null && !title.isEmpty()) {
+                builder.setContentTitle(title);
+            }else {
+                builder.setContentTitle(null);
+            }
+            builder.setContentText(body);
+            builder.setStyle(new NotificationCompat.BigTextStyle().bigText(body));
             builder.setAutoCancel(true);
             builder.setSmallIcon(R.drawable.icon_notifications_base);
             builder.setVibrate(pattern);
@@ -64,21 +67,20 @@ public class MessageService extends FirebaseMessagingService {
 
             notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-                String channelID = CHANNEL_ID;
-                NotificationChannel channel = new NotificationChannel(
-                        channelID,"Coding",NotificationManager.IMPORTANCE_HIGH
-                );
-                channel.enableLights(true);
-                channel.enableVibration(true);
-                channel.setVibrationPattern(pattern);
-                channel.canBypassDnd();
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    channel.canBubble();
-                }
-                notificationManager.createNotificationChannel(channel);
-                builder.setChannelId(channelID);
+            String channelID = CHANNEL_ID;
+            NotificationChannel channel = new NotificationChannel(
+                    channelID,"Coding",NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.enableLights(true);
+            channel.enableVibration(true);
+            channel.setVibrationPattern(pattern);
+            channel.canBypassDnd();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                channel.canBubble();
             }
+            notificationManager.createNotificationChannel(channel);
+            builder.setChannelId(channelID);
+
             notificationManager.notify(NOTIFICATION_ID,builder.build());
         }
 

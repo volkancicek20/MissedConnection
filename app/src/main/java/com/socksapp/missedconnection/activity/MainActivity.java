@@ -13,25 +13,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.socksapp.missedconnection.FCM.AccessToken;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.ActivityMainBinding;
 import com.socksapp.missedconnection.fragment.AboutUsFragment;
@@ -51,7 +44,6 @@ import com.socksapp.missedconnection.fragment.SettingsFragment;
 import com.socksapp.missedconnection.myclass.ChatIdDataAccess;
 import com.socksapp.missedconnection.myclass.RefDataAccess;
 import com.socksapp.missedconnection.myclass.SharedPreferencesHelper;
-
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -60,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
     private FirebaseUser user;
-    private SharedPreferences nameShared,imageUrlShared,language;
+    private SharedPreferences nameShared,imageUrlShared,language,myLocationCity,myLocationDistrict;
     private SharedPreferences userDone;
     private String userMail;
     public FragmentContainerView fragmentContainerView;
@@ -167,7 +159,6 @@ public class MainActivity extends AppCompatActivity {
                     if (currentFragment instanceof MainFragment) {
                         drawerLayout.closeDrawers();
                     }else {
-                        System.out.println("fragment: "+currentFragment);
                         bottomNavigationView.setSelectedItemId(R.id.navHome);
                         loadFragment(MainFragment.class);
                     }
@@ -186,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
         nameShared = getSharedPreferences("Name", Context.MODE_PRIVATE);
         imageUrlShared = getSharedPreferences("ImageUrl", Context.MODE_PRIVATE);
         userDone = getSharedPreferences("UserDone", Context.MODE_PRIVATE);
+        myLocationCity = getSharedPreferences("MyLocationCity", Context.MODE_PRIVATE);
+        myLocationDistrict = getSharedPreferences("MyLocationDistrict", Context.MODE_PRIVATE);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -256,6 +249,12 @@ public class MainActivity extends AppCompatActivity {
                     clearShared(editor1);
                     SharedPreferences.Editor editor2 = userDone.edit();
                     clearShared(editor2);
+                    SharedPreferences.Editor editor3 = language.edit();
+                    clearShared(editor3);
+                    SharedPreferences.Editor editor4 = myLocationCity.edit();
+                    clearShared(editor4);
+                    SharedPreferences.Editor editor5 = myLocationDistrict.edit();
+                    clearShared(editor5);
 
                     refDataAccess.deleteAllData();
                     chatIdDataAccess.deleteAllData();
