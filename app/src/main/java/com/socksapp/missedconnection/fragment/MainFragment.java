@@ -2,8 +2,10 @@ package com.socksapp.missedconnection.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -22,15 +24,19 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import android.os.Handler;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -62,7 +68,7 @@ public class MainFragment extends Fragment {
     private FirebaseFirestore firestore;
     private FirebaseAuth auth;
     private FirebaseUser user;
-    private SharedPreferences nameShared,imageUrlShared,myLocationCity,myLocationDistrict;
+    private SharedPreferences nameShared,imageUrlShared,myLocationCity,myLocationDistrict,language;
     private String userMail,myUserName,myImageUrl,userLocationCity,userLocationDistrict;
     private MainActivity mainActivity;
     public PostAdapter postAdapter;
@@ -86,6 +92,7 @@ public class MainFragment extends Fragment {
 
         postArrayList = new ArrayList<>();
 
+        language = requireActivity().getSharedPreferences("Language",Context.MODE_PRIVATE);
         nameShared = requireActivity().getSharedPreferences("Name", Context.MODE_PRIVATE);
         imageUrlShared = requireActivity().getSharedPreferences("ImageUrl", Context.MODE_PRIVATE);
         myLocationCity = requireActivity().getSharedPreferences("MyLocationCity", Context.MODE_PRIVATE);
@@ -279,7 +286,7 @@ public class MainFragment extends Fragment {
             data.put(documentReference.getId(),mail);
             firestore.collection("saves").document(userMail).set(data,SetOptions.merge()).addOnSuccessListener(unused -> {
 //                mainActivity.refDataAccess.insertRef(documentReference.getId(),mail);
-                Toast.makeText(view.getContext(), "Kaydedildi", Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), getString(R.string.kaydedildi), Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
             }).addOnFailureListener(e -> {
 
@@ -288,23 +295,80 @@ public class MainFragment extends Fragment {
 
         message.setOnClickListener(v ->{
             if(!myUserName.isEmpty()){
-                Bundle args = new Bundle();
-                args.putString("anotherMail", mail);
-                ChatFragment fragment = new ChatFragment();
-                fragment.setArguments(args);
-                FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-                dialog.dismiss();
+                if(!mail.equals(userMail)){
+                    Bundle args = new Bundle();
+                    args.putString("anotherMail", mail);
+                    ChatFragment fragment = new ChatFragment();
+                    fragment.setArguments(args);
+                    FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                    dialog.dismiss();
+                }else {
+                    Toast.makeText(v.getContext(), getString(R.string.kendine_mesaj_g_nderemezsiniz),Toast.LENGTH_SHORT).show();
+                }
             }else {
-                Toast.makeText(v.getContext(),"Mesaj göndermek için profilinizi tamamlamalısınız.",Toast.LENGTH_LONG).show();
+                Toast.makeText(v.getContext(), getString(R.string.mesaj_g_ndermek_i_in_profilinizi_tamamlamal_s_n_z),Toast.LENGTH_LONG).show();
                 dialog.dismiss();
             }
 
         });
 
         report.setOnClickListener(v ->{
+            if(!mail.equals(userMail)){
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+
+                String getLanguage = language.getString("language","");
+                if(getLanguage.equals("english")){
+                    builder.setTitle("You are reporting the user named "+name);
+                }else {
+                    builder.setTitle(name+" adlı kullanıcıyı bildiriyorsunuz!");
+                }
+
+                final EditText editText = new EditText(v.getContext());
+                editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                editText.setLines(5);
+                editText.setHint(getString(R.string.kullaniciyi_bildirme_sebebinizi_aciklayiniz));
+
+                builder.setView(editText);
+
+                builder.setPositiveButton(getString(R.string.bildir), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dg, int which) {
+                        String text = editText.getText().toString().trim();
+                        if(!text.isEmpty()){
+                            Map<String,Object> data = new HashMap<>();
+                            data.put("report",text);
+                            firestore.collection("report").document(mail).collection(mail).add(data).addOnSuccessListener(documentReference1 -> {
+                                Toast.makeText(v.getContext(), getString(R.string.kullanici_bildirildi),Toast.LENGTH_SHORT).show();
+                                dg.dismiss();
+                                dialog.dismiss();
+                            }).addOnFailureListener(e -> {
+                                dg.dismiss();
+                                dialog.dismiss();
+                                Toast.makeText(v.getContext(),getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz),Toast.LENGTH_SHORT).show();
+                            });
+                        }else {
+                            dialog.dismiss();
+                            dg.dismiss();
+                        }
+                    }
+                });
+
+                builder.setNegativeButton(getString(R.string.iptal), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dg, int which) {
+                        dialog.dismiss();
+                        dg.dismiss();
+                    }
+                });
+
+                AlertDialog dlg = builder.create();
+                dlg.show();
+            }else {
+                Toast.makeText(v.getContext(), getString(R.string.kendinizi_bildiremezsiniz),Toast.LENGTH_SHORT).show();
+            }
 
         });
 
@@ -833,13 +897,19 @@ public class MainFragment extends Fragment {
                 documentReference.set(viewData,SetOptions.merge()).addOnSuccessListener(unused -> {
                     firestore.collection("users").document(mail).get().addOnSuccessListener(documentSnapshot1 -> {
                         if(documentSnapshot1.exists()){
-                            String token = documentSnapshot1.getString("fcmToken");
-                            FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,"","Paylaşımınız "+myUserName+" tarafından görüntülendi.",context);
-                            fcmNotificationSender.SendNotification();
+                            String getLanguage = language.getString("language","");
+                            if(getLanguage.equals("english")){
+                                String token = documentSnapshot1.getString("fcmToken");
+                                FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,"",getString(R.string.paylasiminiz)+getString(R.string.tarafindan_goruntulendi)+myUserName,context);
+                                fcmNotificationSender.SendNotification();
+                            }else {
+                                String token = documentSnapshot1.getString("fcmToken");
+                                FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,"",getString(R.string.paylasiminiz)+myUserName+getString(R.string.tarafindan_goruntulendi),context);
+                                fcmNotificationSender.SendNotification();
+                            }
                         }
                     });
                 });
-                Toast.makeText(context,"Bildirildi",Toast.LENGTH_LONG).show();
             }else {
                 // Veri bulundu ve süresi dolmamış
             }

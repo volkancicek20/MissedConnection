@@ -34,7 +34,7 @@
             android:foreground="@drawable/click_effect"
             android:layout_marginStart="10dp"
             android:paddingStart="10dp"
-            android:text="Türkçe"
+            android:text="@string/turkce"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"
@@ -48,7 +48,7 @@
             android:foreground="@drawable/click_effect"
             android:layout_marginStart="10dp"
             android:paddingStart="10dp"
-            android:text="İngilizce"
+            android:text="@string/ingilizce"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="bold"/>

@@ -75,6 +75,15 @@
     <string name="dil_tercihi">Dil tercihi - Türkçe</string>
     <string name="hakkimizda">Hakkımızda</string>
 
+    <!-- fragment_delete -->
+    <string name="hesab_n_z_neden_silmek_istiyorsunuz">Hesabınızı neden silmek istiyorsunuz?</string>
+    <string name="hesabi_s_l">HESABI SİL</string>
+
+    <!-- fragment_change_password -->
+    <string name="yeni_sifre">Yeni sifre</string>
+    <string name="yeni_sifre_tekrar">Yeni sifre tekrar</string>
+    <string name="sifreyi_degistir_büyük_harf">ŞİFREYİ DEĞİŞTİR</string>
+
     <!-- recycler_empty_my_post -->
     <string name="henuz_gonderi_paylasmadiniz">Henüz gönderi paylaşmadınız</string>
     <string name="gonderi_paylas">Gönderi paylaş</string>
@@ -136,6 +145,101 @@
     <string name="bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz">Bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.</string>
     <string name="sifrenizi_yanl_girdiniz">Şifrenizi yanlış girdiniz</string>
 
+    <!-- DeleteAccountFragment -->
+    <string name="sifrenizi_giriniz">Şifrenizi giriniz</string>
+    <string name="bu_alan_bo_b_rak_lamaz">Bu alan boş bırakılamaz</string>
+    <string name="hesap_silme_onayi">Hesap Silme Onayı</string>
+    <string name="silme_onayi">Bu işlem hesabınızı ve tüm verilerinizi kalıcı olarak silecektir. Devam etmek istediğinize emin misiniz?</string>
+    <string name="evet">Evet</string>
+    <string name="hesab_n_z_1_hafta_i_inde_silinecektir">Hesabınız 1 hafta içinde silinecektir.</string>
+    <string name="hesap_silme_i_lemi_ba_ar_s_z_l_tfen_tekrar_deneyiniz">Hesap silme işlemi başarısız. Lütfen tekrar deneyiniz</string>
+
+    <!-- EditProfileFragment -->
+    <string name="kaydediliyor">Kaydediliyor..</string>
+    <string name="profiliniz_kaydedildi">Profiliniz kaydedildi</string>
+
+    <!-- GoogleMapsFragment -->
+    <string name="aradiginiz_yer_bulunamadi">Aradığınız yer bulunamadı</string>
+    <string name="alanin_disina_cikamazsiniz">" alanının dışına çıkamazsınız"</string>
+    <string name="haritada_isaretleme_yapmadiniz">Haritada işaretleme yapmadınız!</string>
+
+    <!-- LoginFragmentFragment -->
+    <string name="dogrulama_e_posta_gonderildi_kontrol_edin">Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.</string>
+    <string name="mail_adresinizi_giriniz">Mail adresinizi giriniz</string>
+    <string name="sifre_degisikligi_icin_e_posta_girin">Şifre değişikliği için e-posta adresinizi giriniz.</string>
+    <string name="dogrulama_gonderilirken_hata_olustu">Doğrulama e-postası gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.</string>
+    <string name="mail_adresi_ge_ersiz">Mail adresi geçersiz</string>
+    <string name="giris_yapiliyor">Giriş yapılıyor..</string>
+    <string name="bu_hesap_silinme_asamasindadir">Bu hesap silinme aşamasındadır.</string>
+    <string name="internet_baglantinizi_kontrol_edin">Bir hata oluştu. İnternet bağlantınızı kontrol ettikten sonra tekrar deneyiniz.</string>
+    <string name="e_posta_adresi_kay_tl_de_il">E-posta adresi kayıtlı değil.</string>
+    <string name="gecersiz_e_posta_veya_sifre">Geçersiz e-posta veya şifre.</string>
+    <string name="giris_yaparken_bir_hata_olu_tu_hata">"Giriş yaparken bir hata oluştu. Hata: "</string>
+    <string name="sifre_sifirlama_baglantisi_gonderildi">Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. Lütfen e-postanızı kontrol edin.</string>
+    <string name="sifre_sifirlama_ba_lant_s_g_nderilirken_bir_hata_olu_tu">Şifre sıfırlama bağlantısı gönderilirken bir hata oluştu.</string>
+    <string name="e_posta_adresinizi_dogrulamadiniz">E-posta adresinizi doğrulamadınız.</string>
+
+    <!-- MainFragment -->
+    <string name="kaydedildi">Kaydedildi</string>
+    <string name="mesaj_g_ndermek_i_in_profilinizi_tamamlamal_s_n_z">Mesaj göndermek için profilinizi tamamlamalısınız.</string>
+    <string name="paylasiminiz">"Paylaşımınız "</string>
+    <string name="tarafindan_goruntulendi">" tarafından görüntülendi."</string>
+    <string name="kendine_mesaj_g_nderemezsiniz">Kendine mesaj gönderemezsiniz!</string>
+    <string name="kullanici_bildirildi">Kullanıcı bildirildi</string>
+    <string name="kullaniciyi_bildirme_sebebinizi_aciklayiniz">Kullanıcıyı bildirme sebebinizi açıklayınız.</string>
+    <string name="kendinizi_bildiremezsiniz">Kendinizi bildiremezsiniz!</string>
+
+    <!-- MessageFragment -->
+    <string name="mesaji_silmek_istiyor_musunuz">Mesajı silmek istiyor musunuz?</string>
+
+    <!-- MyPostFragment -->
+    <string name="payla_m_silmek_istiyor_musunuz">Paylaşımı silmek istiyor musunuz?</string>
+    <string name="gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin">Gönderi silinemedi. Lütfen internet bağlantınızı kontrol edin.</string>
+
+    <!-- RegisterFragment -->
+    <string name="kayit_olunuyor">Kayıt olunuyor..</string>
+    <string name="bu_e_posta_adresiyle_zaten_kay_tl_bir_kullan_c_var">Bu e-posta adresiyle zaten kayıtlı bir kullanıcı var.</string>
+    <string name="kayit_olurken_bir_hata_olustu">"Kayıt olurken bir hata oluştu. Hata: "</string>
+
+    <!-- SavedPostFragment -->
+    <string name="kaydedilenlerden_silindi">Kaydedilenlerden Silindi</string>
+
+    <!-- SettingsFragment -->
+    <string name="konum_izni_gerekli">Konum İzni Gerekli</string>
+    <string name="Bu_uygulama_konumunuza_erismek_icin_izne_ihtiyac">Bu uygulama konumunuza erişmek için izne ihtiyaç duyar. Lütfen konum iznini verin.</string>
+    <string name="tamam">Tamam</string>
+    <string name="izin_gerekli">İzin Gerekli</string>
+    <string name="konum_izni_vermediginiz_icin">Konum izni vermediğiniz için bu özellik çalışmıyor. Lütfen izin vermek için ayarlara gidin.</string>
+    <string name="sec">Seç</string>
+
+    <!-- recycler_empty_message -->
+    <string name="gelen_mesaj_yok">Gelen mesaj yok</string>
+    <string name="gonderilerinizi_daha_iyi_filtre">Gönderilerinizi daha iyi filtreleyerek paylaşırsanız size ulaşabilme fırsatı bi o kadar artacaktır.</string>
+
+    <!-- selection_language -->
+    <string name="turkce">Türkçe</string>
+    <string name="ingilizce">İngilizce</string>
+
+    <!-- fragment_about_us -->
+    <string name="title_text">Missed Connection - Kayıp Bağlantıları Yeniden Kurun</string>
+    <string name="goal_title">Uygulamamızın Amacı:</string>
+    <string name="goal_explain">Missed Connection, modern yaşamın karmaşasında kaybolan anıları ve bağlantıları yeniden canlandırmak için tasarlanmış yenilikçi bir platformdur. Bir kitapçıda sohbet ettiğiniz, sokakta tesadüfen tanıştığınız veya parkta köpeğinizle yürürken karşılaştığınız o kişiyi mi arıyorsunuz? Missed Connection, o anın bilgilerini kullanarak bu kişiyi tekrar bulmanızı ve bağlantınızı yeniden kurmanızı sağlar.</string>
+    <string name="how_work_title">Nasıl Çalışır?</string>
+    <string name="how_work_1">1. Bağlantı Oluşturun: Bir kullanıcıyla karşılaştığınızda, uygulamanızı açın ve o anın bilgilerini girin: yer, tarih, saat ve belki de kısa bir açıklama.</string>
+    <string name="how_work_2">2. Gönderi Paylaşın: Oluşturduğunuz bağlantıyı uygulamada bir gönderi olarak paylaşın.</string>
+    <string name="how_work_3">3. Bağlantıyı Bulun: Karşı taraf da sizinle iletişime geçmek isterse, (Bul) yöntemini kullanarak benzer bilgileri aratabilir ve gönderinize ulaşabilir.</string>
+    <string name="what_can_you_title">Missed Connection ile Neler Yapabilirsiniz?</string>
+    <string name="what_can_you_1">• Kayıp bağlantıları yeniden kurun</string>
+    <string name="what_can_you_2">• Yeni insanlarla tanışın</string>
+    <string name="what_can_you_3">• Şans eseri karşılaştığınız kişileri tekrar bulun</string>
+    <string name="what_can_you_4">• Ortak ilgi alanlarına sahip insanlarla bağlantı kurun</string>
+    <string name="use_missed_connection_title">Missed Connection\'ı Kullanın Çünkü:</string>
+    <string name="use_missed_connection_1">• Kullanımı kolay ve ücretsizdir</string>
+    <string name="use_missed_connection_2">• Gizliliğinize önem veririz</string>
+    <string name="use_missed_connection_3">• Yeni insanlarla tanışmanın ve bağlantılar kurmanın eğlenceli bir yoludur</string>
+    <string name="use_missed_connection_4">• Belki de yıllar süren bir dostluğu yakalayabilirsiniz!</string>
+    <string name="contact_me">Bize ulaşabileceğiniz adresler</string>
+    <string name="contact_mail_address">socksapp@protonmail.com</string>
 
 
 

@@ -5,19 +5,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,7 +26,6 @@ import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.LoginActivity;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentDeleteAccountBinding;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -123,10 +119,11 @@ public class DeleteAccountFragment extends Fragment {
             checkPassword(view,password,explain);
         }else {
             if(password.isEmpty()){
-                binding.oldPasswordInputLayout.setError("Şifrenizi giriniz!");
+                binding.oldPasswordInputLayout.setError(getString(R.string.sifrenizi_giriniz));
             }
             if(explain.isEmpty()){
-                binding.explainInputLayout.setError("Bu alan boş bırakılamaz!");
+
+                binding.explainInputLayout.setError(getString(R.string.bu_alan_bo_b_rak_lamaz));
             }
         }
     }
@@ -137,7 +134,7 @@ public class DeleteAccountFragment extends Fragment {
             if (authTask.isSuccessful()) {
                 deleteUserAccount(view,explain);
             } else {
-                binding.oldPasswordInputLayout.setError("Şifreniz yanlış");
+                binding.oldPasswordInputLayout.setError(getString(R.string.sifrenizi_yanl_girdiniz));
             }
         });
     }
@@ -145,9 +142,9 @@ public class DeleteAccountFragment extends Fragment {
     private void deleteUserAccount(View view,String explain) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-        builder.setTitle("Hesap Silme Onayı");
-        builder.setMessage("Bu işlem hesabınızı ve tüm verilerinizi kalıcı olarak silecektir. Devam etmek istediğinize emin misiniz?");
-        builder.setPositiveButton("Evet", new DialogInterface.OnClickListener() {
+        builder.setTitle(getString(R.string.hesap_silme_onayi));
+        builder.setMessage(getString(R.string.silme_onayi));
+        builder.setPositiveButton(getString(R.string.evet), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 WriteBatch deleteBatch = firestore.batch();
@@ -159,19 +156,19 @@ public class DeleteAccountFragment extends Fragment {
 
                 deleteBatch.commit().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(getContext(), "Hesabınız 1 hafta içinde silinecektir.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), getString(R.string.hesab_n_z_1_hafta_i_inde_silinecektir), Toast.LENGTH_LONG).show();
                         auth.signOut();
                         Intent intent = new Intent(requireActivity(), LoginActivity.class);
                         startActivity(intent);
                         requireActivity().finish();
                     } else {
-                        Toast.makeText(getContext(), "Hesap silme işlemi başarısız. Lütfen tekrar deneyiniz", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.hesap_silme_i_lemi_ba_ar_s_z_l_tfen_tekrar_deneyiniz), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
 
-        builder.setNegativeButton("İptal", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton(getString(R.string.iptal), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
 

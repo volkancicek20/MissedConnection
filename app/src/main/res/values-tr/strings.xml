@@ -76,6 +76,15 @@
     <string name="dil_tercihi">Language preference - English</string>
     <string name="hakkimizda">About us</string>
 
+    <!-- fragment_delete -->
+    <string name="hesab_n_z_neden_silmek_istiyorsunuz">Why do you want to delete your account?</string>
+    <string name="hesabi_s_l">DELETE ACCOUNT</string>
+
+    <!-- fragment_change_password -->
+    <string name="yeni_sifre">New Password</string>
+    <string name="yeni_sifre_tekrar">new password again</string>
+    <string name="sifreyi_degistir_büyük_harf">CHANGE PASSWORD</string>
+
     <!-- recycler_empty_my_post -->
     <string name="henuz_gonderi_paylasmadiniz">You haven\'t posted yet</string>
     <string name="gonderi_paylas">Share post</string>
@@ -136,6 +145,103 @@
     <string name="sifreniz_g_ncellendi_tekrar_giri_yap_n_z">Your password has been updated. Log in again.</string>
     <string name="bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz">Something went wrong. Please try again later.</string>
     <string name="sifrenizi_yanl_girdiniz">You entered your password incorrectly</string>
+
+    <!-- DeleteAccountFragment -->
+    <string name="sifrenizi_giriniz">Enter your password</string>
+    <string name="bu_alan_bo_b_rak_lamaz">This field cannot be left blank</string>
+    <string name="hesap_silme_onayi">Account Deletion Confirmation</string>
+    <string name="silme_onayi">This action will permanently delete your account and all your data. Are you sure you want to continue?</string>
+    <string name="evet">Yes</string>
+    <string name="hesab_n_z_1_hafta_i_inde_silinecektir">Your account will be deleted within 1 week</string>
+    <string name="hesap_silme_i_lemi_ba_ar_s_z_l_tfen_tekrar_deneyiniz">Account deletion failed. Please try again</string>
+
+    <!-- EditProfileFragment -->
+    <string name="kaydediliyor">Saving..</string>
+    <string name="profiliniz_kaydedildi">Your profile has been saved</string>
+
+    <!-- GoogleMapsFragment -->
+    <string name="aradiginiz_yer_bulunamadi">The place you were looking for was not found</string>
+    <string name="alanin_disina_cikamazsiniz">" You cannot leave the area"</string>
+    <string name="haritada_isaretleme_yapmadiniz">You didn\'t mark it on the map!</string>
+
+
+    <!-- LoginFragmentFragment -->
+    <string name="dogrulama_e_posta_gonderildi_kontrol_edin">Verification email has been sent. Please check your email.</string>
+    <string name="mail_adresinizi_giriniz">Enter your e-mail address</string>
+    <string name="sifre_degisikligi_icin_e_posta_girin">Enter your e-mail address to change your password</string>
+    <string name="dogrulama_gonderilirken_hata_olustu">An error occurred while sending the verification email. Please try again later.</string>
+    <string name="mail_adresi_ge_ersiz">Email address is invalid</string>
+    <string name="giris_yapiliyor">Logging in..</string>
+    <string name="bu_hesap_silinme_asamasindadir">This account is in the process of being deleted</string>
+    <string name="internet_baglantinizi_kontrol_edin">Something went wrong. Try again after checking your internet connection.</string>
+    <string name="e_posta_adresi_kay_tl_de_il">Email address not registered</string>
+    <string name="gecersiz_e_posta_veya_sifre">Invalid email or password</string>
+    <string name="giris_yaparken_bir_hata_olu_tu_hata">"An error occurred while logging in. Error: "</string>
+    <string name="sifre_sifirlama_baglantisi_gonderildi">The password reset link has been sent to your email address. Please check your email.</string>
+    <string name="sifre_sifirlama_ba_lant_s_g_nderilirken_bir_hata_olu_tu">An error occurred while sending the password reset link.</string>
+    <string name="e_posta_adresinizi_dogrulamadiniz">You have not verified your email address.</string>
+
+    <!-- MainFragment -->
+    <string name="kaydedildi">Saved</string>
+    <string name="mesaj_g_ndermek_i_in_profilinizi_tamamlamal_s_n_z">You must complete your profile to send a message.</string>
+    <string name="paylasiminiz">"Your post "</string>
+    <string name="tarafindan_goruntulendi">"was viewed by "</string>
+    <string name="kendine_mesaj_g_nderemezsiniz">You can\'t send messages to yourself!</string>
+    <string name="kullanici_bildirildi">User reported</string>
+    <string name="kullaniciyi_bildirme_sebebinizi_aciklayiniz">Explain your reason for reporting the user.</string>
+    <string name="kendinizi_bildiremezsiniz">You cannot report yourself!</string>
+
+    <!-- MessageFragment -->
+    <string name="mesaji_silmek_istiyor_musunuz">Do you want to delete the message?</string>
+
+    <!-- MyPostFragment -->
+    <string name="payla_m_silmek_istiyor_musunuz">Do you want to delete the post?</string>
+    <string name="gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin">The post could not be deleted. Please check your internet connection.</string>
+
+    <!-- RegisterFragment -->
+    <string name="kayit_olunuyor">Registering..</string>
+    <string name="bu_e_posta_adresiyle_zaten_kay_tl_bir_kullan_c_var">There is already a registered user with this email address.</string>
+    <string name="kayit_olurken_bir_hata_olustu">"An error occurred while registering. Error: "</string>
+
+    <!-- SavedPostFragment -->
+    <string name="kaydedilenlerden_silindi">Deleted from Saved</string>
+
+    <!-- SettingsFragment -->
+    <string name="konum_izni_gerekli">Location Permission Required</string>
+    <string name="Bu_uygulama_konumunuza_erismek_icin_izne_ihtiyac">This app needs permission to access your location. Please grant location permission.</string>
+    <string name="tamam">Ok</string>
+    <string name="izin_gerekli">Permission Required</string>
+    <string name="konum_izni_vermediginiz_icin">This feature does not work because you do not give location permission. Please go to settings to allow.</string>
+    <string name="sec">Select</string>
+
+    <!-- recycler_empty_message -->
+    <string name="gelen_mesaj_yok">No messages</string>
+    <string name="gonderilerinizi_daha_iyi_filtre">If you filter your posts better and share them, the opportunity to reach you will increase.</string>
+
+    <!-- selection_language -->
+    <string name="turkce">Turkish</string>
+    <string name="ingilizce">English</string>
+
+    <!-- fragment_about_us -->
+    <string name="title_text">Missed Connection - Reestablish Lost Connections</string>
+    <string name="goal_title">Purpose of our Application:</string>
+    <string name="goal_explain">Missed Connection is an innovative platform designed to revive memories and connections lost in the chaos of modern life. Are you looking for that person you chatted with in a bookstore, met by chance on the street, or ran into while walking with your dog in the park? Missed Connection allows you to find that person again and reestablish your connection using the information of that moment.</string>
+    <string name="how_work_title">How does it work?</string>
+    <string name="how_work_1">1. Create a Connection: When you encounter a user, open your app and enter the information of the moment: location, date, time, and perhaps a short description.</string>
+    <string name="how_work_2">2. Share a Post: Share the link you created as a post in the application.</string>
+    <string name="how_work_3">3. Find the Link: If the other party also wants to contact you, they can search for similar information using the (Find) method and access your post.</string>
+    <string name="what_can_you_title">What Can You Do with Missed Connection?</string>
+    <string name="what_can_you_1">• Reestablish lost connections</string>
+    <string name="what_can_you_2">• Meet new people</string>
+    <string name="what_can_you_3">• Find people you met by chance again</string>
+    <string name="what_can_you_4">• Connect with people with common interests</string>
+    <string name="use_missed_connection_title">Use Missed Connection Because:</string>
+    <string name="use_missed_connection_1">• Easy to use and free</string>
+    <string name="use_missed_connection_2">• We care about your privacy</string>
+    <string name="use_missed_connection_3">• It\'s a fun way to meet new people and make connections</string>
+    <string name="use_missed_connection_4">• Maybe you can create a friendship that lasts for years!</string>
+    <string name="contact_me">The addresses where you can reach us are below.</string>
+    <string name="contact_mail_address">socksapp@protonmail.com</string>
 
     <string-array name="city_names">
         <item>İstanbul</item>

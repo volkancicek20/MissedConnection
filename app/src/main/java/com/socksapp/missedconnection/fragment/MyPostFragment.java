@@ -8,14 +8,12 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -24,8 +22,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,15 +30,12 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.MyPostAdapter;
-import com.socksapp.missedconnection.adapter.PostAdapter;
 import com.socksapp.missedconnection.databinding.FragmentMyPostBinding;
 import com.socksapp.missedconnection.model.FindPost;
-
 import java.util.ArrayList;
 
 public class MyPostFragment extends Fragment {
@@ -144,8 +137,8 @@ public class MyPostFragment extends Fragment {
         delete.setOnClickListener(v ->{
 
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-            builder.setMessage("Paylaşımı silmek istiyor musunuz?");
-            builder.setPositiveButton("Sil", new DialogInterface.OnClickListener() {
+            builder.setMessage(getString(R.string.payla_m_silmek_istiyor_musunuz));
+            builder.setPositiveButton(getString(R.string.sil), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog2, int which) {
                     WriteBatch batch = firestore.batch();
@@ -173,17 +166,17 @@ public class MyPostFragment extends Fragment {
                                 .addOnFailureListener(e -> {
                                     dialog.dismiss();
                                     dialog2.dismiss();
-                                    Toast.makeText(view.getContext(),"Gönderi silinemedi. Lütfen internet bağlantınızı kontrol edin",Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(view.getContext(), getString(R.string.gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin),Toast.LENGTH_SHORT).show();
                                 });
                         } else {
                             dialog.dismiss();
                             dialog2.dismiss();
-                            Toast.makeText(view.getContext(),"Gönderi silinemedi. Lütfen internet bağlantınızı kontrol edin",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(view.getContext(),getString(R.string.gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin),Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
             });
-            builder.setNegativeButton("Geri", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(getString(R.string.iptal), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog2, int which) {
                     dialog2.dismiss();

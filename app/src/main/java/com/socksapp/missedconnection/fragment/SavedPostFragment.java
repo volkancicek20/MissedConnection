@@ -2,40 +2,30 @@ package com.socksapp.missedconnection.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
-import com.socksapp.missedconnection.adapter.PostAdapter;
 import com.socksapp.missedconnection.adapter.SavedPostAdapter;
 import com.socksapp.missedconnection.databinding.FragmentSavedPostBinding;
 import com.socksapp.missedconnection.model.ChatsId;
 import com.socksapp.missedconnection.model.FindPost;
 import com.socksapp.missedconnection.model.RefItem;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -117,7 +107,7 @@ public class SavedPostFragment extends Fragment {
                 savedPostArrayList.remove(position);
                 savedPostAdapter.notifyItemRemoved(position);
                 savedPostAdapter.notifyDataSetChanged();
-                Toast.makeText(view.getContext(),"Kaydedilenlerden Silindi",Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(), getString(R.string.kaydedilenlerden_silindi),Toast.LENGTH_SHORT).show();
             })
             .addOnFailureListener(e -> {
 

@@ -2,15 +2,11 @@ package com.socksapp.missedconnection.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -19,22 +15,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 import com.socksapp.missedconnection.R;
-import com.socksapp.missedconnection.activity.LoginActivity;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentLoginBinding;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -71,7 +59,7 @@ public class LoginFragment extends Fragment {
             String mail = args.getString("mail","");
             if(!mail.isEmpty()){
                 binding.loginEmail.setText(mail);
-                Toast.makeText(view.getContext(), "Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.", Toast.LENGTH_LONG).show();
+                Toast.makeText(view.getContext(), getString(R.string.dogrulama_e_posta_gonderildi_kontrol_edin), Toast.LENGTH_LONG).show();
             }
 
         }
@@ -80,18 +68,18 @@ public class LoginFragment extends Fragment {
             if(!binding.loginEmail.getText().toString().trim().isEmpty()){
                 resetPassword(v,binding.loginEmail.getText().toString().trim());
             }else {
-                binding.loginEmailInputLayout.setError("Mail adresinizi giriniz");
-                Toast.makeText(v.getContext(),"Şifre değişikliği için e-posta adresinizi giriniz.",Toast.LENGTH_SHORT).show();
+                binding.loginEmailInputLayout.setError(getString(R.string.mail_adresinizi_giriniz));
+                Toast.makeText(v.getContext(), getString(R.string.sifre_degisikligi_icin_e_posta_girin),Toast.LENGTH_SHORT).show();
             }
         });
         binding.confirmMail.setOnClickListener(v ->{
             auth.getCurrentUser().sendEmailVerification()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(view.getContext(), "Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view.getContext(), getString(R.string.dogrulama_e_posta_gonderildi_kontrol_edin), Toast.LENGTH_SHORT).show();
                         binding.confirmMail.setVisibility(View.GONE);
                     } else {
-                        Toast.makeText(view.getContext(), "Doğrulama e-postası gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(view.getContext(), getString(R.string.dogrulama_gonderilirken_hata_olustu), Toast.LENGTH_LONG).show();
                     }
                 });
         });
@@ -148,13 +136,13 @@ public class LoginFragment extends Fragment {
                 } else {
 
                     if(!isMailValid){
-                        binding.loginEmailInputLayout.setError("Mail adresi geçersiz");
+                        binding.loginEmailInputLayout.setError(getString(R.string.mail_adresi_ge_ersiz));
                     }else {
                         binding.loginEmailInputLayout.setError(null);
                     }
 
                     if (!isPasswordValid) {
-                        binding.loginPasswordInputLayout.setError("Şifrenizi giriniz");
+                        binding.loginPasswordInputLayout.setError(getString(R.string.sifrenizi_giriniz));
                     } else {
                         binding.loginPasswordInputLayout.setError(null);
                     }
@@ -165,7 +153,7 @@ public class LoginFragment extends Fragment {
 
     private void login(View view,String mail,String password){
         ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-        progressDialog.setMessage("Giriş yapılıyor..");
+        progressDialog.setMessage(getString(R.string.giris_yapiliyor));
         progressDialog.setCancelable(false);
         progressDialog.setInverseBackgroundForced(false);
         progressDialog.show();
@@ -175,23 +163,23 @@ public class LoginFragment extends Fragment {
                     firestore.collection("userDelete").document(mail).get().addOnSuccessListener(documentSnapshot -> {
                         if(documentSnapshot.exists()){
                             progressDialog.dismiss();
-                            Toast.makeText(view.getContext(),"Bu hesap silinme aşamasındadır.",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(view.getContext(), getString(R.string.bu_hesap_silinme_asamasindadir),Toast.LENGTH_SHORT).show();
                         }else {
                             userVerified(view,progressDialog);
                         }
                     }).addOnFailureListener(e -> {
-                        Toast.makeText(view.getContext(),"Bir hata oluştu. İnternet bağlantınızı kontrol ettikten sonra tekrar deneyiniz.",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view.getContext(), getString(R.string.internet_baglantinizi_kontrol_edin),Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
                     });
                 } else {
                     progressDialog.dismiss();
                     Exception exception = task.getException();
                     if (exception instanceof FirebaseAuthInvalidUserException) {
-                        Toast.makeText(view.getContext(), "E-posta adresi kayıtlı değil.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view.getContext(), getString(R.string.e_posta_adresi_kay_tl_de_il), Toast.LENGTH_SHORT).show();
                     } else if (exception instanceof FirebaseAuthInvalidCredentialsException) {
-                        Toast.makeText(view.getContext(), "Geçersiz e-posta veya şifre.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view.getContext(), getString(R.string.gecersiz_e_posta_veya_sifre), Toast.LENGTH_SHORT).show();
                     } else {
-                        Toast.makeText(view.getContext(), "Giriş yaparken bir hata oluştu. Hata:["+exception+"]", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view.getContext(), getString(R.string.giris_yaparken_bir_hata_olu_tu_hata)+"["+exception+"]", Toast.LENGTH_SHORT).show();
                     }
                 }
             }).addOnFailureListener(e -> {
@@ -203,9 +191,9 @@ public class LoginFragment extends Fragment {
         auth.sendPasswordResetEmail(mail)
             .addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    Toast.makeText(view.getContext(), "Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. Lütfen e-postanızı kontrol edin.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(view.getContext(), getString(R.string.sifre_sifirlama_baglantisi_gonderildi), Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(view.getContext(), "Şifre sıfırlama bağlantısı gönderilirken bir hata oluştu.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(view.getContext(), getString(R.string.sifre_sifirlama_ba_lant_s_g_nderilirken_bir_hata_olu_tu), Toast.LENGTH_SHORT).show();
                 }
             });
     }
@@ -247,7 +235,7 @@ public class LoginFragment extends Fragment {
                 });
         }else {
             progressDialog.dismiss();
-            Toast.makeText(view.getContext(), "E-posta adresinizi doğrulamadınız.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(view.getContext(), getString(R.string.e_posta_adresinizi_dogrulamadiniz), Toast.LENGTH_SHORT).show();
             binding.confirmMail.setVisibility(View.VISIBLE);
         }
     }

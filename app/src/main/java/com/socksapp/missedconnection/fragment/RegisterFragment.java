@@ -2,14 +2,11 @@ package com.socksapp.missedconnection.fragment;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -18,15 +15,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
-import com.socksapp.missedconnection.databinding.FragmentLoginBinding;
 import com.socksapp.missedconnection.databinding.FragmentRegisterBinding;
 
 public class RegisterFragment extends Fragment {
@@ -134,19 +127,19 @@ public class RegisterFragment extends Fragment {
                 } else {
 
                     if(!isMailValid){
-                        binding.signupEmailInputLayout.setError("Mail adresi geçersiz");
+                        binding.signupEmailInputLayout.setError(getString(R.string.mail_adresi_ge_ersiz));
                     }else {
                         binding.signupEmailInputLayout.setError(null);
                     }
 
                     if (!isPasswordValid) {
-                        binding.signupPasswordInputLayout.setError("Şifre en az 6 karakter uzunluğunda olmalı, en az 1 büyük harf, 1 küçük harf ve 1 rakam içermelidir.");
+                        binding.signupPasswordInputLayout.setError(getString(R.string.sifre_girme_kurali));
                     } else {
                         binding.signupPasswordInputLayout.setError(null);
                     }
 
                     if (!passwordsMatch) {
-                        binding.signupConfirmInputLayout.setError("Şifreler eşleşmiyor");
+                        binding.signupConfirmInputLayout.setError(getString(R.string.sifreler_eslesmiyor));
                     } else {
                         binding.signupConfirmInputLayout.setError(null);
                     }
@@ -157,7 +150,7 @@ public class RegisterFragment extends Fragment {
 
     private void sign(View view,String mail,String password){
         ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-        progressDialog.setMessage("Kayıt olunuyor..");
+        progressDialog.setMessage(getString(R.string.kayit_olunuyor));
         progressDialog.setCancelable(false);
         progressDialog.setInverseBackgroundForced(false);
         progressDialog.show();
@@ -170,9 +163,9 @@ public class RegisterFragment extends Fragment {
                     progressDialog.dismiss();
                     Exception exception = task.getException();
                     if(exception instanceof FirebaseAuthUserCollisionException){
-                        Toast.makeText(view.getContext(), "Bu e-posta adresiyle zaten kayıtlı bir kullanıcı var.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view.getContext(), getString(R.string.bu_e_posta_adresiyle_zaten_kay_tl_bir_kullan_c_var), Toast.LENGTH_SHORT).show();
                     }else {
-                        Toast.makeText(view.getContext(), "Kayıt olurken bir hata oluştu. Hata:["+exception+"]", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(view.getContext(), getString(R.string.kayit_olurken_bir_hata_olustu)+"["+exception+"]", Toast.LENGTH_SHORT).show();
                     }
                 }
             }).addOnFailureListener(e -> {
@@ -194,7 +187,7 @@ public class RegisterFragment extends Fragment {
 
                 } else {
 //                    Exception exception = task.getException();
-                    Toast.makeText(view.getContext(), "Doğrulama e-postası gönderilirken bir hata oluştu.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(view.getContext(), getString(R.string.dogrulama_gonderilirken_hata_olustu), Toast.LENGTH_SHORT).show();
                 }
             });
     }

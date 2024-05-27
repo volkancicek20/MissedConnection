@@ -13,7 +13,6 @@ import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -24,7 +23,6 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-
 import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,7 +30,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.Task;
@@ -49,7 +46,6 @@ import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentEditProfileBinding;
 import com.socksapp.missedconnection.myclass.SharedPreferencesHelper;
-
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -139,7 +135,7 @@ public class EditProfileFragment extends Fragment {
 
     private void uploadProfile(View view, String uploadName,boolean nameCheck) {
         ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-        progressDialog.setMessage("Kaydediliyor..");
+        progressDialog.setMessage(getString(R.string.kaydediliyor));
         progressDialog.show();
         DocumentReference usersRef = firestore.collection("users").document(userMail);
         WriteBatch batch = firestore.batch();
@@ -172,7 +168,7 @@ public class EditProfileFragment extends Fragment {
                                 .addOnSuccessListener(aVoid -> {
                                     progressDialog.dismiss();
                                     updateProfile(nameCheck,uploadName,imageUrl);
-                                    showToastShort("Profiliniz kaydedildi");
+                                    showToastShort(getString(R.string.profiliniz_kaydedildi));
                                 })
                                 .addOnFailureListener(e -> {
                                     progressDialog.dismiss();
@@ -210,7 +206,7 @@ public class EditProfileFragment extends Fragment {
                     .addOnSuccessListener(aVoid -> {
                         progressDialog.dismiss();
                         updateProfile(nameCheck,uploadName);
-                        showToastShort("Profiliniz kaydedildi");
+                        showToastShort(getString(R.string.profiliniz_kaydedildi));
                     })
                     .addOnFailureListener(e -> {
                         progressDialog.dismiss();
@@ -228,6 +224,8 @@ public class EditProfileFragment extends Fragment {
             SharedPreferences.Editor editor = nameShared.edit();
             editor.putString("name",uploadName);
             editor.apply();
+
+            myUserName = uploadName;
 
             TextView textView = mainActivity.headerView.findViewById(R.id.drawer_user_name);
             textView.setText(uploadName);
@@ -260,6 +258,8 @@ public class EditProfileFragment extends Fragment {
             editor.putString("name",uploadName);
             editor.apply();
 
+            myUserName = uploadName;
+
             TextView textView = mainActivity.headerView.findViewById(R.id.drawer_user_name);
             textView.setText(uploadName);
 
@@ -280,11 +280,11 @@ public class EditProfileFragment extends Fragment {
             permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE};
         }
 
-        rationaleMessage = "Galeriye gitmek için izin gerekli";
+        rationaleMessage = getString(R.string.galeriye_gitmek_i_in_izin_gerekli);
 
         if (ContextCompat.checkSelfPermission(view.getContext(), permissions[0]) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), permissions[0])) {
-                Snackbar.make(view, rationaleMessage, Snackbar.LENGTH_INDEFINITE).setAction("İzin ver", new View.OnClickListener() {
+                Snackbar.make(view, rationaleMessage, Snackbar.LENGTH_INDEFINITE).setAction(getString(R.string.izin_ver), new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         permissionLauncher.launch(permissions[0]);
@@ -339,7 +339,7 @@ public class EditProfileFragment extends Fragment {
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     activityResultLauncher.launch(intent);
                 }else{
-                    showToastShort("İzinleri aktif etmeniz gerekiyor");
+                    showToastShort(getString(R.string.izinleri_aktif_etmeniz_gerekiyor));
                     Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     Uri uri = Uri.fromParts("package", requireActivity().getPackageName(), null);
                     intent.setData(uri);

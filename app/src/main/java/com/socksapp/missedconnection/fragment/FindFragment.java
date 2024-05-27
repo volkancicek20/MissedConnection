@@ -1,54 +1,32 @@
 package com.socksapp.missedconnection.fragment;
 
-import static android.content.Context.LAYOUT_INFLATER_SERVICE;
-import static androidx.core.content.ContextCompat.getSystemService;
-
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -57,25 +35,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.material.datepicker.MaterialDatePicker;
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.WriteBatch;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentFindBinding;
-import com.socksapp.missedconnection.model.FindPost;
-
-import java.text.DateFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
@@ -226,7 +195,7 @@ public class FindFragment extends Fragment {
                             fragmentTransaction.addToBackStack(null);
                             fragmentTransaction.commit();
                         }else {
-                            Toast.makeText(requireContext(),"İl ve ilçeyi girmeniz gerekmektedir",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(),getString(R.string.l_ve_il_eyi_girmeniz_gerekmektedir),Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -399,7 +368,7 @@ public class FindFragment extends Fragment {
                     }
                     else {
                         if(!checkComparesDate){
-                            binding.errorDate1Text.setText("2. girdiğiniz tarihten büyük olamaz");
+                            binding.errorDate1Text.setText(getString(R.string._2_girdi_iniz_tarihten_b_y_k_olamaz));
                             binding.dateEditText1.setTextColor(Color.RED);
                             binding.visibleDatePicker.setVisibility(View.VISIBLE);
                         }else {
@@ -409,7 +378,7 @@ public class FindFragment extends Fragment {
                         }
                         if(!checkComparesTime){
                             binding.errorTime2Text.setText("");
-                            binding.errorTime1Text.setText("2. girdiğiniz saatten büyük olamaz");
+                            binding.errorTime1Text.setText(getString(R.string._2_girdi_iniz_tarihten_b_y_k_olamaz));
                             binding.timeEditText1.setTextColor(Color.RED);
                             binding.visibleDatePicker.setVisibility(View.VISIBLE);
                         }else {
@@ -422,28 +391,28 @@ public class FindFragment extends Fragment {
                 }
                 else {
                     if(!checkFormatDate1){
-                        binding.errorDate1Text.setText("Gün/Ay/Yıl formatına uygun giriniz");
+                        binding.errorDate1Text.setText(getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz));
                         binding.dateEditText1.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
                         binding.dateEditText1.setError(null);
                     }
                     if(!checkFormatDate2){
-                        binding.errorDate2Text.setText("Gün/Ay/Yıl formatına uygun giriniz");
+                        binding.errorDate2Text.setText(getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz));
                         binding.dateEditText2.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
                         binding.dateEditText2.setError(null);
                     }
                     if(!checkFormatTime1){
-                        binding.errorTime1Text.setText("Saat:Dakika formatına uygun giriniz");
+                        binding.errorTime1Text.setText(getString(R.string.saat_dakika_format_na_uygun_giriniz));
                         binding.timeEditText1.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
                         binding.timeEditText1.setError(null);
                     }
                     if(!checkFormatTime2){
-                        binding.errorTime2Text.setText("Saat:Dakika formatına uygun giriniz");
+                        binding.errorTime2Text.setText(getString(R.string.saat_dakika_format_na_uygun_giriniz));
                         binding.timeEditText2.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
@@ -463,7 +432,7 @@ public class FindFragment extends Fragment {
                 binding.dateEditText2.setTextColor(Color.WHITE);
                 binding.timeEditText1.setTextColor(Color.WHITE);
 
-                binding.errorTime2Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.errorTime2Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
                 binding.timeEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -477,7 +446,7 @@ public class FindFragment extends Fragment {
                 binding.timeEditText2.setTextColor(Color.WHITE);
 
 
-                binding.errorTime1Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.errorTime1Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
                 binding.timeEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -490,7 +459,7 @@ public class FindFragment extends Fragment {
                 binding.timeEditText1.setTextColor(Color.WHITE);
                 binding.timeEditText2.setTextColor(Color.WHITE);
 
-                binding.errorDate2Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.errorDate2Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
                 binding.dateEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -503,7 +472,7 @@ public class FindFragment extends Fragment {
                 binding.timeEditText1.setTextColor(Color.WHITE);
                 binding.timeEditText2.setTextColor(Color.WHITE);
 
-                binding.errorDate1Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.errorDate1Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
                 binding.dateEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -516,7 +485,7 @@ public class FindFragment extends Fragment {
                 binding.timeEditText2.setHintTextColor(Color.GRAY);
                 binding.dateEditText1.setTextColor(Color.WHITE);
 
-                binding.errorDate2Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.errorDate2Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
                 binding.dateEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -529,7 +498,7 @@ public class FindFragment extends Fragment {
                 binding.timeEditText2.setHintTextColor(Color.GRAY);
                 binding.dateEditText2.setTextColor(Color.WHITE);
 
-                binding.errorDate1Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.errorDate1Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
                 binding.dateEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -542,7 +511,7 @@ public class FindFragment extends Fragment {
                 binding.dateEditText2.setHintTextColor(Color.GRAY);
                 binding.timeEditText1.setTextColor(Color.WHITE);
 
-                binding.errorTime2Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.errorTime2Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
                 binding.timeEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -555,7 +524,7 @@ public class FindFragment extends Fragment {
                 binding.dateEditText2.setHintTextColor(Color.GRAY);
                 binding.timeEditText2.setTextColor(Color.WHITE);
 
-                binding.errorTime1Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.errorTime1Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
                 binding.timeEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -566,11 +535,11 @@ public class FindFragment extends Fragment {
                 binding.dateEditText1.setTextColor(Color.WHITE);
                 binding.timeEditText2.setTextColor(Color.WHITE);
 
-                binding.errorDate2Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.errorDate2Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
                 binding.dateEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
 
-                binding.errorTime1Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.errorTime1Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
                 binding.timeEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -581,11 +550,11 @@ public class FindFragment extends Fragment {
                 binding.dateEditText1.setTextColor(Color.WHITE);
                 binding.timeEditText1.setTextColor(Color.WHITE);
 
-                binding.errorDate2Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.errorDate2Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
                 binding.dateEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
 
-                binding.errorTime2Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.errorTime2Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
                 binding.timeEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -596,11 +565,11 @@ public class FindFragment extends Fragment {
                 binding.dateEditText2.setTextColor(Color.WHITE);
                 binding.timeEditText2.setTextColor(Color.WHITE);
 
-                binding.errorDate1Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.errorDate1Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
                 binding.dateEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
 
-                binding.errorTime1Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.errorTime1Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
                 binding.timeEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -611,11 +580,11 @@ public class FindFragment extends Fragment {
                 binding.dateEditText2.setTextColor(Color.WHITE);
                 binding.timeEditText1.setTextColor(Color.WHITE);
 
-                binding.errorDate1Text.setText("Tarih aralığını eksiksiz giriniz");
+                binding.errorDate1Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
                 binding.dateEditText1.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
 
-                binding.errorTime2Text.setText("Saat aralığını eksiksiz giriniz");
+                binding.errorTime2Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
                 binding.timeEditText2.setHintTextColor(Color.RED);
                 binding.visibleDatePicker.setVisibility(View.VISIBLE);
             }
@@ -657,7 +626,7 @@ public class FindFragment extends Fragment {
                         fragmentTransaction.commit();
                     }
                     else {
-                        binding.errorDate1Text.setText("2. girdiğiniz tarihten büyük olamaz");
+                        binding.errorDate1Text.setText(getString(R.string._2_girdi_iniz_tarihten_b_y_k_olamaz));
                         binding.dateEditText1.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }
@@ -665,14 +634,14 @@ public class FindFragment extends Fragment {
                 }
                 else {
                     if(!checkFormatDate1){
-                        binding.errorDate1Text.setText("Gün/Ay/Yıl formatına uygun giriniz");
+                        binding.errorDate1Text.setText(getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz));
                         binding.dateEditText1.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
                         binding.dateEditText1.setError(null);
                     }
                     if(!checkFormatDate2){
-                        binding.errorDate2Text.setText("Gün/Ay/Yıl formatına uygun giriniz");
+                        binding.errorDate2Text.setText(getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz));
                         binding.dateEditText2.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
@@ -715,7 +684,7 @@ public class FindFragment extends Fragment {
                         fragmentTransaction.commit();
                     }
                     else {
-                        binding.errorTime1Text.setText("2. girdiğiniz saatten büyük olamaz");
+                        binding.errorTime1Text.setText(getString(R.string._2_girdi_iniz_saatten_b_y_k_olamaz));
                         binding.timeEditText1.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }
@@ -723,7 +692,7 @@ public class FindFragment extends Fragment {
                 }
                 else {
                     if(!checkFormatTime1){
-                        binding.errorTime1Text.setText("Saat:Dakika formatına uygun giriniz");
+                        binding.errorTime1Text.setText(getString(R.string.saat_dakika_format_na_uygun_giriniz));
                         binding.timeEditText1.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
@@ -732,7 +701,7 @@ public class FindFragment extends Fragment {
                         binding.timeEditText1.setTextColor(Color.WHITE);
                     }
                     if(!checkFormatTime2){
-                        binding.errorTime2Text.setText("Saat:Dakika formatına uygun giriniz");
+                        binding.errorTime2Text.setText(getString(R.string.saat_dakika_format_na_uygun_giriniz));
                         binding.timeEditText2.setTextColor(Color.RED);
                         binding.visibleDatePicker.setVisibility(View.VISIBLE);
                     }else {
@@ -766,14 +735,14 @@ public class FindFragment extends Fragment {
         }
         else {
             if(!checkCity){
-                binding.cityTextInput.setError("İl boş bırakılamaz");
+                binding.cityTextInput.setError(getString(R.string.il_bos_birakilamaz));
                 binding.cityTextInput.setErrorIconDrawable(null);
             }else {
                 binding.cityTextInput.setError(null);
                 binding.cityTextInput.setErrorIconDrawable(null);
             }
             if(!checkDistrict){
-                binding.districtTextInput.setError("İlçe boş bırakılamaz");
+                binding.districtTextInput.setError(getString(R.string.ilce_bos_birakilamaz));
                 binding.districtTextInput.setErrorIconDrawable(null);
             }else {
                 binding.districtTextInput.setError(null);

@@ -255,6 +255,7 @@ public class MainActivity extends AppCompatActivity {
                     clearShared(editor4);
                     SharedPreferences.Editor editor5 = myLocationDistrict.edit();
                     clearShared(editor5);
+                    sharedPreferencesHelper.clear();
 
                     refDataAccess.deleteAllData();
                     chatIdDataAccess.deleteAllData();

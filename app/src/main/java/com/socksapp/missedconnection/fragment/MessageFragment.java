@@ -1,41 +1,27 @@
 package com.socksapp.missedconnection.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.MetadataChanges;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
@@ -46,7 +32,6 @@ import com.socksapp.missedconnection.databinding.FragmentMessageBinding;
 import com.socksapp.missedconnection.model.ChatMessage;
 import com.socksapp.missedconnection.myclass.User;
 import com.socksapp.missedconnection.myinterface.ConversionListener;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -227,8 +212,8 @@ public class MessageFragment extends Fragment implements ConversionListener{
 
     public void choiceItem(View view, String userMail, int position){
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-        builder.setMessage("Mesajı silmek istiyor musunuz?");
-        builder.setPositiveButton("Sil", new DialogInterface.OnClickListener() {
+        builder.setMessage(getString(R.string.mesaji_silmek_istiyor_musunuz));
+        builder.setPositiveButton(getString(R.string.sil), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 deleteConversations(userMail,"senderId","receiverId");
@@ -236,7 +221,7 @@ public class MessageFragment extends Fragment implements ConversionListener{
                 deleteChats(userMail,position);
             }
         });
-        builder.setNegativeButton("İptal", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getString(R.string.iptal), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 

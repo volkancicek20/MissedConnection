@@ -21,23 +21,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
-import com.google.android.material.slider.LabelFormatter;
-import com.google.android.material.slider.Slider;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.maps.android.data.geojson.GeoJsonLayer;
-import com.google.maps.android.data.geojson.GeoJsonPolygonStyle;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentGoogleMapsBinding;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
 
@@ -119,7 +110,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
                         .title(location));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
                 }else {
-                    Toast.makeText(requireContext(),"Aradığınız yer bulunamadı",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), getString(R.string.aradiginiz_yer_bulunamadi),Toast.LENGTH_SHORT).show();
                 }
                 return false;
             }
@@ -207,7 +198,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
                             circleOptions.strokeWidth(1);
                             currentCircle = mMap.addCircle(circleOptions);
                         }else {
-                            Toast.makeText(requireContext(),city+","+district+" alanının dışına çıkamazsınız",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(),city+","+district+getString(R.string.alanin_disina_cikamazsiniz),Toast.LENGTH_SHORT).show();
                         }
 
                     } else {
@@ -231,7 +222,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
             if (customLatLng != null) {
                 saveLocationWithRadius(customLatLng, (int) binding.slider.getValue(),streetAddress);
             } else {
-                Toast.makeText(requireContext(), "Haritaya tıklama yapmadınız.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.haritada_isaretleme_yapmadiniz), Toast.LENGTH_SHORT).show();
             }
         });
     }

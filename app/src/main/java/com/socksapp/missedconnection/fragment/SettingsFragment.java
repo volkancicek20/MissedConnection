@@ -3,7 +3,6 @@ package com.socksapp.missedconnection.fragment;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -19,23 +18,19 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
 import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.Task;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentSettingsBinding;
-
 import java.util.List;
 import java.util.Locale;
 
@@ -188,10 +183,10 @@ public class SettingsFragment extends Fragment {
 
     private void showPermissionExplanation() {
         new AlertDialog.Builder(requireContext())
-            .setTitle("Konum İzni Gerekli")
-            .setMessage("Bu uygulama konumunuza erişmek için izne ihtiyaç duyar. Lütfen konum iznini verin.")
-            .setPositiveButton("Tamam", (dialog, which) -> ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE))
-            .setNegativeButton("İptal", (dialog, which) -> dialog.dismiss())
+            .setTitle(getString(R.string.konum_izni_gerekli))
+            .setMessage(getString(R.string.Bu_uygulama_konumunuza_erismek_icin_izne_ihtiyac))
+            .setPositiveButton(getString(R.string.tamam), (dialog, which) -> ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE))
+            .setNegativeButton(getString(R.string.iptal), (dialog, which) -> dialog.dismiss())
             .create()
             .show();
     }
@@ -213,15 +208,15 @@ public class SettingsFragment extends Fragment {
 
     private void showSettingsDialog() {
         new AlertDialog.Builder(requireContext())
-            .setTitle("İzin Gerekli")
-            .setMessage("Konum izni vermediğiniz için bu özellik çalışmıyor. Lütfen izin vermek için ayarlara gidin.")
-            .setPositiveButton("Ayarlar", (dialog, which) -> {
+            .setTitle(getString(R.string.izin_gerekli))
+            .setMessage(getString(R.string.konum_izni_vermediginiz_icin))
+            .setPositiveButton(getString(R.string.ayarlar), (dialog, which) -> {
                 Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                 Uri uri = Uri.fromParts("package", requireActivity().getPackageName(), null);
                 intent.setData(uri);
                 startActivity(intent);
             })
-            .setNegativeButton("İptal", (dialog, which) -> dialog.dismiss())
+            .setNegativeButton(getString(R.string.iptal), (dialog, which) -> dialog.dismiss())
             .create()
             .show();
     }
@@ -291,7 +286,7 @@ public class SettingsFragment extends Fragment {
             radioButtonEnglish.setChecked(true);
         }
 
-        builder.setPositiveButton("Seç", (dialog, which) -> {
+        builder.setPositiveButton(getString(R.string.sec), (dialog, which) -> {
             int selectedId = radioGroupLanguage.getCheckedRadioButtonId();
 
             Locale locale;
