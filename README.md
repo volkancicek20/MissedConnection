@@ -20,6 +20,12 @@ Missed Connection, rastgele bir zamanda ve mekanda tanıştığınız kişilere 
 ## Ana ekran bileşenleri
 <img src="https://github.com/volkancicek20/MissedConnection/assets/45761307/45daf42e-66f8-4af9-a56b-66572c2096a4" alt="add" width="300"/>
 
+## Giriş Ekranı
+<img src="https://github.com/volkancicek20/MissedConnection/assets/45761307/ceec7993-6da2-4a7e-a7f0-87c6682d7bd3" alt="add" width="300"/>
+
+## Kayıt Ekranı
+<img src="https://github.com/volkancicek20/MissedConnection/assets/45761307/55dde733-d813-4196-9446-d64f0d7bebd6" alt="add" width="300"/>
+
 ## Gönderi Ekleme
 <img src="https://github.com/volkancicek20/MissedConnection/assets/45761307/cd27c6fa-f22d-4a5f-84a2-80538ef336ea" alt="add" width="300"/>
 
