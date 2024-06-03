@@ -2000,7 +2000,9 @@ public class AddPostFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        binding.mapView.onSaveInstanceState(outState);
+        if(binding.mapView != null){
+            binding.mapView.onSaveInstanceState(outState);
+        }
     }
 
     private void setImage(View view) {

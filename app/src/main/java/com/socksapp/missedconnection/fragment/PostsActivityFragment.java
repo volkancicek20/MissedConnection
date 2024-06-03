@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
@@ -82,7 +83,7 @@ public class PostsActivityFragment extends Fragment {
 
     private void getData(){
         CollectionReference collectionReference = firestore.collection("views").document(myMail).collection(myMail);
-        collectionReference.get().addOnSuccessListener(queryDocumentSnapshots -> {
+        collectionReference.orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener(queryDocumentSnapshots -> {
             if(queryDocumentSnapshots.isEmpty()){
                 PostNotification postNotification = new PostNotification();
                 postNotification.viewType = 2;
