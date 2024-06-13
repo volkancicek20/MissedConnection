@@ -21,7 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.LinearLayout;
-import android.widget.Toast;
+import android.widget.TextView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -166,12 +167,12 @@ public class MyPostFragment extends Fragment {
                                 .addOnFailureListener(e -> {
                                     dialog.dismiss();
                                     dialog2.dismiss();
-                                    Toast.makeText(view.getContext(), getString(R.string.gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin),Toast.LENGTH_SHORT).show();
+                                    showSnackbar(view,getString(R.string.gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin));
                                 });
                         } else {
                             dialog.dismiss();
                             dialog2.dismiss();
-                            Toast.makeText(view.getContext(),getString(R.string.gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin),Toast.LENGTH_SHORT).show();
+                            showSnackbar(view,getString(R.string.gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin));
                         }
                     });
                 }
@@ -292,5 +293,17 @@ public class MyPostFragment extends Fragment {
         if (context instanceof MainActivity) {
             mainActivity = (MainActivity) context;
         }
+    }
+
+    private void showSnackbar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.rgb(48, 44, 44));
+
+        View snackbarView = snackbar.getView();
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 }

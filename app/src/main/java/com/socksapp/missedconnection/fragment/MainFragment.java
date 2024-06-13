@@ -32,12 +32,12 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -286,7 +286,7 @@ public class MainFragment extends Fragment {
             data.put(documentReference.getId(),mail);
             firestore.collection("saves").document(userMail).set(data,SetOptions.merge()).addOnSuccessListener(unused -> {
 //                mainActivity.refDataAccess.insertRef(documentReference.getId(),mail);
-                Toast.makeText(view.getContext(), getString(R.string.kaydedildi), Toast.LENGTH_SHORT).show();
+                showSnackbar(v,getString(R.string.kaydedildi));
                 dialog.dismiss();
             }).addOnFailureListener(e -> {
 
@@ -306,10 +306,10 @@ public class MainFragment extends Fragment {
                     fragmentTransaction.commit();
                     dialog.dismiss();
                 }else {
-                    Toast.makeText(v.getContext(), getString(R.string.kendine_mesaj_g_nderemezsiniz),Toast.LENGTH_SHORT).show();
+                    showSnackbar(v,getString(R.string.kendine_mesaj_g_nderemezsiniz));
                 }
             }else {
-                Toast.makeText(v.getContext(), getString(R.string.mesaj_g_ndermek_i_in_profilinizi_tamamlamal_s_n_z),Toast.LENGTH_LONG).show();
+                showSnackbar(v,getString(R.string.mesaj_g_ndermek_i_in_profilinizi_tamamlamal_s_n_z));
                 dialog.dismiss();
             }
 
@@ -341,13 +341,13 @@ public class MainFragment extends Fragment {
                             Map<String,Object> data = new HashMap<>();
                             data.put("report",text);
                             firestore.collection("report").document(mail).collection(mail).add(data).addOnSuccessListener(documentReference1 -> {
-                                Toast.makeText(v.getContext(), getString(R.string.kullanici_bildirildi),Toast.LENGTH_SHORT).show();
+                                showSnackbar(v,getString(R.string.kullanici_bildirildi));
                                 dg.dismiss();
                                 dialog.dismiss();
                             }).addOnFailureListener(e -> {
                                 dg.dismiss();
                                 dialog.dismiss();
-                                Toast.makeText(v.getContext(),getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz),Toast.LENGTH_SHORT).show();
+                                showSnackbar(v,getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz));
                             });
                         }else {
                             dialog.dismiss();
@@ -367,7 +367,7 @@ public class MainFragment extends Fragment {
                 AlertDialog dlg = builder.create();
                 dlg.show();
             }else {
-                Toast.makeText(v.getContext(), getString(R.string.kendinizi_bildiremezsiniz),Toast.LENGTH_SHORT).show();
+                showSnackbar(v,getString(R.string.kendinizi_bildiremezsiniz));
             }
 
         });
@@ -958,5 +958,17 @@ public class MainFragment extends Fragment {
         if (context instanceof MainActivity) {
             mainActivity = (MainActivity) context;
         }
+    }
+
+    private void showSnackbar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.rgb(48, 44, 44));
+
+        View snackbarView = snackbar.getView();
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 }

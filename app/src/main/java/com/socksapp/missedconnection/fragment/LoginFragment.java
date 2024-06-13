@@ -2,6 +2,7 @@ package com.socksapp.missedconnection.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,7 +15,8 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.TextView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
@@ -59,9 +61,8 @@ public class LoginFragment extends Fragment {
             String mail = args.getString("mail","");
             if(!mail.isEmpty()){
                 binding.loginEmail.setText(mail);
-                Toast.makeText(view.getContext(), getString(R.string.dogrulama_e_posta_gonderildi_kontrol_edin), Toast.LENGTH_LONG).show();
+                showSnackbar(view,getString(R.string.dogrulama_e_posta_gonderildi_kontrol_edin));
             }
-
         }
 
         binding.forgotpassword.setOnClickListener(v ->{
@@ -69,17 +70,17 @@ public class LoginFragment extends Fragment {
                 resetPassword(v,binding.loginEmail.getText().toString().trim());
             }else {
                 binding.loginEmailInputLayout.setError(getString(R.string.mail_adresinizi_giriniz));
-                Toast.makeText(v.getContext(), getString(R.string.sifre_degisikligi_icin_e_posta_girin),Toast.LENGTH_SHORT).show();
+                showSnackbar(v,getString(R.string.sifre_degisikligi_icin_e_posta_girin));
             }
         });
         binding.confirmMail.setOnClickListener(v ->{
             auth.getCurrentUser().sendEmailVerification()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(view.getContext(), getString(R.string.dogrulama_e_posta_gonderildi_kontrol_edin), Toast.LENGTH_SHORT).show();
+                        showSnackbar(v,getString(R.string.dogrulama_e_posta_gonderildi_kontrol_edin));
                         binding.confirmMail.setVisibility(View.GONE);
                     } else {
-                        Toast.makeText(view.getContext(), getString(R.string.dogrulama_gonderilirken_hata_olustu), Toast.LENGTH_LONG).show();
+                        showSnackbar(v,getString(R.string.dogrulama_gonderilirken_hata_olustu));
                     }
                 });
         });
@@ -163,27 +164,32 @@ public class LoginFragment extends Fragment {
                     firestore.collection("userDelete").document(mail).get().addOnSuccessListener(documentSnapshot -> {
                         if(documentSnapshot.exists()){
                             progressDialog.dismiss();
-                            Toast.makeText(view.getContext(), getString(R.string.bu_hesap_silinme_asamasindadir),Toast.LENGTH_SHORT).show();
+                            showSnackbar(view,getString(R.string.bu_hesap_silinme_asamasindadir));
                         }else {
                             userVerified(view,progressDialog);
                         }
                     }).addOnFailureListener(e -> {
-                        Toast.makeText(view.getContext(), getString(R.string.internet_baglantinizi_kontrol_edin),Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
+                        showSnackbar(view,getString(R.string.internet_baglantinizi_kontrol_edin));
                     });
                 } else {
                     progressDialog.dismiss();
                     Exception exception = task.getException();
+                    String errorMessage;
+
                     if (exception instanceof FirebaseAuthInvalidUserException) {
-                        Toast.makeText(view.getContext(), getString(R.string.e_posta_adresi_kay_tl_de_il), Toast.LENGTH_SHORT).show();
+                        errorMessage = getString(R.string.e_posta_adresi_kay_tl_de_il);
                     } else if (exception instanceof FirebaseAuthInvalidCredentialsException) {
-                        Toast.makeText(view.getContext(), getString(R.string.gecersiz_e_posta_veya_sifre), Toast.LENGTH_SHORT).show();
+                        errorMessage = getString(R.string.gecersiz_e_posta_veya_sifre);
                     } else {
-                        Toast.makeText(view.getContext(), getString(R.string.giris_yaparken_bir_hata_olu_tu_hata)+"["+exception+"]", Toast.LENGTH_SHORT).show();
+                        errorMessage = getString(R.string.giris_yaparken_bir_hata_olu_tu_hata)+"["+exception+"]";
                     }
+
+                    showSnackbar(view,errorMessage);
                 }
             }).addOnFailureListener(e -> {
                 progressDialog.dismiss();
+                showSnackbar(view,getString(R.string.unexpected));
             });
     }
 
@@ -191,9 +197,20 @@ public class LoginFragment extends Fragment {
         auth.sendPasswordResetEmail(mail)
             .addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    Toast.makeText(view.getContext(), getString(R.string.sifre_sifirlama_baglantisi_gonderildi), Toast.LENGTH_LONG).show();
+                    showSnackbar(view,getString(R.string.sifre_sifirlama_baglantisi_gonderildi));
                 } else {
-                    Toast.makeText(view.getContext(), getString(R.string.sifre_sifirlama_ba_lant_s_g_nderilirken_bir_hata_olu_tu), Toast.LENGTH_SHORT).show();
+
+                    Exception exception = task.getException();
+                    String errorMessage;
+                    if (exception instanceof FirebaseAuthInvalidUserException) {
+                        errorMessage = getString(R.string.gecersiz_kullanici);
+                    } else if (exception instanceof FirebaseAuthInvalidCredentialsException) {
+                        errorMessage = getString(R.string.gecersiz_kimlik);
+                    } else {
+                        errorMessage = (exception != null) ? exception.getMessage() : getString(R.string.sifre_sifirlama_ba_lant_s_g_nderilirken_bir_hata_olu_tu);
+                    }
+
+                    showSnackbar(view,errorMessage);
                 }
             });
     }
@@ -226,16 +243,16 @@ public class LoginFragment extends Fragment {
                                 requireActivity().finish();
                         }).addOnFailureListener(e -> {
                             progressDialog.dismiss();
-                            Toast.makeText(view.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                            showSnackbar(view,getString(R.string.unexpected));
                         });
                     }
                 }).addOnFailureListener(e -> {
                     progressDialog.dismiss();
-                    Toast.makeText(view.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                    showSnackbar(view,getString(R.string.unexpected));
                 });
         }else {
             progressDialog.dismiss();
-            Toast.makeText(view.getContext(), getString(R.string.e_posta_adresinizi_dogrulamadiniz), Toast.LENGTH_SHORT).show();
+            showSnackbar(view,getString(R.string.e_posta_adresinizi_dogrulamadiniz));
             binding.confirmMail.setVisibility(View.VISIBLE);
         }
     }
@@ -246,6 +263,18 @@ public class LoginFragment extends Fragment {
         }
 
         return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private void showSnackbar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.rgb(48, 44, 44));
+
+        View snackbarView = snackbar.getView();
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 
 

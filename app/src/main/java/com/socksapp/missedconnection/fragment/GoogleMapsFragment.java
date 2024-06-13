@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,6 +24,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
@@ -110,7 +112,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
                         .title(location));
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,10));
                 }else {
-                    Toast.makeText(requireContext(), getString(R.string.aradiginiz_yer_bulunamadi),Toast.LENGTH_SHORT).show();
+                    showSnackbar(view,getString(R.string.aradiginiz_yer_bulunamadi));
                 }
                 return false;
             }
@@ -211,7 +213,6 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
             });
         }
 
-
         binding.slider.addOnChangeListener((slider, value, fromUser) -> {
             if (currentCircle != null && fromUser) {
                 radius = (int) value;
@@ -223,7 +224,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
             if (customLatLng != null) {
                 saveLocationWithRadius(customLatLng, (int) binding.slider.getValue(),streetAddress);
             } else {
-                Toast.makeText(requireContext(), getString(R.string.haritada_isaretleme_yapmadiniz), Toast.LENGTH_SHORT).show();
+                showSnackbar(v,getString(R.string.haritada_isaretleme_yapmadiniz));
             }
         });
     }
@@ -241,10 +242,10 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
 
             } else {
-                System.out.println("No location found for the given address.");
+//                System.out.println("No location found for the given address.");
             }
         } catch (Exception e) {
-            System.out.println("exception: "+e.getLocalizedMessage());
+//            System.out.println("exception: "+e.getLocalizedMessage());
             e.printStackTrace();
         }
 
@@ -275,6 +276,18 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
         if (context instanceof MainActivity) {
             mainActivity = (MainActivity) context;
         }
+    }
+
+    private void showSnackbar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.rgb(48, 44, 44));
+
+        View snackbarView = snackbar.getView();
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 
 }

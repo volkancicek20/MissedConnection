@@ -137,6 +137,7 @@
     <string name="galeriye_gitmek_i_in_izin_gerekli">Permission required to go to the gallery</string>
     <string name="izin_ver">Allow</string>
     <string name="izinleri_aktif_etmeniz_gerekiyor">You need to enable permissions</string>
+    <string name="error_post">There was an error sharing the post. Try again after checking your internet connection.</string>
 
     <!-- ChangePasswordFragment -->
     <string name="gecersiz_sifre">Invalid password</string>
@@ -180,6 +181,9 @@
     <string name="sifre_sifirlama_baglantisi_gonderildi">The password reset link has been sent to your email address. Please check your email.</string>
     <string name="sifre_sifirlama_ba_lant_s_g_nderilirken_bir_hata_olu_tu">An error occurred while sending the password reset link.</string>
     <string name="e_posta_adresinizi_dogrulamadiniz">You have not verified your email address.</string>
+    <string name="gecersiz_kullanici">Invalid user. Please check your e-mail address.</string>
+    <string name="gecersiz_kimlik">Invalid credentials. Please make sure you have entered your e-mail address correctly.</string>
+    <string name="unexpected">An unknown error occurred. Please try again.</string>
 
     <!-- MainFragment -->
     <string name="kaydedildi">Saved</string>

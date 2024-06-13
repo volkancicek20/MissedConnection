@@ -41,6 +41,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
@@ -262,7 +263,8 @@ public class AddPostFragment extends Fragment {
             if(!myUserName.isEmpty()){
                 addData(view);
             }else {
-                showToastShort(getString(R.string.g_nderi_payla_mak_i_in_profilinizi_tamamlamal_s_n_z));
+                showSnackbar(v,getString(R.string.g_nderi_payla_mak_i_in_profilinizi_tamamlamal_s_n_z));
+//                showToastShort(getString(R.string.g_nderi_payla_mak_i_in_profilinizi_tamamlamal_s_n_z));
             }
         });
 
@@ -523,20 +525,20 @@ public class AddPostFragment extends Fragment {
                                                         .addOnSuccessListener(aVoid -> {
                                                             progressDialog.dismiss();
                                                             resetAction();
-                                                            showToastShort(getString(R.string.g_nderiniz_payla_ld));
+                                                            showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
                                                         })
                                                         .addOnFailureListener(e -> {
                                                             progressDialog.dismiss();
-                                                            showToastShort(e.getLocalizedMessage());
+                                                            showSnackbar(view,getString(R.string.error_post));
                                                         });
                                                 }).addOnFailureListener(e -> {
                                                     progressDialog.dismiss();
-                                                    showToastShort(e.getLocalizedMessage());
+                                                    showSnackbar(view,getString(R.string.error_post));
                                                 });
                                             })
                                             .addOnFailureListener(e -> {
                                                 progressDialog.dismiss();
-                                                showToastShort(e.getLocalizedMessage());
+                                                showSnackbar(view,getString(R.string.error_post));
                                             });
                                 }else {
                                     ProgressDialog progressDialog = new ProgressDialog(view.getContext());
@@ -573,13 +575,12 @@ public class AddPostFragment extends Fragment {
                                     batch.commit().addOnSuccessListener(aVoid -> {
                                         progressDialog.dismiss();
                                         resetAction();
-                                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
+                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
                                     }).addOnFailureListener(e -> {
                                         progressDialog.dismiss();
-                                        showToastShort(e.getLocalizedMessage());
+                                        showSnackbar(view,getString(R.string.error_post));
                                     });
                                 }
-
                             }else {
 
                             }
@@ -902,20 +903,20 @@ public class AddPostFragment extends Fragment {
                                                     .addOnSuccessListener(aVoid -> {
                                                         progressDialog.dismiss();
                                                         resetAction();
-                                                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
+                                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
                                                     })
                                                     .addOnFailureListener(e -> {
                                                         progressDialog.dismiss();
-                                                        showToastShort(e.getLocalizedMessage());
+                                                        showSnackbar(view,getString(R.string.error_post));
                                                     });
                                             }).addOnFailureListener(e -> {
                                                 progressDialog.dismiss();
-                                                showToastShort(e.getLocalizedMessage());
+                                                showSnackbar(view,getString(R.string.error_post));
                                             });
                                         })
                                         .addOnFailureListener(e -> {
                                             progressDialog.dismiss();
-                                            showToastShort(e.getLocalizedMessage());
+                                            showSnackbar(view,getString(R.string.error_post));
                                         });
                                 }else {
                                     ProgressDialog progressDialog = new ProgressDialog(view.getContext());
@@ -952,10 +953,10 @@ public class AddPostFragment extends Fragment {
                                     batch.commit().addOnSuccessListener(aVoid -> {
                                         progressDialog.dismiss();
                                         resetAction();
-                                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
+                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
                                     }).addOnFailureListener(e -> {
                                         progressDialog.dismiss();
-                                        showToastShort(e.getLocalizedMessage());
+                                        showSnackbar(view,getString(R.string.error_post));
                                     });
                                 }
 
@@ -1063,20 +1064,20 @@ public class AddPostFragment extends Fragment {
                                                     .addOnSuccessListener(aVoid -> {
                                                         progressDialog.dismiss();
                                                         resetAction();
-                                                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
+                                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
                                                     })
                                                     .addOnFailureListener(e -> {
                                                         progressDialog.dismiss();
-                                                        showToastShort(e.getLocalizedMessage());
+                                                        showSnackbar(view,getString(R.string.error_post));
                                                     });
                                             }).addOnFailureListener(e -> {
                                                 progressDialog.dismiss();
-                                                showToastShort(e.getLocalizedMessage());
+                                                showSnackbar(view,getString(R.string.error_post));
                                             });
                                         })
                                         .addOnFailureListener(e -> {
                                             progressDialog.dismiss();
-                                            showToastShort(e.getLocalizedMessage());
+                                            showSnackbar(view,getString(R.string.error_post));
                                         });
                                 }else {
                                     ProgressDialog progressDialog = new ProgressDialog(view.getContext());
@@ -1113,10 +1114,10 @@ public class AddPostFragment extends Fragment {
                                     batch.commit().addOnSuccessListener(aVoid -> {
                                         progressDialog.dismiss();
                                         resetAction();
-                                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
+                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
                                     }).addOnFailureListener(e -> {
                                         progressDialog.dismiss();
-                                        showToastShort(e.getLocalizedMessage());
+                                        showSnackbar(view,getString(R.string.error_post));
                                     });
                                 }
 
@@ -1204,20 +1205,20 @@ public class AddPostFragment extends Fragment {
                                     .addOnSuccessListener(aVoid -> {
                                         progressDialog.dismiss();
                                         resetAction();
-                                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
+                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
                                     })
                                     .addOnFailureListener(e -> {
                                         progressDialog.dismiss();
-                                        showToastShort(e.getLocalizedMessage());
+                                        showSnackbar(view,getString(R.string.error_post));
                                     });
                             }).addOnFailureListener(e -> {
                                 progressDialog.dismiss();
-                                showToastShort(e.getLocalizedMessage());
+                                showSnackbar(view,getString(R.string.error_post));
                             });
                         })
                         .addOnFailureListener(e -> {
                             progressDialog.dismiss();
-                            showToastShort(e.getLocalizedMessage());
+                            showSnackbar(view,getString(R.string.error_post));
                         });
                 }else {
 
@@ -1255,10 +1256,10 @@ public class AddPostFragment extends Fragment {
                     batch.commit().addOnSuccessListener(aVoid -> {
                         progressDialog.dismiss();
                         resetAction();
-                        showToastShort(getString(R.string.g_nderiniz_payla_ld));
+                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
                     }).addOnFailureListener(e -> {
                         progressDialog.dismiss();
-                        showToastShort(e.getLocalizedMessage());
+                        showSnackbar(view,getString(R.string.error_post));
                     });
                 }
 
@@ -2098,7 +2099,7 @@ public class AddPostFragment extends Fragment {
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     activityResultLauncher.launch(intent);
                 }else{
-                    showToastShort(getString(R.string.izinleri_aktif_etmeniz_gerekiyor));
+                    showSnackbar(view,getString(R.string.izinleri_aktif_etmeniz_gerekiyor));
                     Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     Uri uri = Uri.fromParts("package", requireActivity().getPackageName(), null);
                     intent.setData(uri);
@@ -2115,14 +2116,17 @@ public class AddPostFragment extends Fragment {
             mainActivity = (MainActivity) context;
         }
     }
-    public void showToastShort(String message){
-        Toast.makeText(requireActivity().getApplicationContext(),message,Toast.LENGTH_SHORT).show();
-    }
-    public void showToastLong(String message){
-        Toast.makeText(requireActivity().getApplicationContext(),message,Toast.LENGTH_LONG).show();
-    }
-    private void showErrorMessage(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+
+    private void showSnackbar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.rgb(48, 44, 44));
+
+        View snackbarView = snackbar.getView();
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 
 }

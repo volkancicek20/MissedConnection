@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -14,7 +15,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.TextView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -156,13 +158,13 @@ public class DeleteAccountFragment extends Fragment {
 
                 deleteBatch.commit().addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(getContext(), getString(R.string.hesab_n_z_1_hafta_i_inde_silinecektir), Toast.LENGTH_LONG).show();
+                        showSnackbar(view,getString(R.string.hesab_n_z_1_hafta_i_inde_silinecektir));
                         auth.signOut();
                         Intent intent = new Intent(requireActivity(), LoginActivity.class);
                         startActivity(intent);
                         requireActivity().finish();
                     } else {
-                        Toast.makeText(getContext(), getString(R.string.hesap_silme_i_lemi_ba_ar_s_z_l_tfen_tekrar_deneyiniz), Toast.LENGTH_SHORT).show();
+                        showSnackbar(view,getString(R.string.hesap_silme_i_lemi_ba_ar_s_z_l_tfen_tekrar_deneyiniz));
                     }
                 });
             }
@@ -191,5 +193,17 @@ public class DeleteAccountFragment extends Fragment {
         if(context instanceof MainActivity){
             mainActivity = (MainActivity) context;
         }
+    }
+
+    private void showSnackbar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.rgb(48, 44, 44));
+
+        View snackbarView = snackbar.getView();
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 }

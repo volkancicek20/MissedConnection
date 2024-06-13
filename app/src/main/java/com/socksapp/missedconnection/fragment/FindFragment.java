@@ -25,8 +25,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
+import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -195,7 +196,7 @@ public class FindFragment extends Fragment {
                             fragmentTransaction.addToBackStack(null);
                             fragmentTransaction.commit();
                         }else {
-                            Toast.makeText(requireContext(),getString(R.string.l_ve_il_eyi_girmeniz_gerekmektedir),Toast.LENGTH_SHORT).show();
+                            showSnackbar(view,getString(R.string.l_ve_il_eyi_girmeniz_gerekmektedir));
                         }
                     }
                 });
@@ -1425,13 +1426,15 @@ public class FindFragment extends Fragment {
         }
     }
 
-    public void showToastShort(String message){
-        Toast.makeText(requireActivity().getApplicationContext(),message,Toast.LENGTH_SHORT).show();
-    }
-    public void showToastLong(String message){
-        Toast.makeText(requireActivity().getApplicationContext(),message,Toast.LENGTH_LONG).show();
-    }
-    private void showErrorMessage(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    private void showSnackbar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.rgb(48, 44, 44));
+
+        View snackbarView = snackbar.getView();
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 }

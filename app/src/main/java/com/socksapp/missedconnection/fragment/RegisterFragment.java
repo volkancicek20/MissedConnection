@@ -1,6 +1,7 @@
 package com.socksapp.missedconnection.fragment;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,7 +15,8 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.TextView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
@@ -163,14 +165,14 @@ public class RegisterFragment extends Fragment {
                     progressDialog.dismiss();
                     Exception exception = task.getException();
                     if(exception instanceof FirebaseAuthUserCollisionException){
-                        Toast.makeText(view.getContext(), getString(R.string.bu_e_posta_adresiyle_zaten_kay_tl_bir_kullan_c_var), Toast.LENGTH_SHORT).show();
+                        showSnackbar(view,getString(R.string.bu_e_posta_adresiyle_zaten_kay_tl_bir_kullan_c_var));
                     }else {
-                        Toast.makeText(view.getContext(), getString(R.string.kayit_olurken_bir_hata_olustu)+"["+exception+"]", Toast.LENGTH_SHORT).show();
+                        showSnackbar(view,getString(R.string.kayit_olurken_bir_hata_olustu)+"["+exception+"]");
                     }
                 }
             }).addOnFailureListener(e -> {
                 progressDialog.dismiss();
-//                Toast.makeText(view.getContext(), e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+                showSnackbar(view,getString(R.string.unexpected));
             });
     }
 
@@ -178,16 +180,13 @@ public class RegisterFragment extends Fragment {
         auth.getCurrentUser().sendEmailVerification()
             .addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-
                     Bundle args = new Bundle();
                     args.putString("mail", auth.getCurrentUser().getEmail());
 
                     NavController navController = Navigation.findNavController(view);
                     navController.navigate(R.id.action_registerFragment_to_loginFragment, args);
-
                 } else {
-//                    Exception exception = task.getException();
-                    Toast.makeText(view.getContext(), getString(R.string.dogrulama_gonderilirken_hata_olustu), Toast.LENGTH_SHORT).show();
+                    showSnackbar(view,getString(R.string.dogrulama_gonderilirken_hata_olustu));
                 }
             });
     }
@@ -225,5 +224,18 @@ public class RegisterFragment extends Fragment {
         }
 
         return Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+
+    private void showSnackbar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.rgb(48, 44, 44));
+
+        View snackbarView = snackbar.getView();
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 }

@@ -2,6 +2,7 @@ package com.socksapp.missedconnection.fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -12,7 +13,8 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+import android.widget.TextView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -156,13 +158,13 @@ public class ChangePasswordFragment extends Fragment {
         user.reauthenticate(credential).addOnCompleteListener(authTask -> {
             if (authTask.isSuccessful()) {
                 user.updatePassword(newPassword).addOnSuccessListener(unused -> {
-                    Toast.makeText(view.getContext(), getString(R.string.sifreniz_g_ncellendi_tekrar_giri_yap_n_z),Toast.LENGTH_LONG).show();
+                    showSnackbar(view,getString(R.string.sifreniz_g_ncellendi_tekrar_giri_yap_n_z));
                     auth.signOut();
                     Intent intent = new Intent(requireActivity(), LoginActivity.class);
                     startActivity(intent);
                     requireActivity().finish();
                 }).addOnFailureListener(e -> {
-                    Toast.makeText(view.getContext(), getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz),Toast.LENGTH_SHORT).show();
+                    showSnackbar(view,getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz));
                 });
             } else {
                 binding.oldPasswordInputLayout.setError(getString(R.string.sifrenizi_yanl_girdiniz));
@@ -203,5 +205,17 @@ public class ChangePasswordFragment extends Fragment {
         if(context instanceof MainActivity){
             mainActivity = (MainActivity) context;
         }
+    }
+
+    private void showSnackbar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.rgb(48, 44, 44));
+
+        View snackbarView = snackbar.getView();
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 }

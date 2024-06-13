@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.ImageDecoder;
 import android.net.Uri;
 import android.os.Build;
@@ -168,17 +169,17 @@ public class EditProfileFragment extends Fragment {
                                 .addOnSuccessListener(aVoid -> {
                                     progressDialog.dismiss();
                                     updateProfile(nameCheck,uploadName,imageUrl);
-                                    showToastShort(getString(R.string.profiliniz_kaydedildi));
+                                    showSnackbar(view,getString(R.string.profiliniz_kaydedildi));
                                 })
                                 .addOnFailureListener(e -> {
                                     progressDialog.dismiss();
-                                    showErrorMessage(view.getContext(), e.getLocalizedMessage());
+                                    showSnackbar(view,getString(R.string.error_save_profile));
                                 });
                         });
                     })
                     .addOnFailureListener(e -> {
                         progressDialog.dismiss();
-                        showErrorMessage(view.getContext(), e.getLocalizedMessage());
+                        showSnackbar(view,getString(R.string.error_save_profile));
                     });
 
         } else {
@@ -206,11 +207,11 @@ public class EditProfileFragment extends Fragment {
                     .addOnSuccessListener(aVoid -> {
                         progressDialog.dismiss();
                         updateProfile(nameCheck,uploadName);
-                        showToastShort(getString(R.string.profiliniz_kaydedildi));
+                        showSnackbar(view,getString(R.string.profiliniz_kaydedildi));
                     })
                     .addOnFailureListener(e -> {
                         progressDialog.dismiss();
-                        showErrorMessage(view.getContext(), e.getLocalizedMessage());
+                        showSnackbar(view,getString(R.string.error_save_profile));
                     });
             }else {
                 progressDialog.dismiss();
@@ -339,7 +340,7 @@ public class EditProfileFragment extends Fragment {
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     activityResultLauncher.launch(intent);
                 }else{
-                    showToastShort(getString(R.string.izinleri_aktif_etmeniz_gerekiyor));
+                    showSnackbar(view,getString(R.string.izinleri_aktif_etmeniz_gerekiyor));
                     Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     Uri uri = Uri.fromParts("package", requireActivity().getPackageName(), null);
                     intent.setData(uri);
@@ -386,13 +387,15 @@ public class EditProfileFragment extends Fragment {
         }
     }
 
-    public void showToastShort(String message){
-        Toast.makeText(requireActivity().getApplicationContext(),message,Toast.LENGTH_SHORT).show();
-    }
-    public void showToastLong(String message){
-        Toast.makeText(requireActivity().getApplicationContext(),message,Toast.LENGTH_LONG).show();
-    }
-    private void showErrorMessage(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    private void showSnackbar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.rgb(48, 44, 44));
+
+        View snackbarView = snackbar.getView();
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 }
