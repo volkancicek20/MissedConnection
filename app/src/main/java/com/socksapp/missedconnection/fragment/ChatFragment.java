@@ -9,6 +9,10 @@ import androidx.annotation.Nullable;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +27,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.firestore.WriteBatch;
@@ -55,6 +61,9 @@ public class ChatFragment extends Fragment {
     private List<ChatMessage> chatMessages;
     private ListenerRegistration collectionListener; // ilerde chat ile anlık silme eklersen bunu kullan veya uyarı
     private MainActivity mainActivity;
+    private DocumentSnapshot lastVisibleMessage;
+    private int pageSize = 10;
+    private boolean checkLastMessage;
     public ChatFragment() {
         // Required empty public constructor
     }
@@ -97,10 +106,28 @@ public class ChatFragment extends Fragment {
         chatAdapter = new ChatAdapter(chatMessages,myMail);
         binding.recyclerViewChat.setAdapter(chatAdapter);
 
+        lastVisibleMessage = null;
+        checkLastMessage = true;
+
         listenMessages();
 
         binding.layoutSend.setOnClickListener(sendMessageClickListener);
         binding.backAndImageLinearLayout.setOnClickListener(backAndImageLinearLayoutClickListener);
+
+        binding.recyclerViewChat.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dy < 0) { // Yukarı kaydırma kontrolü
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
+                        loadMoreMessages();
+                    }
+                }
+            }
+        });
+
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -375,10 +402,12 @@ public class ChatFragment extends Fragment {
                     String id = (String) data.get(anotherMail);
                     if(id != null && !id.isEmpty()){
                         firebaseFirestore.collection("chats")
-                            .document(id).collection(id).addSnapshotListener(eventListener);
+                            .document(id).collection(id)
+                            .orderBy("date", Query.Direction.DESCENDING)
+                            .limit(pageSize)
+                            .addSnapshotListener(eventListener);
                     }
                 }
-
             }
         }).addOnFailureListener(e -> {
 
@@ -398,7 +427,11 @@ public class ChatFragment extends Fragment {
         if(error != null){
             return;
         }
-        if (value != null){
+        if (value != null && !value.isEmpty()){
+            if(checkLastMessage){
+                lastVisibleMessage = value.getDocuments().get(value.size() - 1);
+                checkLastMessage = false;
+            }
             int count = chatMessages.size();
             for (DocumentChange documentChange : value.getDocumentChanges()){
                 if(documentChange.getType() == DocumentChange.Type.ADDED){
@@ -411,7 +444,7 @@ public class ChatFragment extends Fragment {
                     chatMessages.add(chatMessage);
                 }
             }
-            Collections.sort(chatMessages,(obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
+            Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
             if(count == 0){
                 chatAdapter.notifyDataSetChanged();
             }else {
@@ -424,6 +457,61 @@ public class ChatFragment extends Fragment {
             checkForConversion();
         }
     };
+
+    private void loadMoreMessages() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        firebaseFirestore.collection("chatsId").document(myMail).get().addOnSuccessListener(documentSnapshot -> {
+            if(documentSnapshot.exists()){
+                Map<String , Object> data = documentSnapshot.getData();
+                if(data != null && !data.isEmpty()){
+                    String id = (String) data.get(anotherMail);
+                    if(id != null && !id.isEmpty()){
+                        if (lastVisibleMessage != null) {
+                            firebaseFirestore.collection("chats")
+                                .document(id)
+                                .collection(id)
+                                .orderBy("date", Query.Direction.DESCENDING)
+                                .startAfter(lastVisibleMessage)
+                                .limit(pageSize)
+                                .get()
+                                .addOnSuccessListener(queryDocumentSnapshots -> {
+                                    
+                                    binding.progressBar.setVisibility(View.GONE);
+                                    List<ChatMessage> newMessages = new ArrayList<>();
+
+                                    for (QueryDocumentSnapshot documentSnapshot2 : queryDocumentSnapshots) {
+                                        ChatMessage chatMessage = new ChatMessage();
+                                        chatMessage.senderId = documentSnapshot2.getString("senderId");
+                                        chatMessage.receiverId = documentSnapshot2.getString("receiverId");
+                                        chatMessage.message = documentSnapshot2.getString("message");
+                                        chatMessage.dateTime = getReadableDateTime(documentSnapshot2.getDate("date"));
+                                        chatMessage.dateObject = documentSnapshot2.getDate("date");
+                                        newMessages.add(chatMessage);
+                                    }
+
+                                    Collections.sort(newMessages, (obj2, obj1) -> obj2.dateObject.compareTo(obj1.dateObject));
+
+                                    chatMessages.addAll(0, newMessages);
+                                    chatAdapter.notifyItemRangeInserted(0, newMessages.size());
+
+                                    if (!queryDocumentSnapshots.isEmpty()) {
+                                        lastVisibleMessage = queryDocumentSnapshots.getDocuments()
+                                                .get(queryDocumentSnapshots.size() - 1);
+                                    }
+
+                                })
+                                .addOnFailureListener(e -> {
+                                    /* Hata yönetimi */
+                                });
+                        }
+                    }
+                }
+            }
+        }).addOnFailureListener(e -> {
+
+        });
+    }
+
 
     private String getReadableDateTime(Date date){
         if (date != null) {

@@ -342,10 +342,11 @@ public class AddPostFragment extends Fragment {
                 Geocoder geocoder = new Geocoder(requireContext());
                 try {
                     List<Address> addressList = geocoder.getFromLocationName(city + ", " + district, 1);
+                    System.out.println("city: "+ city);
+                    System.out.println("district: "+ district);
                     if (addressList != null && addressList.size() > 0) {
                         double latitude = addressList.get(0).getLatitude();
                         double longitude = addressList.get(0).getLongitude();
-
                         LatLng location = new LatLng(latitude, longitude);
                         binding.mapView.getMapAsync(new OnMapReadyCallback() {
                             @Override
@@ -650,7 +651,6 @@ public class AddPostFragment extends Fragment {
                 }
             }
 
-
             // error
 
             if(hasDate1 && hasDate2 && hasTime1 && !hasTime2){
@@ -858,7 +858,6 @@ public class AddPostFragment extends Fragment {
 
                                 long date1_long = date_1.getTime();
                                 long date2_long = date_2.getTime();
-
 
                                 if(imageData != null){
                                     ProgressDialog progressDialog = new ProgressDialog(view.getContext());

@@ -157,12 +157,11 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
                 try {
                     Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
                     List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
-                    System.out.println("latitude: "+ latLng.latitude);
-                    System.out.println("longitude: "+ latLng.longitude);
                     if (addresses != null && addresses.size() > 0) {
                         String cityFind = addresses.get(0).getAdminArea();
                         String districtFind = addresses.get(0).getSubAdminArea();
-
+                        System.out.println("city: "+ cityFind);
+                        System.out.println("district: "+ districtFind);
                         if(city.equals(cityFind) && district.equals(districtFind)){
                             radius = 100;
                             customLatLng = new LatLng(latLng.latitude,latLng.longitude);
