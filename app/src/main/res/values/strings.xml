@@ -103,7 +103,7 @@
     <string name="yeni_g_nderi_payla">Yeni gönderi paylaş</string>
 
     <!-- MainActivity -->
-    <string name="log_out_text_title">Hesaptan çıkış yapılıyor..</string>
+    <string name="log_out_text_title">Hesaptan çıkış yapılsın mı?</string>
     <string name="log_out_text">Çıkış yap</string>
     <string name="iptal">Geri</string>
 
@@ -198,7 +198,7 @@
     <string name="mesaji_silmek_istiyor_musunuz">Mesajı silmek istiyor musunuz?</string>
 
     <!-- MyPostFragment -->
-    <string name="payla_m_silmek_istiyor_musunuz">Paylaşımı silmek istiyor musunuz?</string>
+    <string name="gonderiniz_silindi">Gönderiniz silindi.</string>
     <string name="gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin">Gönderi silinemedi. Lütfen internet bağlantınızı kontrol edin.</string>
 
     <!-- RegisterFragment -->
@@ -249,6 +249,9 @@
     <!-- custom_dialog_message_delete -->
     <string name="info_message_delete">Mesajı silerseniz tüm sohbet geri döndürülemez şekilde silinecektir!</string>
     <string name="mesaj_sil">Mesajı sil</string>
+
+    <!-- custom_dialog_delete_post -->
+    <string name="g_nderinizi_silmek_istiyor_musunuz">Gönderinizi silmek istiyor musunuz?</string>
 
 
     <string-array name="city_names">

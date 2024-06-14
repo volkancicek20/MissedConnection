@@ -15,6 +15,8 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
@@ -44,7 +46,10 @@ import com.socksapp.missedconnection.fragment.SettingsFragment;
 import com.socksapp.missedconnection.myclass.ChatIdDataAccess;
 import com.socksapp.missedconnection.myclass.RefDataAccess;
 import com.socksapp.missedconnection.myclass.SharedPreferencesHelper;
+
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -239,31 +244,69 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void signOut(){
-        new AlertDialog.Builder(MainActivity.this)
-            .setMessage(getString(R.string.log_out_text_title))
-            .setPositiveButton(getString(R.string.log_out_text), new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int whichButton) {
-                    SharedPreferences.Editor editor = nameShared.edit();
-                    clearShared(editor);
-                    SharedPreferences.Editor editor1 = imageUrlShared.edit();
-                    clearShared(editor1);
-                    SharedPreferences.Editor editor2 = userDone.edit();
-                    clearShared(editor2);
-                    SharedPreferences.Editor editor3 = language.edit();
-                    clearShared(editor3);
-                    SharedPreferences.Editor editor4 = myLocationCity.edit();
-                    clearShared(editor4);
-                    SharedPreferences.Editor editor5 = myLocationDistrict.edit();
-                    clearShared(editor5);
-                    sharedPreferencesHelper.clear();
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-                    refDataAccess.deleteAllData();
-                    chatIdDataAccess.deleteAllData();
-                    logout();
-                    drawerLayout.closeDrawers();
-                }
-            })
-            .setNegativeButton(getString(R.string.iptal), null).show();
+        View dialogView = getLayoutInflater().inflate(R.layout.custom_dialog_logout, null);
+        builder.setView(dialogView);
+
+        Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+        Button logoutButton = dialogView.findViewById(R.id.logoutButton);
+
+        AlertDialog dlg = builder.create();
+
+        cancelButton.setOnClickListener(v2 -> {
+            dlg.dismiss();
+        });
+
+        logoutButton.setOnClickListener(v3 -> {
+            SharedPreferences.Editor editor = nameShared.edit();
+            clearShared(editor);
+            SharedPreferences.Editor editor1 = imageUrlShared.edit();
+            clearShared(editor1);
+            SharedPreferences.Editor editor2 = userDone.edit();
+            clearShared(editor2);
+            SharedPreferences.Editor editor3 = language.edit();
+            clearShared(editor3);
+            SharedPreferences.Editor editor4 = myLocationCity.edit();
+            clearShared(editor4);
+            SharedPreferences.Editor editor5 = myLocationDistrict.edit();
+            clearShared(editor5);
+            sharedPreferencesHelper.clear();
+
+            refDataAccess.deleteAllData();
+            chatIdDataAccess.deleteAllData();
+            logout();
+            drawerLayout.closeDrawers();
+        });
+
+        dlg.show();
+
+//
+//        new AlertDialog.Builder(MainActivity.this)
+//            .setMessage(getString(R.string.log_out_text_title))
+//            .setPositiveButton(getString(R.string.log_out_text), new DialogInterface.OnClickListener() {
+//                public void onClick(DialogInterface dialog, int whichButton) {
+//                    SharedPreferences.Editor editor = nameShared.edit();
+//                    clearShared(editor);
+//                    SharedPreferences.Editor editor1 = imageUrlShared.edit();
+//                    clearShared(editor1);
+//                    SharedPreferences.Editor editor2 = userDone.edit();
+//                    clearShared(editor2);
+//                    SharedPreferences.Editor editor3 = language.edit();
+//                    clearShared(editor3);
+//                    SharedPreferences.Editor editor4 = myLocationCity.edit();
+//                    clearShared(editor4);
+//                    SharedPreferences.Editor editor5 = myLocationDistrict.edit();
+//                    clearShared(editor5);
+//                    sharedPreferencesHelper.clear();
+//
+//                    refDataAccess.deleteAllData();
+//                    chatIdDataAccess.deleteAllData();
+//                    logout();
+//                    drawerLayout.closeDrawers();
+//                }
+//            })
+//            .setNegativeButton(getString(R.string.iptal), null).show();
     }
 
     private void clearShared(SharedPreferences.Editor editor){

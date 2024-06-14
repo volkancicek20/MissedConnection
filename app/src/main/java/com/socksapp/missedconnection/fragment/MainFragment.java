@@ -30,6 +30,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -286,7 +287,7 @@ public class MainFragment extends Fragment {
             data.put(documentReference.getId(),mail);
             firestore.collection("saves").document(userMail).set(data,SetOptions.merge()).addOnSuccessListener(unused -> {
 //                mainActivity.refDataAccess.insertRef(documentReference.getId(),mail);
-                showSnackbar(v,getString(R.string.kaydedildi));
+                showSnackbar(view,getString(R.string.kaydedildi));
                 dialog.dismiss();
             }).addOnFailureListener(e -> {
 
@@ -306,10 +307,11 @@ public class MainFragment extends Fragment {
                     fragmentTransaction.commit();
                     dialog.dismiss();
                 }else {
-                    showSnackbar(v,getString(R.string.kendine_mesaj_g_nderemezsiniz));
+                    showSnackbar(view,getString(R.string.kendine_mesaj_g_nderemezsiniz));
+                    dialog.dismiss();
                 }
             }else {
-                showSnackbar(v,getString(R.string.mesaj_g_ndermek_i_in_profilinizi_tamamlamal_s_n_z));
+                showSnackbar(view,getString(R.string.mesaj_g_ndermek_i_in_profilinizi_tamamlamal_s_n_z));
                 dialog.dismiss();
             }
 
@@ -319,55 +321,54 @@ public class MainFragment extends Fragment {
             if(!mail.equals(userMail)){
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
 
-                String getLanguage = language.getString("language","");
-                if(getLanguage.equals("english")){
-                    builder.setTitle("You are reporting the user named "+name);
-                }else {
-                    builder.setTitle(name+" adlı kullanıcıyı bildiriyorsunuz!");
-                }
+                View dialogView = getLayoutInflater().inflate(R.layout.custom_dialog_report_user, null);
+                builder.setView(dialogView);
 
-                final EditText editText = new EditText(v.getContext());
-                editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                editText.setLines(5);
-                editText.setHint(getString(R.string.kullaniciyi_bildirme_sebebinizi_aciklayiniz));
-
-                builder.setView(editText);
-
-                builder.setPositiveButton(getString(R.string.bildir), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dg, int which) {
-                        String text = editText.getText().toString().trim();
-                        if(!text.isEmpty()){
-                            Map<String,Object> data = new HashMap<>();
-                            data.put("report",text);
-                            firestore.collection("report").document(mail).collection(mail).add(data).addOnSuccessListener(documentReference1 -> {
-                                showSnackbar(v,getString(R.string.kullanici_bildirildi));
-                                dg.dismiss();
-                                dialog.dismiss();
-                            }).addOnFailureListener(e -> {
-                                dg.dismiss();
-                                dialog.dismiss();
-                                showSnackbar(v,getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz));
-                            });
-                        }else {
-                            dialog.dismiss();
-                            dg.dismiss();
-                        }
-                    }
-                });
-
-                builder.setNegativeButton(getString(R.string.iptal), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dg, int which) {
-                        dialog.dismiss();
-                        dg.dismiss();
-                    }
-                });
+                Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+                Button reportButton = dialogView.findViewById(R.id.reportButton);
+                TextView title = dialogView.findViewById(R.id.dialogTitle);
+                EditText explain = dialogView.findViewById(R.id.explain);
 
                 AlertDialog dlg = builder.create();
+
+                String getLanguage = language.getString("language","");
+                String txt;
+                if(getLanguage.equals("english")){
+                    txt = "You are reporting the user named " + name;
+                }else {
+                    txt = name + " adlı kullanıcıyı bildiriyorsunuz!";
+                }
+                title.setText(txt);
+
+                cancelButton.setOnClickListener(v2 -> {
+                    dlg.dismiss();
+                    dialog.dismiss();
+                });
+
+                reportButton.setOnClickListener(v3 -> {
+                    String text = explain.getText().toString().trim();
+                    if(!text.isEmpty()){
+                        Map<String,Object> data = new HashMap<>();
+                        data.put("report",text);
+                        firestore.collection("report").document(mail).collection(mail).add(data).addOnSuccessListener(documentReference1 -> {
+                            dlg.dismiss();
+                            dialog.dismiss();
+                            showSnackbar(view,getString(R.string.kullanici_bildirildi));
+                        }).addOnFailureListener(e -> {
+                            dlg.dismiss();
+                            dialog.dismiss();
+                            showSnackbar(view,getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz));
+                        });
+                    }else {
+                        dialog.dismiss();
+                        dlg.dismiss();
+                    }
+                });
+
                 dlg.show();
             }else {
-                showSnackbar(v,getString(R.string.kendinizi_bildiremezsiniz));
+                showSnackbar(view,getString(R.string.kendinizi_bildiremezsiniz));
+                dialog.dismiss();
             }
 
         });

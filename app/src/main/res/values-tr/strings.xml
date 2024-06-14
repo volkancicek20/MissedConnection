@@ -104,7 +104,7 @@
     <string name="yeni_g_nderi_payla">Share new post</string>
 
     <!-- MainActivity -->
-    <string name="log_out_text_title">Logging out of account..</string>
+    <string name="log_out_text_title">Should the account be logged out?</string>
     <string name="log_out_text">Log out</string>
     <string name="iptal">Cancel</string>
 
@@ -200,7 +200,7 @@
     <string name="mesaji_silmek_istiyor_musunuz">Do you want to delete the message?</string>
 
     <!-- MyPostFragment -->
-    <string name="payla_m_silmek_istiyor_musunuz">Do you want to delete the post?</string>
+    <string name="gonderiniz_silindi">Your post was deleted.</string>
     <string name="gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin">The post could not be deleted. Please check your internet connection.</string>
 
     <!-- RegisterFragment -->
@@ -251,6 +251,9 @@
     <!-- custom_dialog_message_delete -->
     <string name="info_message_delete">If you delete the message, the entire chat will be irreversibly deleted.</string>
     <string name="mesaj_sil">Delete message</string>
+
+    <!-- custom_dialog_delete_post -->
+    <string name="g_nderinizi_silmek_istiyor_musunuz">Do you want to delete your post?</string>
 
     <string-array name="city_names">
         <item>İstanbul</item>

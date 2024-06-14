@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
@@ -38,6 +39,8 @@ import com.socksapp.missedconnection.adapter.MyPostAdapter;
 import com.socksapp.missedconnection.databinding.FragmentMyPostBinding;
 import com.socksapp.missedconnection.model.FindPost;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MyPostFragment extends Fragment {
 
@@ -138,54 +141,58 @@ public class MyPostFragment extends Fragment {
         delete.setOnClickListener(v ->{
 
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-            builder.setMessage(getString(R.string.payla_m_silmek_istiyor_musunuz));
-            builder.setPositiveButton(getString(R.string.sil), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog2, int which) {
-                    WriteBatch batch = firestore.batch();
 
-                    batch.delete(firestore.collection(userMail).document(documentReference.getId()));
-                    batch.delete(firestore.collection("post"+city).document(documentReference.getId()));
+            View dialogView = getLayoutInflater().inflate(R.layout.custom_dialog_delete_post, null);
+            builder.setView(dialogView);
 
-                    CollectionReference subCollectionRef = firestore.collection("views").document(userMail).collection(userMail);
-                    Query query = subCollectionRef.whereEqualTo("refId", documentReference.getId());
+            Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+            Button deleteButton = dialogView.findViewById(R.id.deleteButton);
 
-                    query.get().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                batch.delete(document.getReference());
-                            }
-                            batch.commit()
-                                .addOnSuccessListener(aVoid -> {
-                                    mainActivity.refDataAccess.deleteRef(documentReference.getId());
-                                    myPostAdapter.notifyItemRemoved(position);
-                                    postArrayList.remove(position);
-                                    myPostAdapter.notifyDataSetChanged();
-                                    dialog.dismiss();
-                                    dialog2.dismiss();
-                                })
-                                .addOnFailureListener(e -> {
-                                    dialog.dismiss();
-                                    dialog2.dismiss();
-                                    showSnackbar(view,getString(R.string.gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin));
-                                });
-                        } else {
-                            dialog.dismiss();
-                            dialog2.dismiss();
-                            showSnackbar(view,getString(R.string.gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin));
+            AlertDialog dlg = builder.create();
+
+            cancelButton.setOnClickListener(v2 -> {
+                dlg.dismiss();
+                dialog.dismiss();
+            });
+
+            deleteButton.setOnClickListener(v3 -> {
+                WriteBatch batch = firestore.batch();
+
+                batch.delete(firestore.collection(userMail).document(documentReference.getId()));
+                batch.delete(firestore.collection("post"+city).document(documentReference.getId()));
+
+                CollectionReference subCollectionRef = firestore.collection("views").document(userMail).collection(userMail);
+                Query query = subCollectionRef.whereEqualTo("refId", documentReference.getId());
+
+                query.get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            batch.delete(document.getReference());
                         }
-                    });
-                }
-            });
-            builder.setNegativeButton(getString(R.string.iptal), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog2, int which) {
-                    dialog2.dismiss();
-                }
+                        batch.commit()
+                            .addOnSuccessListener(aVoid -> {
+                                mainActivity.refDataAccess.deleteRef(documentReference.getId());
+                                myPostAdapter.notifyItemRemoved(position);
+                                postArrayList.remove(position);
+                                myPostAdapter.notifyDataSetChanged();
+                                dialog.dismiss();
+                                dlg.dismiss();
+                                showSnackbar(view,getString(R.string.gonderiniz_silindi));
+                            })
+                            .addOnFailureListener(e -> {
+                                dialog.dismiss();
+                                dlg.dismiss();
+                                showSnackbar(view,getString(R.string.gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin));
+                            });
+                    } else {
+                        dialog.dismiss();
+                        dlg.dismiss();
+                        showSnackbar(view,getString(R.string.gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin));
+                    }
+                });
             });
 
-            builder.show();
-
+            dlg.show();
         });
 
         if(dialog.getWindow() != null){

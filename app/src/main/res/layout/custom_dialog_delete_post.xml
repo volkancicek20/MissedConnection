@@ -11,20 +11,12 @@
         android:id="@+id/dialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/mesaji_silmek_istiyor_musunuz"
+        android:text="@string/g_nderinizi_silmek_istiyor_musunuz"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:textStyle="normal"
         android:fontFamily="@font/roboto_regular"
         android:layout_marginBottom="10dp"/>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/info_message_delete"
-        android:textSize="14sp"
-        android:textColor="@color/gray"
-        android:fontFamily="@font/roboto_regular"/>
 
 
     <LinearLayout
@@ -40,8 +32,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/iptal"
-            android:fontFamily="@font/roboto_regular"
             android:textSize="16sp"
+            android:fontFamily="@font/roboto_regular"
             android:textColor="@color/white"
             android:textAllCaps="false"
             style="?android:attr/borderlessButtonStyle"/>
@@ -50,9 +42,9 @@
             android:id="@+id/deleteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/mesaj_sil"
-            android:fontFamily="@font/roboto_regular"
+            android:text="@string/sil"
             android:textSize="16sp"
+            android:fontFamily="@font/roboto_regular"
             android:textColor="@color/white"
             android:textAllCaps="false"
             style="?android:attr/borderlessButtonStyle"/>

@@ -22,6 +22,7 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -274,7 +275,7 @@ public class SettingsFragment extends Fragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 
         LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.selection_language, null);
+        View dialogView = inflater.inflate(R.layout.custom_dialog_select_language, null);
         builder.setView(dialogView);
 
         RadioGroup radioGroupLanguage = dialogView.findViewById(R.id.language_radio_group);
@@ -286,13 +287,19 @@ public class SettingsFragment extends Fragment {
             radioButtonEnglish.setChecked(true);
         }
 
-        builder.setPositiveButton(getString(R.string.sec), (dialog, which) -> {
+        AlertDialog dialog = builder.create();
+
+        Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+        Button chooseButton = dialogView.findViewById(R.id.chooseButton);
+
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+
+        chooseButton.setOnClickListener(v -> {
             int selectedId = radioGroupLanguage.getCheckedRadioButtonId();
 
             Locale locale;
             SharedPreferences.Editor editor = language.edit();
             if(selectedId == R.id.turkish_radio_button){
-
                 editor.putString("language","turkish");
                 editor.apply();
 
@@ -303,12 +310,9 @@ public class SettingsFragment extends Fragment {
                 configuration.setLocale(locale);
 
                 getResources().updateConfiguration(configuration,getResources().getDisplayMetrics());
-
             }else {
-
                 editor.putString("language","english");
                 editor.apply();
-
 
                 locale = new Locale("tr");
                 Locale.setDefault(locale);
@@ -317,14 +321,12 @@ public class SettingsFragment extends Fragment {
                 configuration.setLocale(locale);
 
                 getResources().updateConfiguration(configuration,getResources().getDisplayMetrics());
-
             }
+            dialog.dismiss();
             requireActivity().recreate();
         });
 
-        AlertDialog dialog = builder.create();
         dialog.show();
-
     }
 
     private void goToAboutUsFragment(){

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -11,20 +12,46 @@
         android:id="@+id/dialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/mesaji_silmek_istiyor_musunuz"
+        android:text="Kullanıcıyı bildiriyorsunuz!"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:textStyle="normal"
         android:fontFamily="@font/roboto_regular"
         android:layout_marginBottom="10dp"/>
 
-    <TextView
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/explain_input_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/info_message_delete"
-        android:textSize="14sp"
-        android:textColor="@color/gray"
-        android:fontFamily="@font/roboto_regular"/>
+        android:layout_height="150dp"
+        android:layout_marginTop="10dp"
+        app:boxStrokeColor="@color/text_input_stroke_change"
+        app:boxStrokeWidth="1dp"
+        app:boxStrokeWidthFocused="1dp"
+        app:hintAnimationEnabled="false"
+        app:hintEnabled="false"
+        app:hintTextColor="@color/gray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/delete_account_button"
+        style="@style/CustomTextInputLayout.Dark4"
+        >
+
+        <EditText
+            android:id="@+id/explain"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:gravity="start|top"
+            android:maxLength="200"
+            android:hint="Gönderiyi neden bildirdiğinizi açıklayınız.."
+            android:inputType="textMultiLine"
+            android:paddingTop="10dp"
+            android:fontFamily="@font/roboto_regular"
+            android:textColor="@color/black"
+            android:textColorHint="@color/gray"
+            android:textCursorDrawable="@drawable/edittext_cursor_color"
+            android:textSize="16sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 
     <LinearLayout
@@ -47,10 +74,10 @@
             style="?android:attr/borderlessButtonStyle"/>
 
         <Button
-            android:id="@+id/deleteButton"
+            android:id="@+id/reportButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/mesaj_sil"
+            android:text="@string/bildir"
             android:fontFamily="@font/roboto_regular"
             android:textSize="16sp"
             android:textColor="@color/white"
