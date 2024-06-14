@@ -62,7 +62,7 @@ public class ChatFragment extends Fragment {
     private ListenerRegistration collectionListener; // ilerde chat ile anlık silme eklersen bunu kullan veya uyarı
     private MainActivity mainActivity;
     private DocumentSnapshot lastVisibleMessage;
-    private int pageSize = 10;
+    private final int pageSize = 15;
     private boolean checkLastMessage;
     public ChatFragment() {
         // Required empty public constructor
@@ -515,7 +515,8 @@ public class ChatFragment extends Fragment {
 
     private String getReadableDateTime(Date date){
         if (date != null) {
-            return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
+//            return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
+            return new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(date);
         } else {
             return "";
         }

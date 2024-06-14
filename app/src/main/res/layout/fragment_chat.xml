@@ -88,7 +88,6 @@
         android:overScrollMode="never"
         android:padding="10dp"
         android:layout_marginBottom="5dp"
-        app:stackFromEnd="true"
         android:background="@color/black"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@id/chat_header_constraint_layout"

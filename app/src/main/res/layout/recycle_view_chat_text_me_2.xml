@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="7dp"
         android:background="@drawable/bg_sender"
         android:maxWidth="310dp"
@@ -19,7 +19,7 @@
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline2"
-            app:layout_constraintGuide_end="8dp"
+            app:layout_constraintGuide_end="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical" />
@@ -28,12 +28,14 @@
             android:id="@+id/messageText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
             android:inputType="textLongMessage|textMultiLine"
             android:maxWidth="270dp"
             android:minWidth="50dp"
             android:text="Merhaba arkadaslar"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="14sp"
             android:fontFamily="@font/roboto_regular"
             app:layout_constraintBottom_toTopOf="@id/timeChatText"
@@ -43,18 +45,18 @@
             app:layout_constraintVertical_bias="0.0"
             />
 
-        <TextView
-            android:id="@+id/timeChatText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="4dp"
-            android:text="12:44 ös"
-            android:textColor="@color/chat_sender_time"
-            android:textSize="10sp"
-            android:fontFamily="@font/roboto_regular"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/guideline2"/>
+            <TextView
+                android:id="@+id/timeChatText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:layout_marginBottom="4dp"
+                android:text="12:44 ös"
+                android:textColor="@color/gray"
+                android:textSize="10sp"
+                android:fontFamily="@font/roboto_regular"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/guideline2"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

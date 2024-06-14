@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.socksapp.missedconnection.databinding.RecycleViewChatTextMeBinding;
 import com.socksapp.missedconnection.databinding.RecycleViewChatTextYouBinding;
 import com.socksapp.missedconnection.model.ChatMessage;
+
+import java.util.Date;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{

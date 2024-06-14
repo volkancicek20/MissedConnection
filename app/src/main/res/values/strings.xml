@@ -158,6 +158,7 @@
     <!-- EditProfileFragment -->
     <string name="kaydediliyor">Kaydediliyor..</string>
     <string name="profiliniz_kaydedildi">Profiliniz kaydedildi</string>
+    <string name="error_save_profile">Profiliniz kaydedilirken bir hata oluştu. İnternetinizi kontrol ettikten sonra tekrar deneyiniz.</string>
 
     <!-- GoogleMapsFragment -->
     <string name="aradiginiz_yer_bulunamadi">Aradığınız yer bulunamadı</string>
@@ -244,7 +245,10 @@
     <string name="use_missed_connection_4">• Belki de yıllar süren bir dostluğu yakalayabilirsiniz!</string>
     <string name="contact_me">Bize ulaşabileceğiniz adresler</string>
     <string name="contact_mail_address">socksapp@protonmail.com</string>
-    <string name="error_save_profile">Profiliniz kaydedilirken bir hata oluştu. İnternetinizi kontrol ettikten sonra tekrar deneyiniz.</string>
+
+    <!-- custom_dialog_message_delete -->
+    <string name="info_message_delete">Mesajı silerseniz tüm sohbet geri döndürülemez şekilde silinecektir!</string>
+    <string name="mesaj_sil">Mesajı sil</string>
 
 
     <string-array name="city_names">

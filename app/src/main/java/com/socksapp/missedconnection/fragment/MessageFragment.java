@@ -1,6 +1,7 @@
 package com.socksapp.missedconnection.fragment;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -36,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class MessageFragment extends Fragment implements ConversionListener{
 
@@ -212,23 +216,23 @@ public class MessageFragment extends Fragment implements ConversionListener{
 
     public void choiceItem(View view, String userMail, int position){
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-        builder.setMessage(getString(R.string.mesaji_silmek_istiyor_musunuz));
-        builder.setPositiveButton(getString(R.string.sil), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteConversations(userMail,"senderId","receiverId");
-                deleteConversations(userMail,"receiverId","senderId");
-                deleteChats(userMail,position);
-            }
-        });
-        builder.setNegativeButton(getString(R.string.iptal), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        View dialogView = getLayoutInflater().inflate(R.layout.custom_dialog_message_delete, null);
+        builder.setView(dialogView);
 
-            }
-        });
+        Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+        Button deleteButton = dialogView.findViewById(R.id.deleteButton);
 
-        builder.show();
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
+
+        deleteButton.setOnClickListener(v -> {
+            deleteConversations(userMail, "senderId", "receiverId");
+            deleteConversations(userMail, "receiverId", "senderId");
+            deleteChats(userMail, position);
+            dialog.dismiss();
+        });
     }
 
     public void deleteConversations(String userMail, String senderId, String receiverId){

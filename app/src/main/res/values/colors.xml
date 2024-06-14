@@ -16,6 +16,11 @@
     <color name="tp">#00000000</color>
     <color name="buttonBg">#1d9cf0</color>
     <color name="blue2">#009dff</color>
+    <color name="chat_sender">#2B5278</color>
+    <color name="chat_receiver">#182533</color>
+    <color name="chat_receiver_time">#6D7F8F</color>
+    <color name="chat_sender_time">#7DA8D3</color>
+    <color name="gray_shade">#2C2C2C</color>
 
     <color name="shimmer_color">#BFBDBD</color>
 

@@ -159,6 +159,7 @@
     <!-- EditProfileFragment -->
     <string name="kaydediliyor">Saving..</string>
     <string name="profiliniz_kaydedildi">Your profile has been saved</string>
+    <string name="error_save_profile">There was an error saving your profile. Try again after checking your internet connection.</string>
 
     <!-- GoogleMapsFragment -->
     <string name="aradiginiz_yer_bulunamadi">The place you were looking for was not found</string>
@@ -246,6 +247,10 @@
     <string name="use_missed_connection_4">• Maybe you can create a friendship that lasts for years!</string>
     <string name="contact_me">The addresses where you can reach us are below.</string>
     <string name="contact_mail_address">socksapp@protonmail.com</string>
+
+    <!-- custom_dialog_message_delete -->
+    <string name="info_message_delete">If you delete the message, the entire chat will be irreversibly deleted.</string>
+    <string name="mesaj_sil">Delete message</string>
 
     <string-array name="city_names">
         <item>İstanbul</item>
