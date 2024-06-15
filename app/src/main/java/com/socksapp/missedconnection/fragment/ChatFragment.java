@@ -119,7 +119,7 @@ public class ChatFragment extends Fragment {
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
 
-                if (dy < 0) { // Yukarı kaydırma kontrolü
+                if (dy < 0) {
                     LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
                     if (layoutManager.findFirstCompletelyVisibleItemPosition() == 0) {
                         loadMoreMessages();

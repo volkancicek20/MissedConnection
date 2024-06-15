@@ -587,12 +587,12 @@
                     android:layout_height="130dp"
                     android:gravity="top|start"
                     android:textColor="@color/white"
-                    android:textColorHint="@color/black"
+                    android:textColorHint="@color/gray"
                     android:inputType="textMultiLine"
                     android:textSize="14sp"
                     android:fontFamily="@font/roboto_regular"
                     android:maxLength="500"
-                    android:textCursorDrawable="@drawable/edittext_cursor_color"/>
+                    android:textCursorDrawable="@drawable/edittext_cursor_color_white"/>
 
             </com.google.android.material.textfield.TextInputLayout>
 

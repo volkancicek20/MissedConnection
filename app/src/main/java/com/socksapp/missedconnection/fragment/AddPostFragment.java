@@ -516,11 +516,17 @@ public class AddPostFragment extends Fragment {
 
                                                     WriteBatch batch = firestore.batch();
 
-                                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
                                                     batch.set(newPostRef, post);
 
-                                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
                                                     batch.set(newPostRef2, post);
+
+//                                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+//                                                    batch.set(newPostRef, post);
+//
+//                                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                                    batch.set(newPostRef2, post);
 
                                                     batch.commit()
                                                         .addOnSuccessListener(aVoid -> {
@@ -567,11 +573,17 @@ public class AddPostFragment extends Fragment {
 
                                     WriteBatch batch = firestore.batch();
 
-                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
                                     batch.set(newPostRef, post);
 
-                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
                                     batch.set(newPostRef2, post);
+
+//                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+//                                    batch.set(newPostRef, post);
+//
+//                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                    batch.set(newPostRef2, post);
 
                                     batch.commit().addOnSuccessListener(aVoid -> {
                                         progressDialog.dismiss();
@@ -892,11 +904,17 @@ public class AddPostFragment extends Fragment {
 
                                                 WriteBatch batch = firestore.batch();
 
-                                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                                DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
                                                 batch.set(newPostRef, post);
 
-                                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                                DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
                                                 batch.set(newPostRef2, post);
+
+//                                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+//                                                batch.set(newPostRef, post);
+//
+//                                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                                batch.set(newPostRef2, post);
 
                                                 batch.commit()
                                                     .addOnSuccessListener(aVoid -> {
@@ -943,11 +961,17 @@ public class AddPostFragment extends Fragment {
 
                                     WriteBatch batch = firestore.batch();
 
-                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
                                     batch.set(newPostRef, post);
 
-                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
                                     batch.set(newPostRef2, post);
+
+//                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+//                                    batch.set(newPostRef, post);
+//
+//                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                    batch.set(newPostRef2, post);
 
                                     batch.commit().addOnSuccessListener(aVoid -> {
                                         progressDialog.dismiss();
@@ -1053,11 +1077,17 @@ public class AddPostFragment extends Fragment {
 
                                                 WriteBatch batch = firestore.batch();
 
-                                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                                DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
                                                 batch.set(newPostRef, post);
 
-                                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                                DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
                                                 batch.set(newPostRef2, post);
+
+//                                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+//                                                batch.set(newPostRef, post);
+//
+//                                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                                batch.set(newPostRef2, post);
 
                                                 batch.commit()
                                                     .addOnSuccessListener(aVoid -> {
@@ -1104,11 +1134,17 @@ public class AddPostFragment extends Fragment {
 
                                     WriteBatch batch = firestore.batch();
 
-                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
                                     batch.set(newPostRef, post);
 
-                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
                                     batch.set(newPostRef2, post);
+
+//                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+//                                    batch.set(newPostRef, post);
+//
+//                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                    batch.set(newPostRef2, post);
 
                                     batch.commit().addOnSuccessListener(aVoid -> {
                                         progressDialog.dismiss();
@@ -1194,11 +1230,17 @@ public class AddPostFragment extends Fragment {
 
                                 WriteBatch batch = firestore.batch();
 
-                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+                                DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
                                 batch.set(newPostRef, post);
 
-                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                                DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
                                 batch.set(newPostRef2, post);
+
+//                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+//                                batch.set(newPostRef, post);
+//
+//                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                batch.set(newPostRef2, post);
 
                                 batch.commit()
                                     .addOnSuccessListener(aVoid -> {
@@ -1246,11 +1288,17 @@ public class AddPostFragment extends Fragment {
 
                     WriteBatch batch = firestore.batch();
 
-                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
                     batch.set(newPostRef, post);
 
-                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
                     batch.set(newPostRef2, post);
+
+//                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+//                    batch.set(newPostRef, post);
+//
+//                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                    batch.set(newPostRef2, post);
 
                     batch.commit().addOnSuccessListener(aVoid -> {
                         progressDialog.dismiss();

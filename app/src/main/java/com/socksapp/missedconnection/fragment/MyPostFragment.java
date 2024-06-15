@@ -14,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,12 +25,15 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -40,7 +45,9 @@ import com.socksapp.missedconnection.databinding.FragmentMyPostBinding;
 import com.socksapp.missedconnection.model.FindPost;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class MyPostFragment extends Fragment {
 
@@ -54,6 +61,8 @@ public class MyPostFragment extends Fragment {
     public MyPostAdapter myPostAdapter;
     public ArrayList<FindPost> postArrayList;
     private Handler handler;
+    private DocumentSnapshot lastVisibleMyPost;
+    private final int pageSize = 10;
 
     public MyPostFragment() {
         // Required empty public constructor
@@ -93,11 +102,32 @@ public class MyPostFragment extends Fragment {
         binding.recyclerViewMyPost.setLayoutManager(new LinearLayoutManager(view.getContext()));
         myPostAdapter = new MyPostAdapter(postArrayList,view.getContext(),MyPostFragment.this);
         binding.recyclerViewMyPost.setAdapter(myPostAdapter);
+
         postArrayList.clear();
+
+        lastVisibleMyPost = null;
 
         handler = new Handler();
 
         getData();
+
+
+        binding.recyclerViewMyPost.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dy > 0) {
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    int totalItemCount = Objects.requireNonNull(layoutManager).getItemCount();
+                    int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
+
+                    if (lastVisibleItem >= totalItemCount - 1) {
+                        loadMoreMyPost();
+                    }
+                }
+            }
+        });
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -158,8 +188,8 @@ public class MyPostFragment extends Fragment {
             deleteButton.setOnClickListener(v3 -> {
                 WriteBatch batch = firestore.batch();
 
-                batch.delete(firestore.collection(userMail).document(documentReference.getId()));
-                batch.delete(firestore.collection("post"+city).document(documentReference.getId()));
+                batch.delete(firestore.collection("myPosts").document(userMail).collection(userMail).document(documentReference.getId()));
+                batch.delete(firestore.collection("posts").document("post"+city).collection("post"+city).document(documentReference.getId()));
 
                 CollectionReference subCollectionRef = firestore.collection("views").document(userMail).collection(userMail);
                 Query query = subCollectionRef.whereEqualTo("refId", documentReference.getId());
@@ -205,7 +235,11 @@ public class MyPostFragment extends Fragment {
     }
 
     private void getData(){
-        firestore.collection(userMail).orderBy("timestamp", Query.Direction.DESCENDING).get().addOnSuccessListener(queryDocumentSnapshots -> {
+        firestore.collection("myPosts")
+                .document(userMail).collection(userMail)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(pageSize)
+                .get().addOnSuccessListener(queryDocumentSnapshots -> {
             if(queryDocumentSnapshots.isEmpty()){
                 FindPost post = new FindPost();
                 post.viewType = 2;
@@ -215,8 +249,10 @@ public class MyPostFragment extends Fragment {
                 binding.shimmerLayout.setVisibility(View.GONE);
                 binding.recyclerViewMyPost.setVisibility(View.VISIBLE);
                 myPostAdapter.notifyDataSetChanged();
-
                 return;
+            }
+            if(!queryDocumentSnapshots.isEmpty()){
+                lastVisibleMyPost = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
             }
             for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
 //                    String imageUrl = querySnapshot.getString("imageUrl");
@@ -281,9 +317,92 @@ public class MyPostFragment extends Fragment {
                 binding.shimmerLayout.stopShimmer();
                 binding.shimmerLayout.setVisibility(View.GONE);
                 binding.recyclerViewMyPost.setVisibility(View.VISIBLE);
-                myPostAdapter.notifyDataSetChanged();
             }
+            myPostAdapter.notifyDataSetChanged();
         });
+    }
+
+    private void loadMoreMyPost(){
+        if (lastVisibleMyPost != null) {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            firestore.collection("myPosts").document(userMail).collection(userMail)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .startAfter(lastVisibleMyPost)
+                    .limit(pageSize)
+                    .get().addOnSuccessListener(queryDocumentSnapshots -> {
+                binding.progressBar.setVisibility(View.GONE);
+                List<FindPost> newPosts = new ArrayList<>();
+                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+//                    String imageUrl = querySnapshot.getString("imageUrl");
+//                    String name = querySnapshot.getString("name");
+//                    String mail = querySnapshot.getString("mail");
+                    String galleryUrl = querySnapshot.getString("galleryUrl");
+                    String city = querySnapshot.getString("city");
+                    String district = querySnapshot.getString("district");
+                    Long time1 = querySnapshot.getLong("time1");
+                    Long time2 = querySnapshot.getLong("time2");
+                    Long date1 = querySnapshot.getLong("date1");
+                    Long date2 = querySnapshot.getLong("date2");
+                    String place = querySnapshot.getString("place");
+                    String explain = querySnapshot.getString("explain");
+                    Double lat = querySnapshot.getDouble("lat");
+                    Double lng = querySnapshot.getDouble("lng");
+                    Long x = querySnapshot.getLong("radius");
+                    double radius = 0;
+                    if(x != null){
+                        radius = x;
+                    }
+                    Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                    DocumentReference documentReference = querySnapshot.getReference();
+
+                    FindPost post = new FindPost();
+                    post.viewType = 1;
+                    post.imageUrl = imageUrlShared.getString("imageUrl","");
+                    post.galleryUrl = galleryUrl;
+                    post.name = nameShared.getString("name","");
+                    post.mail = userMail;
+                    post.city = city;
+                    post.district = district;
+                    if (time1 == null) {
+                        post.time1 = 0;
+                    } else {
+                        post.time1 = time1;
+                    }
+                    if (time2 == null) {
+                        post.time2 = 0;
+                    } else {
+                        post.time2 = time2;
+                    }
+                    if (date1 == null) {
+                        post.date1 = 0;
+                    } else {
+                        post.date1 = date1;
+                    }
+                    if (date2 == null) {
+                        post.date2 = 0;
+                    } else {
+                        post.date2 = date2;
+                    }
+                    post.place = place;
+                    post.explain = explain;
+                    post.timestamp = timestamp;
+                    post.lat = lat;
+                    post.lng = lng;
+                    post.radius = radius;
+                    post.documentReference = documentReference;
+
+                    newPosts.add(post);
+                }
+
+                postArrayList.addAll(postArrayList.size(),newPosts);
+                myPostAdapter.notifyItemRangeInserted(postArrayList.size(), postArrayList.size());
+
+                if (!queryDocumentSnapshots.isEmpty()) {
+                    lastVisibleMyPost = queryDocumentSnapshots.getDocuments()
+                            .get(queryDocumentSnapshots.size() - 1);
+                }
+            });
+        }
     }
 
     public void goAddPost(){

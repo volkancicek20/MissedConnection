@@ -23,8 +23,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.os.Handler;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,22 +40,28 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
 import com.socksapp.missedconnection.FCM.FCMNotificationSender;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.PostAdapter;
 import com.socksapp.missedconnection.databinding.FragmentMainBinding;
+import com.socksapp.missedconnection.model.ChatMessage;
 import com.socksapp.missedconnection.model.FindPost;
 import com.socksapp.missedconnection.myclass.TimedDataManager;
 import java.text.SimpleDateFormat;
@@ -62,6 +71,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 public class MainFragment extends Fragment {
 
@@ -79,6 +89,9 @@ public class MainFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
     private static final int LOCATION_REQUEST_CODE = 100;
     public double checkRadius = 0,checkLat = 0,checkLng = 0;
+    private DocumentSnapshot lastVisiblePost;
+    private final int pageSize = 10;
+    private String loadCity,loadDistrict;
     public MainFragment() {
         // Required empty public constructor
     }
@@ -138,14 +151,21 @@ public class MainFragment extends Fragment {
         binding.recyclerViewMain.setLayoutManager(new LinearLayoutManager(view.getContext()));
         postAdapter = new PostAdapter(postArrayList,view.getContext(),MainFragment.this);
         binding.recyclerViewMain.setAdapter(postAdapter);
+
         postArrayList.clear();
+
+        lastVisiblePost = null;
 
         handler = new Handler();
 
+        loadCity = "";
+        loadDistrict = "";
         Bundle args = getArguments();
         if (args != null) {
             String city = args.getString("city","");
             String district = args.getString("district","");
+            loadCity = city;
+            loadDistrict = district;
             double radius = args.getDouble("radius",0);
             double latitude = args.getDouble("latitude",0);
             double longitude = args.getDouble("longitude",0);
@@ -161,6 +181,24 @@ public class MainFragment extends Fragment {
         }else {
             checkLocationPermission();
         }
+
+        binding.recyclerViewMain.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dy > 0) {
+                    LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                    int totalItemCount = Objects.requireNonNull(layoutManager).getItemCount();
+                    int lastVisibleItem = layoutManager.findLastCompletelyVisibleItemPosition();
+
+                    if (lastVisibleItem >= totalItemCount - 1) {
+                        loadMorePost();
+                    }
+                }
+            }
+        });
+
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -284,9 +322,11 @@ public class MainFragment extends Fragment {
 
         save.setOnClickListener(v ->{
             HashMap<String,Object> data = new HashMap<>();
-            data.put(documentReference.getId(),mail);
-            firestore.collection("saves").document(userMail).set(data,SetOptions.merge()).addOnSuccessListener(unused -> {
-//                mainActivity.refDataAccess.insertRef(documentReference.getId(),mail);
+            data.put("mail",mail);
+            data.put("refId",documentReference.getId());
+            data.put("timestamp",new Date());
+            firestore.collection("saves").document(userMail).collection(userMail).document(documentReference.getId()).set(data).addOnSuccessListener(documentReference12 -> {
+//              mainActivity.refDataAccess.insertRef(documentReference.getId(),mail);
                 showSnackbar(view,getString(R.string.kaydedildi));
                 dialog.dismiss();
             }).addOnFailureListener(e -> {
@@ -411,12 +451,14 @@ public class MainFragment extends Fragment {
                     long time1_long = time_1.getTime();
                     long time2_long = time_2.getTime();
 
-                    query = firestore.collection(collection)
+                    query = firestore.collection("posts").document(collection).collection(collection)
                             .whereEqualTo("district", districtFind)
                             .whereLessThanOrEqualTo("date1",date2_long)
                             .whereGreaterThanOrEqualTo("date2",date1_long)
                             .whereLessThanOrEqualTo("time1",time2_long)
-                            .whereGreaterThanOrEqualTo("time2",time1_long);
+                            .whereGreaterThanOrEqualTo("time2",time1_long)
+                            .orderBy("timestamp", Query.Direction.DESCENDING)
+                            .limit(pageSize);
                 }else {
                 }
             }catch (Exception e){
@@ -441,12 +483,14 @@ public class MainFragment extends Fragment {
                     long time1_long = time_1.getTime();
                     long time2_long = time_2.getTime();
 
-                    query = firestore.collection(collection)
+                    query = firestore.collection("posts").document(collection).collection(collection)
                             .whereEqualTo("district", districtFind)
                             .whereLessThanOrEqualTo("date1",date2_long)
                             .whereGreaterThanOrEqualTo("date2",date1_long)
                             .whereLessThanOrEqualTo("time1",time2_long)
-                            .whereGreaterThanOrEqualTo("time2",time1_long);
+                            .whereGreaterThanOrEqualTo("time2",time1_long)
+                            .orderBy("timestamp", Query.Direction.DESCENDING)
+                            .limit(pageSize);
 
                 }else {
                 }
@@ -466,10 +510,12 @@ public class MainFragment extends Fragment {
                     long date1_long = date_1.getTime();
                     long date2_long = date_2.getTime();
 
-                    query = firestore.collection(collection)
+                    query = firestore.collection("posts").document(collection).collection(collection)
                             .whereEqualTo("district", districtFind)
                             .whereLessThanOrEqualTo("date1",date2_long)
-                            .whereGreaterThanOrEqualTo("date2",date1_long);
+                            .whereGreaterThanOrEqualTo("date2",date1_long)
+                            .orderBy("timestamp", Query.Direction.DESCENDING)
+                            .limit(pageSize);
 
                 }else {
                 }
@@ -490,10 +536,12 @@ public class MainFragment extends Fragment {
                     long time1_long = time_1.getTime();
                     long time2_long = time_2.getTime();
 
-                    query = firestore.collection(collection)
+                    query = firestore.collection("posts").document(collection).collection(collection)
                             .whereEqualTo("district", districtFind)
                             .whereLessThanOrEqualTo("time1",time2_long)
-                            .whereGreaterThanOrEqualTo("time2",time1_long);
+                            .whereGreaterThanOrEqualTo("time2",time1_long)
+                            .orderBy("timestamp", Query.Direction.DESCENDING)
+                            .limit(pageSize);
 
                 }else {
                 }
@@ -506,8 +554,10 @@ public class MainFragment extends Fragment {
         else if (checkDistrict && checkField) {
             postArrayList.clear();
             String collection = "post" + cityFind;
-            query = firestore.collection(collection)
-                    .whereEqualTo("district", districtFind);
+            query = firestore.collection("posts").document(collection).collection(collection)
+                    .whereEqualTo("district", districtFind)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(pageSize);
 
         }
         else if (checkDistrict && checkDate) {
@@ -522,10 +572,12 @@ public class MainFragment extends Fragment {
                     long date1_long = date_1.getTime();
                     long date2_long = date_2.getTime();
 
-                    query = firestore.collection(collection)
-                        .whereEqualTo("district", districtFind)
-                        .whereLessThanOrEqualTo("date1",date2_long)
-                        .whereGreaterThanOrEqualTo("date2",date1_long);
+                    query = firestore.collection("posts").document(collection).collection(collection)
+                            .whereEqualTo("district", districtFind)
+                            .whereLessThanOrEqualTo("date1",date2_long)
+                            .whereGreaterThanOrEqualTo("date2",date1_long)
+                            .orderBy("timestamp", Query.Direction.DESCENDING)
+                            .limit(pageSize);
 
                 }else {
                 }
@@ -546,10 +598,12 @@ public class MainFragment extends Fragment {
                     long time1_long = time_1.getTime();
                     long time2_long = time_2.getTime();
 
-                    query = firestore.collection(collection)
+                    query = firestore.collection("posts").document(collection).collection(collection)
                             .whereEqualTo("district", districtFind)
                             .whereLessThanOrEqualTo("time1",time2_long)
-                            .whereGreaterThanOrEqualTo("time2",time1_long);
+                            .whereGreaterThanOrEqualTo("time2",time1_long)
+                            .orderBy("timestamp", Query.Direction.DESCENDING)
+                            .limit(pageSize);
 
                 }else {
                 }
@@ -560,14 +614,15 @@ public class MainFragment extends Fragment {
         else if (checkDistrict) {
             postArrayList.clear();
             String collection = "post" + cityFind;
-            query = firestore.collection(collection)
-                    .whereEqualTo("district", districtFind);
-
+            query = firestore.collection("posts").document(collection).collection(collection)
+                    .whereEqualTo("district", districtFind)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(pageSize);
         }
         else {
-            postArrayList.clear();
-            String collection = "post" + cityFind;
-            query = firestore.collection(collection);
+//            postArrayList.clear();
+//            String collection = "post" + cityFind;
+//            query = firestore.collection(collection);
 
         }
 
@@ -586,6 +641,7 @@ public class MainFragment extends Fragment {
                         mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                         return;
                     }
+                    lastVisiblePost = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
                     boolean empty = true;
                     for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
 
@@ -662,12 +718,11 @@ public class MainFragment extends Fragment {
                                 binding.shimmerLayout.stopShimmer();
                                 binding.shimmerLayout.setVisibility(View.GONE);
                                 binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                                postAdapter.notifyDataSetChanged();
                                 mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                             }
                         }
                     }
-
+                    postAdapter.notifyDataSetChanged();
                     if(empty){
                         FindPost post = new FindPost();
                         post.viewType = 2;
@@ -688,6 +743,7 @@ public class MainFragment extends Fragment {
             else {
                 query.get().addOnSuccessListener(queryDocumentSnapshots -> {
                     if(queryDocumentSnapshots.isEmpty()){
+                        Toast.makeText(requireContext(),"empty",Toast.LENGTH_SHORT).show();
                         FindPost post = new FindPost();
                         post.viewType = 2;
 
@@ -699,6 +755,7 @@ public class MainFragment extends Fragment {
                         mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                         return;
                     }
+                    lastVisiblePost = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
                     boolean empty = true;
                     for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
                         empty = false;
@@ -762,10 +819,9 @@ public class MainFragment extends Fragment {
                         binding.shimmerLayout.stopShimmer();
                         binding.shimmerLayout.setVisibility(View.GONE);
                         binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                        postAdapter.notifyDataSetChanged();
                         mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
                     }
-
+                    postAdapter.notifyDataSetChanged();
                     if(empty){
                         FindPost post = new FindPost();
                         post.viewType = 2;
@@ -791,7 +847,13 @@ public class MainFragment extends Fragment {
     }
 
     private void getData(){
-        firestore.collection("post"+userLocationCity).whereEqualTo("district",userLocationDistrict).get().addOnSuccessListener(queryDocumentSnapshots -> {
+        firestore.collection("posts").document("post"+userLocationCity).collection("post"+userLocationCity)
+                .whereEqualTo("district",userLocationDistrict)
+                .orderBy("timestamp", Query.Direction.DESCENDING)
+                .limit(pageSize).get().addOnSuccessListener(queryDocumentSnapshots -> {
+            if(!queryDocumentSnapshots.isEmpty()){
+                lastVisiblePost = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
+            }
             boolean found = false;
             for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
                 found = true;
@@ -855,8 +917,8 @@ public class MainFragment extends Fragment {
                 binding.shimmerLayout.stopShimmer();
                 binding.shimmerLayout.setVisibility(View.GONE);
                 binding.recyclerViewMain.setVisibility(View.VISIBLE);
-                postAdapter.notifyDataSetChanged();
             }
+            postAdapter.notifyDataSetChanged();
             if(!found){
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -873,7 +935,119 @@ public class MainFragment extends Fragment {
                     }
                 }, 1000);
             }
+        }).addOnFailureListener(e -> {
+            if (e instanceof FirebaseFirestoreException &&
+                    Objects.requireNonNull(e.getMessage()).contains("The query requires an index")){
+
+                Log.e("FirestoreError", "city: " + userLocationCity + ": " + e.getLocalizedMessage());
+//                handler.postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        FindPost post = new FindPost();
+//                        post.viewType = 2;
+//
+//                        postArrayList.add(post);
+//                        postAdapter.notifyDataSetChanged();
+//
+//                        binding.shimmerLayout.stopShimmer();
+//                        binding.shimmerLayout.setVisibility(View.GONE);
+//                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
+//                    }
+//                }, 1000);
+            }
         });
+    }
+
+    private void loadMorePost(){
+        if (lastVisiblePost != null) {
+            binding.progressBar.setVisibility(View.VISIBLE);
+            Query query;
+            if(!loadCity.isEmpty() && !loadDistrict.isEmpty()){
+                query = firestore.collection("posts").document("post"+loadCity).collection("post"+loadCity)
+                    .whereEqualTo("district",loadDistrict)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .startAfter(lastVisiblePost)
+                    .limit(pageSize);
+            }else {
+                query = firestore.collection("posts").document("post"+userLocationCity).collection("post"+userLocationCity)
+                    .whereEqualTo("district",userLocationDistrict)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .startAfter(lastVisiblePost)
+                    .limit(pageSize);
+            }
+
+            query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+                    binding.progressBar.setVisibility(View.GONE);
+                    List<FindPost> newPosts = new ArrayList<>();
+                    for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+                        String imageUrl = querySnapshot.getString("imageUrl");
+                        String galleryUrl = querySnapshot.getString("galleryUrl");
+                        String name = querySnapshot.getString("name");
+                        String mail = querySnapshot.getString("mail");
+                        String city = querySnapshot.getString("city");
+                        String district = querySnapshot.getString("district");
+                        Long time1 = querySnapshot.getLong("time1");
+                        Long time2 = querySnapshot.getLong("time2");
+                        Long date1 = querySnapshot.getLong("date1");
+                        Long date2 = querySnapshot.getLong("date2");
+                        String explain = querySnapshot.getString("explain");
+                        Double lat = querySnapshot.getDouble("lat");
+                        Double lng = querySnapshot.getDouble("lng");
+                        Long x = querySnapshot.getLong("radius");
+                        double radius = 0;
+                        if(x != null){
+                            radius = x;
+                        }
+                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+                        DocumentReference documentReference = querySnapshot.getReference();
+
+                        FindPost post = new FindPost();
+                        post.viewType = 1;
+                        post.imageUrl = imageUrl;
+                        post.galleryUrl = galleryUrl;
+                        post.name = name;
+                        post.mail = mail;
+                        post.city = city;
+                        post.district = district;
+                        if (time1 == null) {
+                            post.time1 = 0;
+                        } else {
+                            post.time1 = time1;
+                        }
+                        if (time2 == null) {
+                            post.time2 = 0;
+                        } else {
+                            post.time2 = time2;
+                        }
+                        if (date1 == null) {
+                            post.date1 = 0;
+                        } else {
+                            post.date1 = date1;
+                        }
+                        if (date2 == null) {
+                            post.date2 = 0;
+                        } else {
+                            post.date2 = date2;
+                        }
+                        post.explain = explain;
+                        post.timestamp = timestamp;
+                        post.lat = lat;
+                        post.lng = lng;
+                        post.radius = radius;
+                        post.documentReference = documentReference;
+
+                        newPosts.add(post);
+                    }
+
+                    postArrayList.addAll(postArrayList.size(),newPosts);
+                    postAdapter.notifyItemRangeInserted(postArrayList.size(), postArrayList.size());
+
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        lastVisiblePost = queryDocumentSnapshots.getDocuments()
+                                .get(queryDocumentSnapshots.size() - 1);
+                    }
+                });
+        }
     }
 
     public void setActivityNotification(String mail, DocumentReference ref,Context context){
