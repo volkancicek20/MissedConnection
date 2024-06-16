@@ -20,6 +20,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -151,306 +153,389 @@ public class SavedPostFragment extends Fragment {
 //        Toast.makeText(view.getContext(),"Kaydedilenlerden Silindi",Toast.LENGTH_SHORT).show();
 //    }
 
-    private void getData(){
+    private void getData() {
         firestore.collection("saves")
-            .document(userMail).collection(userMail)
+            .document(userMail)
+            .collection(userMail)
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .limit(pageSize)
-            .get().addOnSuccessListener(queryDocumentSnapshots -> {
-                if(queryDocumentSnapshots.isEmpty()){
-                    FindPost post = new FindPost();
-                    post.viewType = 2;
+            .get()
+            .addOnSuccessListener(queryDocumentSnapshots -> {
 
-                    savedPostArrayList.add(post);
+                if (queryDocumentSnapshots.isEmpty()) {
+                    addEmptyPostView();
+                    return;
+                }
+
+                lastVisibleSavedPost = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
+
+                List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots) {
+                    String mail = querySnapshot.getString("mail");
+                    String refId = querySnapshot.getString("refId");
+
+                    if (mail != null && !mail.isEmpty() &&  refId != null && !refId.isEmpty()) {
+                        Task<DocumentSnapshot> task = firestore.collection("myPosts")
+                            .document(mail)
+                            .collection(mail)
+                            .document(refId)
+                            .get();
+                        tasks.add(task);
+                    }
+                }
+
+                Tasks.whenAllSuccess(tasks).addOnSuccessListener(taskResults -> {
+                    for (Object result : taskResults) {
+                        if (result instanceof DocumentSnapshot) {
+                            DocumentSnapshot documentSnapshot = (DocumentSnapshot) result;
+                            if (documentSnapshot.exists()) {
+                                FindPost post = createPostFromDocument(documentSnapshot);
+                                savedPostArrayList.add(post);
+                            }
+                        }
+                    }
                     binding.shimmerLayout.stopShimmer();
                     binding.shimmerLayout.setVisibility(View.GONE);
                     binding.recyclerViewSavedPost.setVisibility(View.VISIBLE);
                     savedPostAdapter.notifyDataSetChanged();
-                    return;
-                }
-                if(!queryDocumentSnapshots.isEmpty()){
-                    lastVisibleSavedPost = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
-                }
-                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-                    String mail = querySnapshot.getString("mail");
-                    String refId = querySnapshot.getString("refId");
-                    if(mail != null && refId != null){
-                        firestore.collection("myPosts")
-                            .document(mail)
-                            .collection(mail)
-                            .document(refId)
-                            .get().addOnSuccessListener(documentSnapshot -> {
-                                if(documentSnapshot.exists()){
-                                    String imageUrl = documentSnapshot.getString("imageUrl");
-                                    String galleryUrl = documentSnapshot.getString("galleryUrl");
-                                    String name = documentSnapshot.getString("name");
-                                    String city = documentSnapshot.getString("city");
-                                    String district = documentSnapshot.getString("district");
-                                    Long time1 = documentSnapshot.getLong("time1");
-                                    Long time2 = documentSnapshot.getLong("time2");
-                                    Long date1 = documentSnapshot.getLong("date1");
-                                    Long date2 = documentSnapshot.getLong("date2");
-                                    String place = documentSnapshot.getString("place");
-                                    String explain = documentSnapshot.getString("explain");
-                                    Double lat = documentSnapshot.getDouble("lat");
-                                    Double lng = documentSnapshot.getDouble("lng");
-                                    Long x = documentSnapshot.getLong("radius");
-                                    double radius = 0;
-                                    if(x != null){
-                                        radius = x;
-                                    }
-                                    Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
-                                    DocumentReference documentReference = documentSnapshot.getReference();
-
-                                    FindPost post = new FindPost();
-                                    post.viewType = 1;
-                                    post.imageUrl = imageUrl;
-                                    post.galleryUrl = galleryUrl;
-                                    post.name = name;
-                                    post.mail = mail;
-                                    post.city = city;
-                                    post.district = district;
-                                    if (time1 == null) {
-                                        post.time1 = 0;
-                                    } else {
-                                        post.time1 = time1;
-                                    }
-                                    if (time2 == null) {
-                                        post.time2 = 0;
-                                    } else {
-                                        post.time2 = time2;
-                                    }
-                                    if (date1 == null) {
-                                        post.date1 = 0;
-                                    } else {
-                                        post.date1 = date1;
-                                    }
-                                    if (date2 == null) {
-                                        post.date2 = 0;
-                                    } else {
-                                        post.date2 = date2;
-                                    }
-                                    post.place = place;
-                                    post.explain = explain;
-                                    post.timestamp = timestamp;
-                                    post.lat = lat;
-                                    post.lng = lng;
-                                    post.radius = radius;
-                                    post.documentReference = documentReference;
-
-                                    savedPostArrayList.add(post);
-                                    binding.shimmerLayout.stopShimmer();
-                                    binding.shimmerLayout.setVisibility(View.GONE);
-                                    binding.recyclerViewSavedPost.setVisibility(View.VISIBLE);
-                                    savedPostAdapter.notifyDataSetChanged();
-                                }else {
-
-                                }
-                            }).addOnFailureListener(e -> {
-
-                            });
-
-                    }else {
-                        // mail veya refId null
-                    }
-                }
-        }).addOnFailureListener(e -> {
-
-        });
+                }).addOnFailureListener(e -> {
+                    // Hata işleme kodları
+                });
+            })
+            .addOnFailureListener(e -> {
+                binding.shimmerLayout.stopShimmer();
+                binding.shimmerLayout.setVisibility(View.GONE);
+                binding.recyclerViewSavedPost.setVisibility(View.VISIBLE);
+                // Hata işleme kodları
+            });
     }
 
-    private void loadMoreSavedPost(){
-        if(lastVisibleSavedPost != null){
-            binding.progressBar.setVisibility(View.VISIBLE);
-            firestore.collection("saves")
-                .document(userMail).collection(userMail)
-                .orderBy("timestamp", Query.Direction.DESCENDING)
-                .startAfter(lastVisibleSavedPost)
-                .limit(pageSize)
-                .get().addOnSuccessListener(queryDocumentSnapshots -> {
-                    binding.progressBar.setVisibility(View.GONE);
+//    private void getData(){
+//        firestore.collection("saves")
+//            .document(userMail).collection(userMail)
+//            .orderBy("timestamp", Query.Direction.DESCENDING)
+//            .limit(pageSize)
+//            .get().addOnSuccessListener(queryDocumentSnapshots -> {
+//                if(queryDocumentSnapshots.isEmpty()){
+//                    FindPost post = new FindPost();
+//                    post.viewType = 2;
+//
+//                    savedPostArrayList.add(post);
+//                    binding.shimmerLayout.stopShimmer();
+//                    binding.shimmerLayout.setVisibility(View.GONE);
+//                    binding.recyclerViewSavedPost.setVisibility(View.VISIBLE);
+//                    savedPostAdapter.notifyDataSetChanged();
+//                    return;
+//                }
+//                if(!queryDocumentSnapshots.isEmpty()){
+//                    lastVisibleSavedPost = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
+//                }
+//                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+//                    String mail = querySnapshot.getString("mail");
+//                    String refId = querySnapshot.getString("refId");
+//                    if(mail != null && refId != null){
+//                        firestore.collection("myPosts")
+//                            .document(mail)
+//                            .collection(mail)
+//                            .document(refId)
+//                            .get().addOnSuccessListener(documentSnapshot -> {
+//                                if(documentSnapshot.exists()){
+//                                    String imageUrl = documentSnapshot.getString("imageUrl");
+//                                    String galleryUrl = documentSnapshot.getString("galleryUrl");
+//                                    String name = documentSnapshot.getString("name");
+//                                    String city = documentSnapshot.getString("city");
+//                                    String district = documentSnapshot.getString("district");
+//                                    Long time1 = documentSnapshot.getLong("time1");
+//                                    Long time2 = documentSnapshot.getLong("time2");
+//                                    Long date1 = documentSnapshot.getLong("date1");
+//                                    Long date2 = documentSnapshot.getLong("date2");
+//                                    String place = documentSnapshot.getString("place");
+//                                    String explain = documentSnapshot.getString("explain");
+//                                    Double lat = documentSnapshot.getDouble("lat");
+//                                    Double lng = documentSnapshot.getDouble("lng");
+//                                    Long x = documentSnapshot.getLong("radius");
+//                                    double radius = 0;
+//                                    if(x != null){
+//                                        radius = x;
+//                                    }
+//                                    Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
+//                                    DocumentReference documentReference = documentSnapshot.getReference();
+//
+//                                    FindPost post = new FindPost();
+//                                    post.viewType = 1;
+//                                    post.imageUrl = imageUrl;
+//                                    post.galleryUrl = galleryUrl;
+//                                    post.name = name;
+//                                    post.mail = mail;
+//                                    post.city = city;
+//                                    post.district = district;
+//                                    if (time1 == null) {
+//                                        post.time1 = 0;
+//                                    } else {
+//                                        post.time1 = time1;
+//                                    }
+//                                    if (time2 == null) {
+//                                        post.time2 = 0;
+//                                    } else {
+//                                        post.time2 = time2;
+//                                    }
+//                                    if (date1 == null) {
+//                                        post.date1 = 0;
+//                                    } else {
+//                                        post.date1 = date1;
+//                                    }
+//                                    if (date2 == null) {
+//                                        post.date2 = 0;
+//                                    } else {
+//                                        post.date2 = date2;
+//                                    }
+//                                    post.place = place;
+//                                    post.explain = explain;
+//                                    post.timestamp = timestamp;
+//                                    post.lat = lat;
+//                                    post.lng = lng;
+//                                    post.radius = radius;
+//                                    post.documentReference = documentReference;
+//
+//                                    savedPostArrayList.add(post);
+//                                    binding.shimmerLayout.stopShimmer();
+//                                    binding.shimmerLayout.setVisibility(View.GONE);
+//                                    binding.recyclerViewSavedPost.setVisibility(View.VISIBLE);
+//                                    savedPostAdapter.notifyDataSetChanged();
+//                                }else {
+//
+//                                }
+//                            }).addOnFailureListener(e -> {
+//
+//                            });
+//
+//                    }else {
+//                        // mail veya refId null
+//                    }
+//                }
+//        }).addOnFailureListener(e -> {
+//
+//        });
+//    }
+
+
+    private void loadMoreSavedPost() {
+        if (lastVisibleSavedPost == null) return;
+
+        binding.progressBar.setVisibility(View.VISIBLE);
+        firestore.collection("saves")
+            .document(userMail)
+            .collection(userMail)
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .startAfter(lastVisibleSavedPost)
+            .limit(pageSize)
+            .get()
+            .addOnSuccessListener(queryDocumentSnapshots -> {
+                binding.progressBar.setVisibility(View.GONE);
+
+                if (queryDocumentSnapshots.isEmpty()) return;
+
+                List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
+                for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots) {
+                    String mail = querySnapshot.getString("mail");
+                    String refId = querySnapshot.getString("refId");
+
+                    if (mail != null && refId != null) {
+                        tasks.add(fetchPostDetails(mail, refId));
+                    }
+                }
+
+                Tasks.whenAllSuccess(tasks).addOnSuccessListener(taskResults -> {
                     List<FindPost> newPosts = new ArrayList<>();
-                    for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
-                        String mail = querySnapshot.getString("mail");
-                        String refId = querySnapshot.getString("refId");
-                        if(mail != null && refId != null){
-                            firestore.collection("myPosts")
-                                .document(mail)
-                                .collection(mail)
-                                .document(refId)
-                                .get().addOnSuccessListener(documentSnapshot -> {
-                                    if(documentSnapshot.exists()){
-                                        String imageUrl = documentSnapshot.getString("imageUrl");
-                                        String galleryUrl = documentSnapshot.getString("galleryUrl");
-                                        String name = documentSnapshot.getString("name");
-                                        String city = documentSnapshot.getString("city");
-                                        String district = documentSnapshot.getString("district");
-                                        Long time1 = documentSnapshot.getLong("time1");
-                                        Long time2 = documentSnapshot.getLong("time2");
-                                        Long date1 = documentSnapshot.getLong("date1");
-                                        Long date2 = documentSnapshot.getLong("date2");
-                                        String place = documentSnapshot.getString("place");
-                                        String explain = documentSnapshot.getString("explain");
-                                        Double lat = documentSnapshot.getDouble("lat");
-                                        Double lng = documentSnapshot.getDouble("lng");
-                                        Long x = documentSnapshot.getLong("radius");
-                                        double radius = 0;
-                                        if(x != null){
-                                            radius = x;
-                                        }
-                                        Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
-                                        DocumentReference documentReference = documentSnapshot.getReference();
-
-                                        FindPost post = new FindPost();
-                                        post.viewType = 1;
-                                        post.imageUrl = imageUrl;
-                                        post.galleryUrl = galleryUrl;
-                                        post.name = name;
-                                        post.mail = mail;
-                                        post.city = city;
-                                        post.district = district;
-                                        if (time1 == null) {
-                                            post.time1 = 0;
-                                        } else {
-                                            post.time1 = time1;
-                                        }
-                                        if (time2 == null) {
-                                            post.time2 = 0;
-                                        } else {
-                                            post.time2 = time2;
-                                        }
-                                        if (date1 == null) {
-                                            post.date1 = 0;
-                                        } else {
-                                            post.date1 = date1;
-                                        }
-                                        if (date2 == null) {
-                                            post.date2 = 0;
-                                        } else {
-                                            post.date2 = date2;
-                                        }
-                                        post.place = place;
-                                        post.explain = explain;
-                                        post.timestamp = timestamp;
-                                        post.lat = lat;
-                                        post.lng = lng;
-                                        post.radius = radius;
-                                        post.documentReference = documentReference;
-
-                                        newPosts.add(post);
-                                    }else {
-                                        // gönderi kaldırılmış
-                                    }
-                                }).addOnFailureListener(e -> {
-                                    // gönderiyi alırken hata oluştu
-                                });
-
-                        }else {
-                            // mail veya refId null
+                    for (Object result : taskResults) {
+                        if (result instanceof DocumentSnapshot) {
+                            DocumentSnapshot documentSnapshot = (DocumentSnapshot) result;
+                            if (documentSnapshot.exists()) {
+                                FindPost post = createPostFromDocument(documentSnapshot);
+                                newPosts.add(post);
+                            }
                         }
                     }
 
-                    savedPostArrayList.addAll(savedPostArrayList.size(),newPosts);
-                    savedPostAdapter.notifyItemRangeInserted(savedPostArrayList.size(), savedPostArrayList.size());
+                    savedPostArrayList.addAll(newPosts);
+                    savedPostAdapter.notifyItemRangeInserted(savedPostArrayList.size() - newPosts.size(), newPosts.size());
 
-                    if (!queryDocumentSnapshots.isEmpty()) {
+                    if(!queryDocumentSnapshots.isEmpty()){
                         lastVisibleSavedPost = queryDocumentSnapshots.getDocuments()
                                 .get(queryDocumentSnapshots.size() - 1);
                     }
 
                 }).addOnFailureListener(e -> {
-
+                    binding.progressBar.setVisibility(View.GONE);
                 });
-        }
+            })
+            .addOnFailureListener(e -> {
+                binding.progressBar.setVisibility(View.GONE);
+            });
     }
 
-//    private void getData(){
-//        refItemList = mainActivity.refDataAccess.getAllRefs();
+    private Task<DocumentSnapshot> fetchPostDetails(String mail, String refId) {
+        return firestore.collection("myPosts")
+            .document(mail)
+            .collection(mail)
+            .document(refId)
+            .get();
+    }
+
+    private FindPost createPostFromDocument(DocumentSnapshot documentSnapshot) {
+        String imageUrl = documentSnapshot.getString("imageUrl");
+        String galleryUrl = documentSnapshot.getString("galleryUrl");
+        String name = documentSnapshot.getString("name");
+        String city = documentSnapshot.getString("city");
+        String district = documentSnapshot.getString("district");
+        Long time1 = documentSnapshot.getLong("time1");
+        Long time2 = documentSnapshot.getLong("time2");
+        Long date1 = documentSnapshot.getLong("date1");
+        Long date2 = documentSnapshot.getLong("date2");
+        String place = documentSnapshot.getString("place");
+        String explain = documentSnapshot.getString("explain");
+        Double lat = documentSnapshot.getDouble("lat");
+        Double lng = documentSnapshot.getDouble("lng");
+        Long x = documentSnapshot.getLong("radius");
+        double radius = (x != null) ? x : 0;
+        Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
+        DocumentReference documentReference = documentSnapshot.getReference();
+
+        FindPost post = new FindPost();
+        post.viewType = 1;
+        post.imageUrl = imageUrl;
+        post.galleryUrl = galleryUrl;
+        post.name = name;
+        post.mail = documentSnapshot.getString("mail");
+        post.city = city;
+        post.district = district;
+        post.time1 = (time1 != null) ? time1 : 0;
+        post.time2 = (time2 != null) ? time2 : 0;
+        post.date1 = (date1 != null) ? date1 : 0;
+        post.date2 = (date2 != null) ? date2 : 0;
+        post.place = place;
+        post.explain = explain;
+        post.timestamp = timestamp;
+        post.lat = lat;
+        post.lng = lng;
+        post.radius = radius;
+        post.documentReference = documentReference;
+
+        return post;
+    }
+
+    private void addEmptyPostView() {
+        FindPost post = new FindPost();
+        post.viewType = 2;
+        savedPostArrayList.add(post);
+        binding.shimmerLayout.stopShimmer();
+        binding.shimmerLayout.setVisibility(View.GONE);
+        binding.recyclerViewSavedPost.setVisibility(View.VISIBLE);
+        savedPostAdapter.notifyDataSetChanged();
+    }
+
+//    private void loadMoreSavedPost(){
+//        if(lastVisibleSavedPost != null){
+//            binding.progressBar.setVisibility(View.VISIBLE);
+//            firestore.collection("saves")
+//                .document(userMail).collection(userMail)
+//                .orderBy("timestamp", Query.Direction.DESCENDING)
+//                .startAfter(lastVisibleSavedPost)
+//                .limit(pageSize)
+//                .get().addOnSuccessListener(queryDocumentSnapshots -> {
+//                    binding.progressBar.setVisibility(View.GONE);
+//                    List<FindPost> newPosts = new ArrayList<>();
+//                    for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots){
+//                        String mail = querySnapshot.getString("mail");
+//                        String refId = querySnapshot.getString("refId");
+//                        if(mail != null && refId != null){
+//                            firestore.collection("myPosts")
+//                                .document(mail)
+//                                .collection(mail)
+//                                .document(refId)
+//                                .get().addOnSuccessListener(documentSnapshot -> {
+//                                    if(documentSnapshot.exists()){
+//                                        String imageUrl = documentSnapshot.getString("imageUrl");
+//                                        String galleryUrl = documentSnapshot.getString("galleryUrl");
+//                                        String name = documentSnapshot.getString("name");
+//                                        String city = documentSnapshot.getString("city");
+//                                        String district = documentSnapshot.getString("district");
+//                                        Long time1 = documentSnapshot.getLong("time1");
+//                                        Long time2 = documentSnapshot.getLong("time2");
+//                                        Long date1 = documentSnapshot.getLong("date1");
+//                                        Long date2 = documentSnapshot.getLong("date2");
+//                                        String place = documentSnapshot.getString("place");
+//                                        String explain = documentSnapshot.getString("explain");
+//                                        Double lat = documentSnapshot.getDouble("lat");
+//                                        Double lng = documentSnapshot.getDouble("lng");
+//                                        Long x = documentSnapshot.getLong("radius");
+//                                        double radius = 0;
+//                                        if(x != null){
+//                                            radius = x;
+//                                        }
+//                                        Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
+//                                        DocumentReference documentReference = documentSnapshot.getReference();
 //
-//        if(refItemList.isEmpty()){
-//            FindPost post = new FindPost();
-//            post.viewType = 2;
+//                                        FindPost post = new FindPost();
+//                                        post.viewType = 1;
+//                                        post.imageUrl = imageUrl;
+//                                        post.galleryUrl = galleryUrl;
+//                                        post.name = name;
+//                                        post.mail = mail;
+//                                        post.city = city;
+//                                        post.district = district;
+//                                        if (time1 == null) {
+//                                            post.time1 = 0;
+//                                        } else {
+//                                            post.time1 = time1;
+//                                        }
+//                                        if (time2 == null) {
+//                                            post.time2 = 0;
+//                                        } else {
+//                                            post.time2 = time2;
+//                                        }
+//                                        if (date1 == null) {
+//                                            post.date1 = 0;
+//                                        } else {
+//                                            post.date1 = date1;
+//                                        }
+//                                        if (date2 == null) {
+//                                            post.date2 = 0;
+//                                        } else {
+//                                            post.date2 = date2;
+//                                        }
+//                                        post.place = place;
+//                                        post.explain = explain;
+//                                        post.timestamp = timestamp;
+//                                        post.lat = lat;
+//                                        post.lng = lng;
+//                                        post.radius = radius;
+//                                        post.documentReference = documentReference;
 //
-//            savedPostArrayList.add(post);
-//            binding.shimmerLayout.stopShimmer();
-//            binding.shimmerLayout.setVisibility(View.GONE);
-//            binding.recyclerViewSavedPost.setVisibility(View.VISIBLE);
-//            savedPostAdapter.notifyDataSetChanged();
+//                                        newPosts.add(post);
+//                                    }else {
+//                                        // gönderi kaldırılmış
+//                                    }
+//                                }).addOnFailureListener(e -> {
+//                                    // gönderiyi alırken hata oluştu
+//                                });
 //
-//        }else {
-//            for (RefItem item : refItemList) {
-//                String mail = item.getMail();
-//                String ref = item.getRef();
-//
-//                firestore.collection(mail).document(ref).get().addOnSuccessListener(querySnapshot -> {
-//                    if(querySnapshot.exists()){
-//                        String imageUrl = querySnapshot.getString("imageUrl");
-//                        String name = querySnapshot.getString("name");
-//                        String city = querySnapshot.getString("city");
-//                        String district = querySnapshot.getString("district");
-//                        Long time1 = querySnapshot.getLong("time1");
-//                        Long time2 = querySnapshot.getLong("time2");
-//                        Long date1 = querySnapshot.getLong("date1");
-//                        Long date2 = querySnapshot.getLong("date2");
-//                        String place = querySnapshot.getString("place");
-//                        String explain = querySnapshot.getString("explain");
-//                        Double lat = querySnapshot.getDouble("lat");
-//                        Double lng = querySnapshot.getDouble("lng");
-//                        Long x = querySnapshot.getLong("radius");
-//                        double radius = 0;
-//                        if(x != null){
-//                            radius = x;
+//                        }else {
+//                            // mail veya refId null
 //                        }
-//                        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
-//                        DocumentReference documentReference = querySnapshot.getReference();
-//
-//                        FindPost post = new FindPost();
-//                        post.viewType = 1;
-//                        post.imageUrl = imageUrl;
-//                        post.name = name;
-//                        post.mail = mail;
-//                        post.city = city;
-//                        post.district = district;
-//                        if (time1 == null) {
-//                            post.time1 = 0;
-//                        } else {
-//                            post.time1 = time1;
-//                        }
-//                        if (time2 == null) {
-//                            post.time2 = 0;
-//                        } else {
-//                            post.time2 = time2;
-//                        }
-//                        if (date1 == null) {
-//                            post.date1 = 0;
-//                        } else {
-//                            post.date1 = date1;
-//                        }
-//                        if (date2 == null) {
-//                            post.date2 = 0;
-//                        } else {
-//                            post.date2 = date2;
-//                        }
-//                        post.place = place;
-//                        post.explain = explain;
-//                        post.timestamp = timestamp;
-//                        post.lat = lat;
-//                        post.lng = lng;
-//                        post.radius = radius;
-//                        post.documentReference = documentReference;
-//
-//                        savedPostArrayList.add(post);
-//                        binding.shimmerLayout.stopShimmer();
-//                        binding.shimmerLayout.setVisibility(View.GONE);
-//                        binding.recyclerViewSavedPost.setVisibility(View.VISIBLE);
-//                        savedPostAdapter.notifyDataSetChanged();
 //                    }
-//                }).addOnFailureListener(e -> {
-//                    e.printStackTrace();
-//                });
-//            }
-//        }
+//                    savedPostArrayList.addAll(savedPostArrayList.size(),newPosts);
+//                    savedPostAdapter.notifyItemRangeInserted(savedPostArrayList.size(), savedPostArrayList.size());
 //
+//                    if (!queryDocumentSnapshots.isEmpty()) {
+//                        lastVisibleSavedPost = queryDocumentSnapshots.getDocuments()
+//                                .get(queryDocumentSnapshots.size() - 1);
+//                    }
+//
+//                }).addOnFailureListener(e -> {
+//
+//                });
+//        }
 //    }
 
     public void goMain(){
