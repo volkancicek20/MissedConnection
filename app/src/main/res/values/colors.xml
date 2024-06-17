@@ -22,6 +22,8 @@
     <color name="chat_sender_time">#7DA8D3</color>
     <color name="gray_shade">#2C2C2C</color>
 
+    <color name="semi_transparent">#BB000000</color>
+
     <color name="shimmer_color">#BFBDBD</color>
 
     <color name="hint_color_dark">#878787</color>

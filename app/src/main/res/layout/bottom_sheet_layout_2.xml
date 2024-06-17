@@ -29,9 +29,10 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/icon_google_map_2"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/icon_google_map_2"
+            android:backgroundTint="@color/gray"
             android:layout_gravity="center"
             android:gravity="center"
             />
@@ -40,6 +41,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:fontFamily="@font/roboto_regular"
             android:textStyle="normal"
             android:textSize="18sp"
             android:text="@string/haritada_goster"
@@ -48,6 +50,25 @@
             android:gravity="center"/>
 
     </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutLine"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"
+            android:layout_marginHorizontal="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+    </LinearLayout>
+
+
 
     <LinearLayout
         android:id="@+id/layoutDelete"
@@ -61,8 +82,8 @@
         android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/icon_delete_red"
             android:layout_gravity="center"
             android:gravity="center"
@@ -72,6 +93,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
+            android:fontFamily="@font/roboto_regular"
             android:textStyle="normal"
             android:textSize="18sp"
             android:text="@string/sil"

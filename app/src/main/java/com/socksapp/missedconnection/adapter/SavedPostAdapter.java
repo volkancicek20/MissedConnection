@@ -3,14 +3,21 @@ package com.socksapp.missedconnection.adapter;
 import static com.socksapp.missedconnection.model.FindPost.LAYOUT_EMPTY;
 import static com.socksapp.missedconnection.model.FindPost.LAYOUT_ONE;
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
+
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,6 +29,8 @@ import com.socksapp.missedconnection.databinding.RecyclerSavedPostBinding;
 import com.socksapp.missedconnection.fragment.SavedPostFragment;
 import com.socksapp.missedconnection.model.FindPost;
 import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SavedPostAdapter extends RecyclerView.Adapter {
 
@@ -111,6 +120,14 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
                 }else {
                     savedPostHolder.recyclerSavedPostBinding.galleryImage.setVisibility(View.GONE);
                 }
+
+                savedPostHolder.recyclerSavedPostBinding.recyclerProfileImage.setOnClickListener(v ->{
+                    getImageShow(v,imageUrl);
+                });
+
+                savedPostHolder.recyclerSavedPostBinding.galleryImage.setOnClickListener(v ->{
+                    getGalleryShow(v,galleryUrl);
+                });
 
                 getShow(imageUrl,galleryUrl,name,city,district,explain,timestamp,savedPostHolder);
 
@@ -210,6 +227,87 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
 
         holder.recyclerSavedPostBinding.timestampTime.setText(elapsedTime);
 
+    }
+
+    private void getImageShow(View view, String imageUrl) {
+        LayoutInflater inflater = LayoutInflater.from(view.getContext());
+        View popupView = inflater.inflate(R.layout.show_image, null);
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+
+        Animation showAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.popup_image_enter);
+        popupView.startAnimation(showAnimation);
+
+        Animation hideAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.popup_image_exit);
+        hideAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                popupWindow.dismiss();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+
+        CircleImageView imageView = popupView.findViewById(R.id.show_image);
+
+        Glide.with(view.getContext())
+            .load(imageUrl)
+            .apply(new RequestOptions()
+            .error(R.drawable.person_active_96)
+            .centerCrop())
+            .into(imageView);
+
+        ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
+        constraintLayout.setOnClickListener(v -> popupView.startAnimation(hideAnimation));
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+
+    private void getGalleryShow(View view,String galleryUrl){
+        LayoutInflater inflater = LayoutInflater.from(view.getContext());
+        View popupView = inflater.inflate(R.layout.show_gallery, null);
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+
+        Animation showAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.popup_image_enter);
+        popupView.startAnimation(showAnimation);
+
+        Animation hideAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.popup_image_exit);
+        hideAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                popupWindow.dismiss();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
+        });
+
+        ShapeableImageView imageView = popupView.findViewById(R.id.show_image);
+
+        int screenWidth = getScreenWidth(context);
+
+        Glide.with(context)
+            .load(galleryUrl)
+            .apply(new RequestOptions()
+            .error(R.drawable.icon_loading)
+            .fitCenter()
+            .centerCrop())
+            .override(screenWidth, 500)
+            .into(imageView);
+
+        ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
+        constraintLayout.setOnClickListener(v -> {
+            popupWindow.dismiss();
+        });
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
     private int getScreenWidth(Context context) {

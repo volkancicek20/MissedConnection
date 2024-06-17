@@ -7,6 +7,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import androidx.annotation.NonNull;
@@ -234,14 +236,26 @@ public class PostAdapter extends RecyclerView.Adapter {
 
     }
 
-    private void getImageShow(View view,String imageUrl){
+    private void getImageShow(View view, String imageUrl) {
         LayoutInflater inflater = LayoutInflater.from(view.getContext());
         View popupView = inflater.inflate(R.layout.show_image, null);
         PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
 
-        ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
-        constraintLayout.setOnClickListener(v -> {
-            popupWindow.dismiss();
+        Animation showAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.popup_image_enter);
+        popupView.startAnimation(showAnimation);
+
+        Animation hideAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.popup_image_exit);
+        hideAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                popupWindow.dismiss();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
         });
 
         CircleImageView imageView = popupView.findViewById(R.id.show_image);
@@ -253,17 +267,33 @@ public class PostAdapter extends RecyclerView.Adapter {
             .centerCrop())
             .into(imageView);
 
+        ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
+        constraintLayout.setOnClickListener(v -> popupView.startAnimation(hideAnimation));
+
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
+
 
     private void getGalleryShow(View view,String galleryUrl){
         LayoutInflater inflater = LayoutInflater.from(view.getContext());
         View popupView = inflater.inflate(R.layout.show_gallery, null);
         PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
 
-        ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
-        constraintLayout.setOnClickListener(v -> {
-            popupWindow.dismiss();
+        Animation showAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.popup_image_enter);
+        popupView.startAnimation(showAnimation);
+
+        Animation hideAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.popup_image_exit);
+        hideAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {}
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                popupWindow.dismiss();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {}
         });
 
         ShapeableImageView imageView = popupView.findViewById(R.id.show_image);
@@ -278,6 +308,11 @@ public class PostAdapter extends RecyclerView.Adapter {
             .centerCrop())
             .override(screenWidth, 500)
             .into(imageView);
+
+        ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
+        constraintLayout.setOnClickListener(v -> {
+            popupWindow.dismiss();
+        });
 
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
     }

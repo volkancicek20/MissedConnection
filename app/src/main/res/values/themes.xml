@@ -53,5 +53,10 @@
         <item name="cornerSize">16dp</item>
     </style>
 
+    <style name="PopupAnimation">
+        <item name="android:windowEnterAnimation">@anim/popup_image_enter</item>
+        <item name="android:windowExitAnimation">@anim/popup_image_exit</item>
+    </style>
+
 
 </resources>

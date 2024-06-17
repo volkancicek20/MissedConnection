@@ -147,10 +147,12 @@ public class MyPostFragment extends Fragment {
         dialog.setContentView(R.layout.bottom_sheet_layout_2);
 
         LinearLayout map = dialog.findViewById(R.id.layoutMap);
+        LinearLayout line = dialog.findViewById(R.id.layoutLine);
 
 
         if(lat == 0.0 && lng == 0.0){
             map.setVisibility(View.GONE);
+            line.setVisibility(View.GONE);
         }
 
         map.setOnClickListener(v -> {
