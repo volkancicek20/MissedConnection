@@ -1,258 +1,258 @@
 <resources>
     <string name="app_name">Missed Connection</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string name="mapApi">AIzaSyAa3bocqAvozi-CMbMkpkul_GokfApX6Z4</string>
 
     <!-- menu_drawer -->
-    <string name="anasayfa">Anasayfa</string>
-    <string name="ayarlar">Ayarlar</string>
-    <string name="cikis_yap">Çıkış yap</string>
+    <string name="anasayfa">Main</string>
+    <string name="ayarlar">Settings</string>
+    <string name="cikis_yap">Logout</string>
 
     <!-- bottom_sheet_layout -->
-    <string name="haritada_goster">Haritada göster</string>
-    <string name="kaydet">Kaydet</string>
-    <string name="mesaj_gonder">Mesaj gönder</string>
-    <string name="bildir">Bildir</string>
+    <string name="haritada_goster">Show on map</string>
+    <string name="kaydet">Save</string>
+    <string name="mesaj_gonder">Sender Message</string>
+    <string name="bildir">Report</string>
 
     <!-- bottom_sheet_layout -->
-    <string name="sil">Sil</string>
+    <string name="sil">Delete</string>
 
     <!-- fragment_account_setting -->
-    <string name="sifremi_degistir">Şifremi değiştir</string>
-    <string name="hesap_hareketligi">Hesap hareketleri</string>
-    <string name="gonderi_hareketleri">Gönderi hareketleri</string>
-    <string name="hesabi_sil">Hesabı sil</string>
+    <string name="sifremi_degistir">Change my password</string>
+    <string name="hesap_hareketligi">Account activity</string>
+    <string name="gonderi_hareketleri">Posts activity</string>
+    <string name="hesabi_sil">Delete account</string>
 
     <!-- fragment_add_post -->
-    <string name="il">İl</string>
-    <string name="ilce">İlçe</string>
-    <string name="konum_sec">Konum seç</string>
-    <string name="mekan">Mekan</string>
-    <string name="tarih_secimi">Tarih seçimi</string>
-    <string name="tarih_araligi">Tarih aralığı</string>
-    <string name="saat_araligi">Saat aralığı</string>
-    <string name="gg_aa_yyyy">gg/aa/yyyy</string>
-    <string name="ss_dd">ss:dd</string>
-    <string name="aciklama">Açıklama</string>
-    <string name="ekle">EKLE</string>
+    <string name="il">City</string>
+    <string name="ilce">District</string>
+    <string name="konum_sec">Choose location</string>
+    <string name="mekan">Place</string>
+    <string name="tarih_secimi">Date selection</string>
+    <string name="tarih_araligi">Date range</string>
+    <string name="saat_araligi">Time range</string>
+    <string name="gg_aa_yyyy">dd/mm/yyyy</string>
+    <string name="ss_dd">hh:mm</string>
+    <string name="aciklama">Description</string>
+    <string name="ekle">ADD</string>
 
     <!-- fragment_chat -->
-    <string name="mesaj">Mesaj</string>
+    <string name="mesaj">Message</string>
 
     <!-- fragment_edit_profile -->
-    <string name="kullanici_adinizi_giriniz">Kullanıcı adınızı giriniz</string>
+    <string name="kullanici_adinizi_giriniz">Enter your username</string>
 
     <!-- fragment_find -->
-    <string name="ara">Ara</string>
+    <string name="ara">Search</string>
 
     <!-- fragment_login -->
-    <string name="hosgeldiniz">Hoşgeldiniz</string>
-    <string name="e_posta">E-posta</string>
-    <string name="sifre">Şifre</string>
-    <string name="sifremi_unuttum">Şifrenizi mi unuttunuz?</string>
-    <string name="giris_yap">GİRİŞ YAP</string>
-    <string name="hesabiniz_yok_mu">Hesabınız yok mu?</string>
-    <string name="hesap_ac">Hesap oluştur</string>
-    <string name="do_rulama_linki_g_nder">Doğrulama linki gönder</string>
+    <string name="hosgeldiniz">Welcome</string>
+    <string name="e_posta">Email</string>
+    <string name="sifre">Password</string>
+    <string name="sifremi_unuttum">Forgot your password?</string>
+    <string name="giris_yap">LOGIN</string>
+    <string name="hesabiniz_yok_mu">Don\'t have an account?</string>
+    <string name="hesap_ac">Create an account</string>
+    <string name="do_rulama_linki_g_nder">Send verification link</string>
 
     <!-- fragment_profile -->
-    <string name="profili_duzenle">Profili düzenle</string>
-    <string name="gonderilerim">Gönderilerim</string>
-    <string name="kaydedilenler">Kaydedilenler</string>
-    <string name="hesap_ayarlari">Hesap ayarları</string>
+    <string name="profili_duzenle">Edit profile</string>
+    <string name="gonderilerim">My posts</string>
+    <string name="kaydedilenler">Bookmarks</string>
+    <string name="hesap_ayarlari">Account settings</string>
 
     <!-- fragment_register -->
-    <string name="sifre_tekrar">Şifre tekrar</string>
-    <string name="kayit_ol">KAYIT OL</string>
-    <string name="hesabiniz_var_mi">Hesabınız var mı?</string>
-    <string name="giris_yap_text">Giriş yap</string>
+    <string name="sifre_tekrar">Password again</string>
+    <string name="kayit_ol">SIGN UP</string>
+    <string name="hesabiniz_var_mi">Do you have an account?</string>
+    <string name="giris_yap_text">Login</string>
 
     <!-- fragment_settings -->
-    <string name="bildirimler">Bildirimler</string>
-    <string name="konum">Konum</string>
-    <string name="dil_tercihi">Dil tercihi - Türkçe</string>
-    <string name="hakkimizda">Hakkımızda</string>
+    <string name="bildirimler">Notifications</string>
+    <string name="konum">Location</string>
+    <string name="dil_tercihi">Language preference - English</string>
+    <string name="hakkimizda">About us</string>
 
     <!-- fragment_delete -->
-    <string name="hesab_n_z_neden_silmek_istiyorsunuz">Hesabınızı neden silmek istiyorsunuz?</string>
-    <string name="hesabi_s_l">HESABI SİL</string>
+    <string name="hesab_n_z_neden_silmek_istiyorsunuz">Why do you want to delete your account?</string>
+    <string name="hesabi_s_l">DELETE ACCOUNT</string>
 
     <!-- fragment_change_password -->
-    <string name="yeni_sifre">Yeni sifre</string>
-    <string name="yeni_sifre_tekrar">Yeni sifre tekrar</string>
-    <string name="sifreyi_degistir_büyük_harf">ŞİFREYİ DEĞİŞTİR</string>
+    <string name="yeni_sifre">New Password</string>
+    <string name="yeni_sifre_tekrar">new password again</string>
+    <string name="sifreyi_degistir_büyük_harf">CHANGE PASSWORD</string>
 
     <!-- recycler_empty_my_post -->
-    <string name="henuz_gonderi_paylasmadiniz">Henüz gönderi paylaşmadınız</string>
-    <string name="gonderi_paylas">Gönderi paylaş</string>
+    <string name="henuz_gonderi_paylasmadiniz">You haven\'t posted yet</string>
+    <string name="gonderi_paylas">Share post</string>
 
     <!-- recycler_empty_post -->
-    <string name="sonuc_bulunmadi">Sonuç bulunamadı</string>
-    <string name="sonuc_bulunamadi_aciklamasi">Yaptığınız filtrelemeleri değiştirerek farklı sonuçlar elde edebilirsiniz</string>
-    <string name="tekrar_arama_yap">Arama yap</string>
+    <string name="sonuc_bulunmadi">There were no results</string>
+    <string name="sonuc_bulunamadi_aciklamasi">You can get different results by changing the filters you make</string>
+    <string name="tekrar_arama_yap">Search</string>
 
     <!-- recycler_empty_saved_post -->
-    <string name="kaydedilen_gonderi_bulunamadi">Kaydedilen gönderi bulunamadı</string>
-    <string name="paylasimlara_git">Paylaşımlara git</string>
+    <string name="kaydedilen_gonderi_bulunamadi">Saved post not found</string>
+    <string name="paylasimlara_git">Go to posts</string>
 
     <!-- recycler_view_empty_post_notification -->
-    <string name="herhangi_bir_hareketlilik_yok">Herhangi bir hareketlilik yok</string>
-    <string name="no_activity_explain">Paylaşımlarınız kullanıcılar tarafından henüz gösterilmedi veya aratılmadı. Filtrelemelerinizi daha iyi düzenleyerek gösterilme oranınızı arttırabilirsiniz.</string>
-    <string name="yeni_g_nderi_payla">Yeni gönderi paylaş</string>
+    <string name="herhangi_bir_hareketlilik_yok">There is no activity</string>
+    <string name="no_activity_explain">Your posts have not yet been shown or searched by users. You can increase your exposure by better organizing your filters.</string>
+    <string name="yeni_g_nderi_payla">Share new post</string>
 
     <!-- MainActivity -->
-    <string name="log_out_text_title">Hesaptan çıkış yapılsın mı?</string>
-    <string name="log_out_text">Çıkış yap</string>
-    <string name="iptal">Geri</string>
+    <string name="log_out_text_title">Should the account be logged out?</string>
+    <string name="log_out_text">Log out</string>
+    <string name="iptal">Cancel</string>
 
     <!-- MyPostAdapter -->
-    <string name="azonce">az önce</string>
-    <string name="yil">yıl</string>
-    <string name="ay">ay</string>
-    <string name="g">g</string>
-    <string name="sa">sa</string>
-    <string name="d">d</string>
+    <string name="azonce">just now</string>
+    <string name="yil">y</string>
+    <string name="ay">mo</string>
+    <string name="g">d</string>
+    <string name="sa">h</string>
+    <string name="d">m</string>
     <string name="s">s</string>
 
     <!-- PustNotificationAdapter -->
-    <string name="taraf_ndan_g_r_nt_lendi">tarafından görüntülendi</string>
+    <string name="taraf_ndan_g_r_nt_lendi">viewed by</string>
 
     <!-- AddPostFragment -->
-    <string name="l_ve_il_eyi_girmeniz_gerekmektedir">İl ve ilçeyi girmeniz gerekmektedir</string>
-    <string name="g_nderi_payla_mak_i_in_profilinizi_tamamlamal_s_n_z">Gönderi paylaşmak için profilinizi tamamlamalısınız</string>
-    <string name="g_nderiniz_payla_l_yor">Gönderiniz paylaşılıyor..</string>
-    <string name="g_nderiniz_payla_ld">Gönderiniz paylaşıldı</string>
-    <string name="_2_girdi_iniz_tarihten_b_y_k_olamaz">2. girdiğiniz tarihten büyük olamaz</string>
-    <string name="_2_girdi_iniz_saatten_b_y_k_olamaz">2. girdiğiniz saatten büyük olamaz</string>
-    <string name="g_n_ay_y_l_format_na_uygun_giriniz">Gün/Ay/Yıl formatına uygun giriniz</string>
-    <string name="saat_dakika_format_na_uygun_giriniz">Saat:Dakika formatına uygun giriniz</string>
-    <string name="saat_aral_n_eksiksiz_giriniz">Saat aralığını eksiksiz giriniz</string>
-    <string name="tarih_aral_n_eksiksiz_giriniz">Tarih aralığını eksiksiz giriniz</string>
-    <string name="il_bos_birakilamaz">İl boş bırakılamaz</string>
-    <string name="ilce_bos_birakilamaz">İlçe boş bırakılamaz</string>
-    <string name="aciklama_bos_birakilamaz">Açıklama boş bırakılamaz</string>
-    <string name="galeriye_gitmek_i_in_izin_gerekli">Galeriye gitmek için izin gerekli</string>
-    <string name="izin_ver">İzin ver</string>
-    <string name="izinleri_aktif_etmeniz_gerekiyor">İzinleri aktif etmeniz gerekiyor</string>
-    <string name="error_post">Gönderi paylaşılırken bir hata oluştu. İnternetinizi kontrol ettikten sonra tekrar deneyiniz.</string>
+    <string name="l_ve_il_eyi_girmeniz_gerekmektedir">You must enter the city and district</string>
+    <string name="g_nderi_payla_mak_i_in_profilinizi_tamamlamal_s_n_z">You must complete your profile to post</string>
+    <string name="g_nderiniz_payla_l_yor">Your post is being shared..</string>
+    <string name="g_nderiniz_payla_ld">Your post has been shared</string>
+    <string name="_2_girdi_iniz_tarihten_b_y_k_olamaz">2. It cannot be greater than the date you entered.</string>
+    <string name="_2_girdi_iniz_saatten_b_y_k_olamaz">2. It cannot be greater than the time you entered.</string>
+    <string name="g_n_ay_y_l_format_na_uygun_giriniz">Enter in accordance with the Day/Month/Year format</string>
+    <string name="saat_dakika_format_na_uygun_giriniz">Enter the hour:minute format.</string>
+    <string name="saat_aral_n_eksiksiz_giriniz">Enter the exact time range</string>
+    <string name="tarih_aral_n_eksiksiz_giriniz">Enter the complete date range</string>
+    <string name="il_bos_birakilamaz">City cannot be left blank</string>
+    <string name="ilce_bos_birakilamaz">District cannot be left blank</string>
+    <string name="aciklama_bos_birakilamaz">Description cannot be left blank</string>
+    <string name="galeriye_gitmek_i_in_izin_gerekli">Permission required to go to the gallery</string>
+    <string name="izin_ver">Allow</string>
+    <string name="izinleri_aktif_etmeniz_gerekiyor">You need to enable permissions</string>
+    <string name="error_post">There was an error sharing the post. Try again after checking your internet connection.</string>
 
     <!-- ChangePasswordFragment -->
-    <string name="gecersiz_sifre">Geçersiz şifre</string>
-    <string name="sifre_girme_kurali">Şifre en az 6 karakter uzunluğunda olmalı, en az 1 büyük harf, 1 küçük harf ve 1 rakam içermelidir.</string>
-    <string name="sifreler_eslesmiyor">Şifreler eşleşmiyor</string>
-    <string name="sifreniz_g_ncellendi_tekrar_giri_yap_n_z">Şifreniz güncellendi. Tekrar giriş yapınız.</string>
-    <string name="bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz">Bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.</string>
-    <string name="sifrenizi_yanl_girdiniz">Şifrenizi yanlış girdiniz</string>
+    <string name="gecersiz_sifre">Invalid password</string>
+    <string name="sifre_girme_kurali">The password must be at least 6 characters long and contain at least 1 uppercase letter, 1 lowercase letter and 1 number.</string>
+    <string name="sifreler_eslesmiyor">Passwords do not match</string>
+    <string name="sifreniz_g_ncellendi_tekrar_giri_yap_n_z">Your password has been updated. Log in again.</string>
+    <string name="bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz">Something went wrong. Please try again later.</string>
+    <string name="sifrenizi_yanl_girdiniz">You entered your password incorrectly</string>
 
     <!-- DeleteAccountFragment -->
-    <string name="sifrenizi_giriniz">Şifrenizi giriniz</string>
-    <string name="bu_alan_bo_b_rak_lamaz">Bu alan boş bırakılamaz</string>
-    <string name="hesap_silme_onayi">Hesap Silme Onayı</string>
-    <string name="silme_onayi">Bu işlem hesabınızı ve tüm verilerinizi kalıcı olarak silecektir. Devam etmek istediğinize emin misiniz?</string>
-    <string name="evet">Evet</string>
-    <string name="hesab_n_z_1_hafta_i_inde_silinecektir">Hesabınız 1 hafta içinde silinecektir.</string>
-    <string name="hesap_silme_i_lemi_ba_ar_s_z_l_tfen_tekrar_deneyiniz">Hesap silme işlemi başarısız. Lütfen tekrar deneyiniz</string>
+    <string name="sifrenizi_giriniz">Enter your password</string>
+    <string name="bu_alan_bo_b_rak_lamaz">This field cannot be left blank</string>
+    <string name="hesap_silme_onayi">Account Deletion Confirmation</string>
+    <string name="silme_onayi">This action will permanently delete your account and all your data. Are you sure you want to continue?</string>
+    <string name="evet">Yes</string>
+    <string name="hesab_n_z_1_hafta_i_inde_silinecektir">Your account will be deleted within 1 week</string>
+    <string name="hesap_silme_i_lemi_ba_ar_s_z_l_tfen_tekrar_deneyiniz">Account deletion failed. Please try again</string>
 
     <!-- EditProfileFragment -->
-    <string name="kaydediliyor">Kaydediliyor..</string>
-    <string name="profiliniz_kaydedildi">Profiliniz kaydedildi</string>
-    <string name="error_save_profile">Profiliniz kaydedilirken bir hata oluştu. İnternetinizi kontrol ettikten sonra tekrar deneyiniz.</string>
+    <string name="kaydediliyor">Saving..</string>
+    <string name="profiliniz_kaydedildi">Your profile has been saved</string>
+    <string name="error_save_profile">There was an error saving your profile. Try again after checking your internet connection.</string>
 
     <!-- GoogleMapsFragment -->
-    <string name="aradiginiz_yer_bulunamadi">Aradığınız yer bulunamadı</string>
-    <string name="alanin_disina_cikamazsiniz">" alanının dışına çıkamazsınız"</string>
-    <string name="haritada_isaretleme_yapmadiniz">Haritada işaretleme yapmadınız!</string>
+    <string name="aradiginiz_yer_bulunamadi">The place you were looking for was not found</string>
+    <string name="alanin_disina_cikamazsiniz">" You cannot leave the area"</string>
+    <string name="haritada_isaretleme_yapmadiniz">You didn\'t mark it on the map!</string>
+
 
     <!-- LoginFragmentFragment -->
-    <string name="dogrulama_e_posta_gonderildi_kontrol_edin">Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.</string>
-    <string name="mail_adresinizi_giriniz">Mail adresinizi giriniz</string>
-    <string name="sifre_degisikligi_icin_e_posta_girin">Şifre değişikliği için e-posta adresinizi giriniz.</string>
-    <string name="dogrulama_gonderilirken_hata_olustu">Doğrulama e-postası gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.</string>
-    <string name="mail_adresi_ge_ersiz">Mail adresi geçersiz</string>
-    <string name="giris_yapiliyor">Giriş yapılıyor..</string>
-    <string name="bu_hesap_silinme_asamasindadir">Bu hesap silinme aşamasındadır.</string>
-    <string name="internet_baglantinizi_kontrol_edin">Bir hata oluştu. İnternet bağlantınızı kontrol ettikten sonra tekrar deneyiniz.</string>
-    <string name="e_posta_adresi_kay_tl_de_il">E-posta adresi kayıtlı değil.</string>
-    <string name="gecersiz_e_posta_veya_sifre">Geçersiz e-posta veya şifre.</string>
-    <string name="giris_yaparken_bir_hata_olu_tu_hata">"Giriş yaparken bir hata oluştu. Hata: "</string>
-    <string name="sifre_sifirlama_baglantisi_gonderildi">Şifre sıfırlama bağlantısı e-posta adresinize gönderildi. Lütfen e-postanızı kontrol edin.</string>
-    <string name="sifre_sifirlama_ba_lant_s_g_nderilirken_bir_hata_olu_tu">Şifre sıfırlama bağlantısı gönderilirken bir hata oluştu.</string>
-    <string name="e_posta_adresinizi_dogrulamadiniz">E-posta adresinizi doğrulamadınız.</string>
-    <string name="gecersiz_kullanici">Geçersiz kullanıcı. Lütfen e-posta adresinizi kontrol edin.</string>
-    <string name="gecersiz_kimlik">Geçersiz kimlik bilgileri. Lütfen e-posta adresinizi doğru girdiğinizden emin olun.</string>
-    <string name="unexpected">Bilinmeyen bir hata oluştu. Lütfen tekrar deneyin.</string>
+    <string name="dogrulama_e_posta_gonderildi_kontrol_edin">Verification email has been sent. Please check your email.</string>
+    <string name="mail_adresinizi_giriniz">Enter your e-mail address</string>
+    <string name="sifre_degisikligi_icin_e_posta_girin">Enter your e-mail address to change your password</string>
+    <string name="dogrulama_gonderilirken_hata_olustu">An error occurred while sending the verification email. Please try again later.</string>
+    <string name="mail_adresi_ge_ersiz">Email address is invalid</string>
+    <string name="giris_yapiliyor">Logging in..</string>
+    <string name="bu_hesap_silinme_asamasindadir">This account is in the process of being deleted</string>
+    <string name="internet_baglantinizi_kontrol_edin">Something went wrong. Try again after checking your internet connection.</string>
+    <string name="e_posta_adresi_kay_tl_de_il">Email address not registered</string>
+    <string name="gecersiz_e_posta_veya_sifre">Invalid email or password</string>
+    <string name="giris_yaparken_bir_hata_olu_tu_hata">"An error occurred while logging in. Error: "</string>
+    <string name="sifre_sifirlama_baglantisi_gonderildi">The password reset link has been sent to your email address. Please check your email.</string>
+    <string name="sifre_sifirlama_ba_lant_s_g_nderilirken_bir_hata_olu_tu">An error occurred while sending the password reset link.</string>
+    <string name="e_posta_adresinizi_dogrulamadiniz">You have not verified your email address.</string>
+    <string name="gecersiz_kullanici">Invalid user. Please check your e-mail address.</string>
+    <string name="gecersiz_kimlik">Invalid credentials. Please make sure you have entered your e-mail address correctly.</string>
+    <string name="unexpected">An unknown error occurred. Please try again.</string>
 
     <!-- MainFragment -->
-    <string name="kaydedildi">Kaydedildi</string>
-    <string name="mesaj_g_ndermek_i_in_profilinizi_tamamlamal_s_n_z">Mesaj göndermek için profilinizi tamamlamalısınız.</string>
-    <string name="paylasiminiz">"Paylaşımınız "</string>
-    <string name="tarafindan_goruntulendi">" tarafından görüntülendi."</string>
-    <string name="kendine_mesaj_g_nderemezsiniz">Kendine mesaj gönderemezsiniz!</string>
-    <string name="kullanici_bildirildi">Kullanıcı bildirildi</string>
-    <string name="kullaniciyi_bildirme_sebebinizi_aciklayiniz">Kullanıcıyı bildirme sebebinizi açıklayınız.</string>
-    <string name="kendinizi_bildiremezsiniz">Kendinizi bildiremezsiniz!</string>
+    <string name="kaydedildi">Saved</string>
+    <string name="mesaj_g_ndermek_i_in_profilinizi_tamamlamal_s_n_z">You must complete your profile to send a message.</string>
+    <string name="paylasiminiz">"Your post "</string>
+    <string name="tarafindan_goruntulendi">"was viewed by "</string>
+    <string name="kendine_mesaj_g_nderemezsiniz">You can\'t send messages to yourself!</string>
+    <string name="kullanici_bildirildi">User reported</string>
+    <string name="kullaniciyi_bildirme_sebebinizi_aciklayiniz">Explain your reason for reporting the user.</string>
+    <string name="kendinizi_bildiremezsiniz">You cannot report yourself!</string>
 
     <!-- MessageFragment -->
-    <string name="mesaji_silmek_istiyor_musunuz">Mesajı silmek istiyor musunuz?</string>
+    <string name="mesaji_silmek_istiyor_musunuz">Do you want to delete the message?</string>
 
     <!-- MyPostFragment -->
-    <string name="gonderiniz_silindi">Gönderiniz silindi.</string>
-    <string name="gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin">Gönderi silinemedi. Lütfen internet bağlantınızı kontrol edin.</string>
+    <string name="gonderiniz_silindi">Your post was deleted.</string>
+    <string name="gonderi_silinemedi_l_tfen_internet_ba_lant_n_z_kontrol_edin">The post could not be deleted. Please check your internet connection.</string>
 
     <!-- RegisterFragment -->
-    <string name="kayit_olunuyor">Kayıt olunuyor..</string>
-    <string name="bu_e_posta_adresiyle_zaten_kay_tl_bir_kullan_c_var">Bu e-posta adresiyle zaten kayıtlı bir kullanıcı var.</string>
-    <string name="kayit_olurken_bir_hata_olustu">"Kayıt olurken bir hata oluştu. Hata: "</string>
+    <string name="kayit_olunuyor">Registering..</string>
+    <string name="bu_e_posta_adresiyle_zaten_kay_tl_bir_kullan_c_var">There is already a registered user with this email address.</string>
+    <string name="kayit_olurken_bir_hata_olustu">"An error occurred while registering. Error: "</string>
 
     <!-- SavedPostFragment -->
-    <string name="kaydedilenlerden_silindi">Kaydedilenlerden Silindi</string>
+    <string name="kaydedilenlerden_silindi">Deleted from Saved</string>
 
     <!-- SettingsFragment -->
-    <string name="konum_izni_gerekli">Konum İzni Gerekli</string>
-    <string name="Bu_uygulama_konumunuza_erismek_icin_izne_ihtiyac">Bu uygulama konumunuza erişmek için izne ihtiyaç duyar. Lütfen konum iznini verin.</string>
-    <string name="tamam">Tamam</string>
-    <string name="izin_gerekli">İzin Gerekli</string>
-    <string name="konum_izni_vermediginiz_icin">Konum izni vermediğiniz için bu özellik çalışmıyor. Lütfen izin vermek için ayarlara gidin.</string>
-    <string name="sec">Seç</string>
+    <string name="konum_izni_gerekli">Location Permission Required</string>
+    <string name="Bu_uygulama_konumunuza_erismek_icin_izne_ihtiyac">This app needs permission to access your location. Please grant location permission.</string>
+    <string name="tamam">Ok</string>
+    <string name="izin_gerekli">Permission Required</string>
+    <string name="konum_izni_vermediginiz_icin">This feature does not work because you do not give location permission. Please go to settings to allow.</string>
+    <string name="sec">Select</string>
 
     <!-- recycler_empty_message -->
-    <string name="gelen_mesaj_yok">Gelen mesaj yok</string>
-    <string name="gonderilerinizi_daha_iyi_filtre">Gönderilerinizi daha iyi filtreleyerek paylaşırsanız size ulaşabilme fırsatı bi o kadar artacaktır.</string>
+    <string name="gelen_mesaj_yok">No messages</string>
+    <string name="gonderilerinizi_daha_iyi_filtre">If you filter your posts better and share them, the opportunity to reach you will increase.</string>
 
     <!-- selection_language -->
-    <string name="turkce">Türkçe</string>
-    <string name="ingilizce">İngilizce</string>
+    <string name="turkce">Turkish</string>
+    <string name="ingilizce">English</string>
 
     <!-- fragment_about_us -->
-    <string name="title_text">Missed Connection - Kayıp Bağlantıları Yeniden Kurun</string>
-    <string name="goal_title">Uygulamamızın Amacı:</string>
-    <string name="goal_explain">Missed Connection, modern yaşamın karmaşasında kaybolan anıları ve bağlantıları yeniden canlandırmak için tasarlanmış yenilikçi bir platformdur. Bir kitapçıda sohbet ettiğiniz, sokakta tesadüfen tanıştığınız veya parkta köpeğinizle yürürken karşılaştığınız o kişiyi mi arıyorsunuz? Missed Connection, o anın bilgilerini kullanarak bu kişiyi tekrar bulmanızı ve bağlantınızı yeniden kurmanızı sağlar.</string>
-    <string name="how_work_title">Nasıl Çalışır?</string>
-    <string name="how_work_1">1. Bağlantı Oluşturun: Bir kullanıcıyla karşılaştığınızda, uygulamanızı açın ve o anın bilgilerini girin: yer, tarih, saat ve belki de kısa bir açıklama.</string>
-    <string name="how_work_2">2. Gönderi Paylaşın: Oluşturduğunuz bağlantıyı uygulamada bir gönderi olarak paylaşın.</string>
-    <string name="how_work_3">3. Bağlantıyı Bulun: Karşı taraf da sizinle iletişime geçmek isterse, (Bul) yöntemini kullanarak benzer bilgileri aratabilir ve gönderinize ulaşabilir.</string>
-    <string name="what_can_you_title">Missed Connection ile Neler Yapabilirsiniz?</string>
-    <string name="what_can_you_1">• Kayıp bağlantıları yeniden kurun</string>
-    <string name="what_can_you_2">• Yeni insanlarla tanışın</string>
-    <string name="what_can_you_3">• Şans eseri karşılaştığınız kişileri tekrar bulun</string>
-    <string name="what_can_you_4">• Ortak ilgi alanlarına sahip insanlarla bağlantı kurun</string>
-    <string name="use_missed_connection_title">Missed Connection\'ı Kullanın Çünkü:</string>
-    <string name="use_missed_connection_1">• Kullanımı kolay ve ücretsizdir</string>
-    <string name="use_missed_connection_2">• Gizliliğinize önem veririz</string>
-    <string name="use_missed_connection_3">• Yeni insanlarla tanışmanın ve bağlantılar kurmanın eğlenceli bir yoludur</string>
-    <string name="use_missed_connection_4">• Belki de yıllar süren bir dostluğu yakalayabilirsiniz!</string>
-    <string name="contact_me">Bize ulaşabileceğiniz adresler</string>
+    <string name="title_text">Missed Connection - Reestablish Lost Connections</string>
+    <string name="goal_title">Purpose of our Application:</string>
+    <string name="goal_explain">Missed Connection is an innovative platform designed to revive memories and connections lost in the chaos of modern life. Are you looking for that person you chatted with in a bookstore, met by chance on the street, or ran into while walking with your dog in the park? Missed Connection allows you to find that person again and reestablish your connection using the information of that moment.</string>
+    <string name="how_work_title">How does it work?</string>
+    <string name="how_work_1">1. Create a Connection: When you encounter a user, open your app and enter the information of the moment: location, date, time, and perhaps a short description.</string>
+    <string name="how_work_2">2. Share a Post: Share the link you created as a post in the application.</string>
+    <string name="how_work_3">3. Find the Link: If the other party also wants to contact you, they can search for similar information using the (Find) method and access your post.</string>
+    <string name="what_can_you_title">What Can You Do with Missed Connection?</string>
+    <string name="what_can_you_1">• Reestablish lost connections</string>
+    <string name="what_can_you_2">• Meet new people</string>
+    <string name="what_can_you_3">• Find people you met by chance again</string>
+    <string name="what_can_you_4">• Connect with people with common interests</string>
+    <string name="use_missed_connection_title">Use Missed Connection Because:</string>
+    <string name="use_missed_connection_1">• Easy to use and free</string>
+    <string name="use_missed_connection_2">• We care about your privacy</string>
+    <string name="use_missed_connection_3">• It\'s a fun way to meet new people and make connections</string>
+    <string name="use_missed_connection_4">• Maybe you can create a friendship that lasts for years!</string>
+    <string name="contact_me">The addresses where you can reach us are below.</string>
     <string name="contact_mail_address">socksapp@protonmail.com</string>
 
     <!-- custom_dialog_message_delete -->
-    <string name="info_message_delete">Mesajı silerseniz tüm sohbet geri döndürülemez şekilde silinecektir!</string>
-    <string name="mesaj_sil">Mesajı sil</string>
+    <string name="info_message_delete">If you delete the message, the entire chat will be irreversibly deleted.</string>
+    <string name="mesaj_sil">Delete message</string>
 
     <!-- custom_dialog_delete_post -->
-    <string name="g_nderinizi_silmek_istiyor_musunuz">Gönderinizi silmek istiyor musunuz?</string>
-
+    <string name="g_nderinizi_silmek_istiyor_musunuz">Do you want to delete your post?</string>
 
     <string-array name="city_names">
         <item>İstanbul</item>
@@ -1421,6 +1421,4 @@
         <item>Kaynaşlı</item>
         <item>Yığılca</item>
     </string-array>
-
-
 </resources>

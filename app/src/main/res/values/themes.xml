@@ -58,5 +58,11 @@
         <item name="android:windowExitAnimation">@anim/popup_image_exit</item>
     </style>
 
+    <style name="abirStyle" parent="@android:style/Theme.Holo.Light.Dialog.NoActionBar">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:background">@null</item>
+        <item name="android:textColorPrimary">@color/white</item>
+    </style>
+
 
 </resources>

@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
         if(getLanguage.equals("english")){
 
             Locale locale;
-            locale = new Locale("tr");
+            locale = new Locale("en");
             Locale.setDefault(locale);
 
             Configuration configuration = new Configuration();
@@ -235,6 +235,24 @@ public class MainActivity extends AppCompatActivity {
 
             getResources().updateConfiguration(configuration,getResources().getDisplayMetrics());
 
+        }else if(getLanguage.equals("turkish")){
+            Locale locale;
+            locale = new Locale("tr");
+            Locale.setDefault(locale);
+
+            Configuration configuration = new Configuration();
+            configuration.setLocale(locale);
+
+            getResources().updateConfiguration(configuration,getResources().getDisplayMetrics());
+        }else {
+            Locale locale;
+            locale = new Locale("en");
+            Locale.setDefault(locale);
+
+            Configuration configuration = new Configuration();
+            configuration.setLocale(locale);
+
+            getResources().updateConfiguration(configuration,getResources().getDisplayMetrics());
         }
     }
 

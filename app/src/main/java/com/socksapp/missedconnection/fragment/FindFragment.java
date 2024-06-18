@@ -1385,7 +1385,10 @@ public class FindFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        binding.mapView.onResume();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onResume();
+        }
+
         cityNames = getResources().getStringArray(R.array.city_names);
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
         cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
@@ -1395,25 +1398,31 @@ public class FindFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        binding.mapView.onPause();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onPause();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        binding.mapView.onDestroy();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onDestroy();
+        }
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        binding.mapView.onLowMemory();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onLowMemory();
+        }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(binding.mapView != null){
+        if (binding != null && binding.mapView != null) {
             binding.mapView.onSaveInstanceState(outState);
         }
     }

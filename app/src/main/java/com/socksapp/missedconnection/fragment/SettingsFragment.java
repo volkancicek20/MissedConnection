@@ -279,11 +279,14 @@ public class SettingsFragment extends Fragment {
         builder.setView(dialogView);
 
         RadioGroup radioGroupLanguage = dialogView.findViewById(R.id.language_radio_group);
+        RadioButton radioButtonTurkish = dialogView.findViewById(R.id.turkish_radio_button);
         RadioButton radioButtonEnglish = dialogView.findViewById(R.id.english_radio_button);
 
         String getLanguage = language.getString("language","");
 
-        if(getLanguage.equals("english")){
+        if(getLanguage.equals("turkish")){
+            radioButtonTurkish.setChecked(true);
+        }else {
             radioButtonEnglish.setChecked(true);
         }
 
@@ -303,7 +306,7 @@ public class SettingsFragment extends Fragment {
                 editor.putString("language","turkish");
                 editor.apply();
 
-                locale = new Locale("en");
+                locale = new Locale("tr");
                 Locale.setDefault(locale);
 
                 Configuration configuration = new Configuration();
@@ -314,7 +317,7 @@ public class SettingsFragment extends Fragment {
                 editor.putString("language","english");
                 editor.apply();
 
-                locale = new Locale("tr");
+                locale = new Locale("en");
                 Locale.setDefault(locale);
 
                 Configuration configuration = new Configuration();

@@ -4,7 +4,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -35,12 +34,14 @@ import androidx.fragment.app.FragmentTransaction;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -55,26 +56,22 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentAddPostBinding;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -203,25 +200,25 @@ public class AddPostFragment extends Fragment {
             return false;
         });
 
-        binding.dateEditText1.setOnTouchListener((v, event) -> {
-            showCustomDateDialog1(v);
-            return false;
-        });
-
-        binding.timeEditText1.setOnTouchListener((v, event) -> {
-            showCustomTimeDialog1(v);
-            return false;
-        });
-
-        binding.dateEditText2.setOnTouchListener((v, event) -> {
-            showCustomDateDialog2(v);
-            return false;
-        });
-
-        binding.timeEditText2.setOnTouchListener((v, event) -> {
-            showCustomTimeDialog2(v);
-            return false;
-        });
+//        binding.dateEditText1.setOnTouchListener((v, event) -> {
+//            showCustomDateDialog1(v);
+//            return false;
+//        });
+//
+//        binding.timeEditText1.setOnTouchListener((v, event) -> {
+//            showCustomTimeDialog1(v);
+//            return false;
+//        });
+//
+//        binding.dateEditText2.setOnTouchListener((v, event) -> {
+//            showCustomDateDialog2(v);
+//            return false;
+//        });
+//
+//        binding.timeEditText2.setOnTouchListener((v, event) -> {
+//            showCustomTimeDialog2(v);
+//            return false;
+//        });
 
         binding.mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -261,17 +258,10 @@ public class AddPostFragment extends Fragment {
 
         binding.addPost.setOnClickListener(v ->{
             if(!myUserName.isEmpty()){
-                addData(view);
+//                addData(view);
             }else {
                 showSnackbar(v,getString(R.string.g_nderi_payla_mak_i_in_profilinizi_tamamlamal_s_n_z));
 //                showToastShort(getString(R.string.g_nderi_payla_mak_i_in_profilinizi_tamamlamal_s_n_z));
-            }
-        });
-
-        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                goToMainFragment();
             }
         });
 
@@ -375,6 +365,120 @@ public class AddPostFragment extends Fragment {
             setMarked();
         }
 
+        binding.dateRangeInputLayout.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialogs(v);
+            }
+        });
+
+        binding.timeRangeInputLayout.setEndIconOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTimePickerDialogs(v);
+            }
+        });
+
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                goToMainFragment();
+            }
+        });
+
+    }
+
+    private void showTimePickerDialogs(View view) {
+        LayoutInflater inflater = LayoutInflater.from(view.getContext());
+        View popupView = inflater.inflate(R.layout.layout_time_range_picker, null);
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+
+        TimePicker startTimePicker = (TimePicker) popupView.findViewById(R.id.startTimePicker);
+        TimePicker endTimePicker = (TimePicker) popupView.findViewById(R.id.endTimePicker);
+
+        TextView startTimeText = popupView.findViewById(R.id.startTime);
+        TextView endTimeText = popupView.findViewById(R.id.endTime);
+
+        int startHour = startTimePicker.getCurrentHour();
+        int startMinute = startTimePicker.getCurrentMinute();
+        String startFormattedTime = String.format(Locale.getDefault(), "%02d:%02d", startHour, startMinute);
+        startTimeText.setText(startFormattedTime);
+
+        int endHour = endTimePicker.getCurrentHour();
+        int endMinute = endTimePicker.getCurrentMinute();
+        String endFormattedTime = String.format(Locale.getDefault(), "%02d:%02d", endHour, endMinute);
+        endTimeText.setText(endFormattedTime);
+
+        startTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+                startTimeText.setText(formattedTime);
+            }
+        });
+
+        endTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
+            @Override
+            public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
+                String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+                endTimeText.setText(formattedTime);
+            }
+        });
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+    }
+
+    private void showDatePickerDialogs(View view) {
+        LayoutInflater inflater = LayoutInflater.from(view.getContext());
+        View popupView = inflater.inflate(R.layout.layout_date_range_picker, null);
+        PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+
+        DatePicker startDatePicker = (DatePicker) popupView.findViewById(R.id.startDatePicker);
+        DatePicker endDatePicker = (DatePicker) popupView.findViewById(R.id.endDatePicker);
+
+        TextView startDateText = popupView.findViewById(R.id.startDate);
+        TextView endDateText = popupView.findViewById(R.id.endDate);
+
+        Calendar calendar = Calendar.getInstance();
+        startDatePicker.setMaxDate(calendar.getTimeInMillis());
+        endDatePicker.setMaxDate(calendar.getTimeInMillis());
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("tr"));
+
+        int startYear = startDatePicker.getYear();
+        int startMonth = startDatePicker.getMonth();
+        int startDay = startDatePicker.getDayOfMonth();
+        calendar.set(startYear, startMonth, startDay);
+        String startFormattedDate = dateFormat.format(calendar.getTime());
+        startDateText.setText(startFormattedDate);
+
+        int endYear = endDatePicker.getYear();
+        int endMonth = endDatePicker.getMonth();
+        int endDay = endDatePicker.getDayOfMonth();
+        calendar.set(endYear, endMonth, endDay);
+        String endFormattedDate = dateFormat.format(calendar.getTime());
+        endDateText.setText(endFormattedDate);
+
+        startDatePicker.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
+            @Override
+            public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                calendar.set(year, monthOfYear, dayOfMonth);
+                String formattedDate = dateFormat.format(calendar.getTime());
+                startDateText.setText(formattedDate);
+            }
+        });
+
+        endDatePicker.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
+            @Override
+            public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                calendar.set(year, monthOfYear, dayOfMonth);
+                String formattedDate = dateFormat.format(calendar.getTime());
+                endDateText.setText(formattedDate);
+            }
+        });
+
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
     private void setMarked(){
@@ -428,1053 +532,1053 @@ public class AddPostFragment extends Fragment {
         fragmentTransaction.commit();
     }
 
-    private void addData(View view){
-        Double latitude = lat;
-        Double longitude = lng;
-        Double radius = rad;
-        String city = binding.cityCompleteText.getText().toString();
-        String district = binding.districtCompleteText.getText().toString();
-        String date1 = binding.dateEditText1.getText().toString();
-        String time1 = binding.timeEditText1.getText().toString();
-        String date2 = binding.dateEditText2.getText().toString();
-        String time2 = binding.timeEditText2.getText().toString();
-        String explain = binding.explain.getText().toString();
-
-        boolean checkCity = !city.isEmpty();
-        boolean checkDistrict = !district.isEmpty();
-        boolean checkExplain = !explain.isEmpty();
-
-        boolean hasDate1 = !date1.isEmpty();
-        boolean hasTime1 = !time1.isEmpty();
-        boolean hasDate2 = !date2.isEmpty();
-        boolean hasTime2 = !time2.isEmpty();
-
-        boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
-
-        if(checkCity && checkDistrict && checkExplain){
-
-            if(hasDate1 && hasDate2 && hasTime1 && hasTime2){
-                checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
-                checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
-
-                checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
-                checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
-
-                if(checkFormatDate1 && checkFormatDate2 && checkFormatTime1 && checkFormatTime2){
-                    boolean checkComparesDate,checkComparesTime;
-
-                    checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
-                    checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
-
-                    if(checkComparesDate && checkComparesTime){
-                        try {
-                            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
-                            Date date_1 = formatter_date.parse(date1);
-                            Date date_2 = formatter_date.parse(date2);
-
-                            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
-                            Date time_1 = formatter_time.parse(time1);
-                            Date time_2 = formatter_time.parse(time2);
-
-                            if(date_1 != null && date_2 != null && time_1 != null && time_2 != null){
-
-                                long date1_long = date_1.getTime();
-                                long date2_long = date_2.getTime();
-                                long time1_long = time_1.getTime();
-                                long time2_long = time_2.getTime();
-
-                                if(imageData != null){
-                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
-                                    progressDialog.setCancelable(false);
-                                    progressDialog.setInverseBackgroundForced(false);
-                                    progressDialog.show();
-
-                                    uniqueID = UUID.randomUUID().toString();
-                                    storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
-                                            .addOnSuccessListener(taskSnapshot -> {
-                                                Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
-                                                downloadUrlTask.addOnCompleteListener(task -> {
-                                                    String galleryUrl = task.getResult().toString();
-
-                                                    HashMap<String,Object> post = new HashMap<>();
-                                                    post.put("city",city);
-                                                    post.put("district",district);
-                                                    post.put("date1",date1_long);
-                                                    post.put("time1",time1_long);
-                                                    post.put("time2",time2_long);
-                                                    post.put("date2",date2_long);
-                                                    post.put("lat",latitude);
-                                                    post.put("lng",longitude);
-                                                    post.put("radius",radius);
-                                                    post.put("explain",explain);
-                                                    post.put("timestamp",new Date());
-                                                    post.put("name",myUserName);
-                                                    post.put("imageUrl",myImageUrl);
-                                                    post.put("galleryUrl",galleryUrl);
-                                                    post.put("mail",userMail);
-
-                                                    WriteBatch batch = firestore.batch();
-
-                                                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
-                                                    batch.set(newPostRef, post);
-
-                                                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
-                                                    batch.set(newPostRef2, post);
-
-//                                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+//    private void addData(View view){
+//        Double latitude = lat;
+//        Double longitude = lng;
+//        Double radius = rad;
+//        String city = binding.cityCompleteText.getText().toString();
+//        String district = binding.districtCompleteText.getText().toString();
+//        String date1 = binding.dateEditText1.getText().toString();
+//        String time1 = binding.timeEditText1.getText().toString();
+//        String date2 = binding.dateEditText2.getText().toString();
+//        String time2 = binding.timeEditText2.getText().toString();
+//        String explain = binding.explain.getText().toString();
+//
+//        boolean checkCity = !city.isEmpty();
+//        boolean checkDistrict = !district.isEmpty();
+//        boolean checkExplain = !explain.isEmpty();
+//
+//        boolean hasDate1 = !date1.isEmpty();
+//        boolean hasTime1 = !time1.isEmpty();
+//        boolean hasDate2 = !date2.isEmpty();
+//        boolean hasTime2 = !time2.isEmpty();
+//
+//        boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
+//
+//        if(checkCity && checkDistrict && checkExplain){
+//
+//            if(hasDate1 && hasDate2 && hasTime1 && hasTime2){
+//                checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
+//                checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
+//
+//                checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
+//                checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
+//
+//                if(checkFormatDate1 && checkFormatDate2 && checkFormatTime1 && checkFormatTime2){
+//                    boolean checkComparesDate,checkComparesTime;
+//
+//                    checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
+//                    checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
+//
+//                    if(checkComparesDate && checkComparesTime){
+//                        try {
+//                            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
+//                            Date date_1 = formatter_date.parse(date1);
+//                            Date date_2 = formatter_date.parse(date2);
+//
+//                            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
+//                            Date time_1 = formatter_time.parse(time1);
+//                            Date time_2 = formatter_time.parse(time2);
+//
+//                            if(date_1 != null && date_2 != null && time_1 != null && time_2 != null){
+//
+//                                long date1_long = date_1.getTime();
+//                                long date2_long = date_2.getTime();
+//                                long time1_long = time_1.getTime();
+//                                long time2_long = time_2.getTime();
+//
+//                                if(imageData != null){
+//                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+//                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
+//                                    progressDialog.setCancelable(false);
+//                                    progressDialog.setInverseBackgroundForced(false);
+//                                    progressDialog.show();
+//
+//                                    uniqueID = UUID.randomUUID().toString();
+//                                    storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
+//                                            .addOnSuccessListener(taskSnapshot -> {
+//                                                Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
+//                                                downloadUrlTask.addOnCompleteListener(task -> {
+//                                                    String galleryUrl = task.getResult().toString();
+//
+//                                                    HashMap<String,Object> post = new HashMap<>();
+//                                                    post.put("city",city);
+//                                                    post.put("district",district);
+//                                                    post.put("date1",date1_long);
+//                                                    post.put("time1",time1_long);
+//                                                    post.put("time2",time2_long);
+//                                                    post.put("date2",date2_long);
+//                                                    post.put("lat",latitude);
+//                                                    post.put("lng",longitude);
+//                                                    post.put("radius",radius);
+//                                                    post.put("explain",explain);
+//                                                    post.put("timestamp",new Date());
+//                                                    post.put("name",myUserName);
+//                                                    post.put("imageUrl",myImageUrl);
+//                                                    post.put("galleryUrl",galleryUrl);
+//                                                    post.put("mail",userMail);
+//
+//                                                    WriteBatch batch = firestore.batch();
+//
+//                                                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
 //                                                    batch.set(newPostRef, post);
 //
-//                                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
 //                                                    batch.set(newPostRef2, post);
-
-                                                    batch.commit()
-                                                        .addOnSuccessListener(aVoid -> {
-                                                            progressDialog.dismiss();
-                                                            resetAction();
-                                                            showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
-                                                        })
-                                                        .addOnFailureListener(e -> {
-                                                            progressDialog.dismiss();
-                                                            showSnackbar(view,getString(R.string.error_post));
-                                                        });
-                                                }).addOnFailureListener(e -> {
-                                                    progressDialog.dismiss();
-                                                    showSnackbar(view,getString(R.string.error_post));
-                                                });
-                                            })
-                                            .addOnFailureListener(e -> {
-                                                progressDialog.dismiss();
-                                                showSnackbar(view,getString(R.string.error_post));
-                                            });
-                                }else {
-                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
-                                    progressDialog.setCancelable(false);
-                                    progressDialog.setInverseBackgroundForced(false);
-                                    progressDialog.show();
-
-                                    HashMap<String,Object> post = new HashMap<>();
-                                    post.put("city",city);
-                                    post.put("district",district);
-                                    post.put("date1",date1_long);
-                                    post.put("time1",time1_long);
-                                    post.put("time2",time2_long);
-                                    post.put("date2",date2_long);
-                                    post.put("lat",latitude);
-                                    post.put("lng",longitude);
-                                    post.put("radius",radius);
-                                    post.put("explain",explain);
-                                    post.put("timestamp",new Date());
-                                    post.put("name",myUserName);
-                                    post.put("imageUrl",myImageUrl);
-                                    post.put("galleryUrl","");
-                                    post.put("mail",userMail);
-
-                                    WriteBatch batch = firestore.batch();
-
-                                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
-                                    batch.set(newPostRef, post);
-
-                                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
-                                    batch.set(newPostRef2, post);
-
-//                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+//
+////                                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+////                                                    batch.set(newPostRef, post);
+////
+////                                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+////                                                    batch.set(newPostRef2, post);
+//
+//                                                    batch.commit()
+//                                                        .addOnSuccessListener(aVoid -> {
+//                                                            progressDialog.dismiss();
+//                                                            resetAction();
+//                                                            showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
+//                                                        })
+//                                                        .addOnFailureListener(e -> {
+//                                                            progressDialog.dismiss();
+//                                                            showSnackbar(view,getString(R.string.error_post));
+//                                                        });
+//                                                }).addOnFailureListener(e -> {
+//                                                    progressDialog.dismiss();
+//                                                    showSnackbar(view,getString(R.string.error_post));
+//                                                });
+//                                            })
+//                                            .addOnFailureListener(e -> {
+//                                                progressDialog.dismiss();
+//                                                showSnackbar(view,getString(R.string.error_post));
+//                                            });
+//                                }else {
+//                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+//                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
+//                                    progressDialog.setCancelable(false);
+//                                    progressDialog.setInverseBackgroundForced(false);
+//                                    progressDialog.show();
+//
+//                                    HashMap<String,Object> post = new HashMap<>();
+//                                    post.put("city",city);
+//                                    post.put("district",district);
+//                                    post.put("date1",date1_long);
+//                                    post.put("time1",time1_long);
+//                                    post.put("time2",time2_long);
+//                                    post.put("date2",date2_long);
+//                                    post.put("lat",latitude);
+//                                    post.put("lng",longitude);
+//                                    post.put("radius",radius);
+//                                    post.put("explain",explain);
+//                                    post.put("timestamp",new Date());
+//                                    post.put("name",myUserName);
+//                                    post.put("imageUrl",myImageUrl);
+//                                    post.put("galleryUrl","");
+//                                    post.put("mail",userMail);
+//
+//                                    WriteBatch batch = firestore.batch();
+//
+//                                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
 //                                    batch.set(newPostRef, post);
 //
-//                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
 //                                    batch.set(newPostRef2, post);
-
-                                    batch.commit().addOnSuccessListener(aVoid -> {
-                                        progressDialog.dismiss();
-                                        resetAction();
-                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
-                                    }).addOnFailureListener(e -> {
-                                        progressDialog.dismiss();
-                                        showSnackbar(view,getString(R.string.error_post));
-                                    });
-                                }
-                            }else {
-
-                            }
-
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                    else {
-                        if(!checkComparesDate){
-                            String text = getString(R.string._2_girdi_iniz_tarihten_b_y_k_olamaz);
-                            binding.errorDate1Text.setText(text);
-                            binding.dateEditText1.setTextColor(Color.RED);
-                            binding.visibleDatePicker.setVisibility(View.VISIBLE);
-                        }else {
-                            binding.dateEditText1.setError(null);
-                            binding.errorDate1Text.setText("");
-                            binding.dateEditText1.setTextColor(Color.WHITE);
-                        }
-                        if(!checkComparesTime){
-                            String text = getString(R.string._2_girdi_iniz_saatten_b_y_k_olamaz);
-                            binding.errorTime2Text.setText("");
-                            binding.errorTime1Text.setText(text);
-                            binding.timeEditText1.setTextColor(Color.RED);
-                            binding.visibleDatePicker.setVisibility(View.VISIBLE);
-                        }else {
-                            binding.timeEditText1.setError(null);
-                            binding.errorTime1Text.setText("");
-                            binding.timeEditText1.setTextColor(Color.WHITE);
-                        }
-                    }
-
-                }
-                else {
-                    if(!checkFormatDate1){
-                        String text = getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz);
-                        binding.errorDate1Text.setText(text);
-                        binding.dateEditText1.setTextColor(Color.RED);
-                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-                    }else {
-                        binding.dateEditText1.setError(null);
-                    }
-                    if(!checkFormatDate2){
-                        String text = getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz);
-                        binding.errorDate2Text.setText(text);
-                        binding.dateEditText2.setTextColor(Color.RED);
-                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-                    }else {
-                        binding.dateEditText2.setError(null);
-                    }
-                    if(!checkFormatTime1){
-                        String text = getString(R.string.saat_dakika_format_na_uygun_giriniz);
-                        binding.errorTime1Text.setText(text);
-                        binding.timeEditText1.setTextColor(Color.RED);
-                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-                    }else {
-                        binding.timeEditText1.setError(null);
-                    }
-                    if(!checkFormatTime2){
-                        String text = getString(R.string.saat_dakika_format_na_uygun_giriniz);
-                        binding.errorTime2Text.setText(text);
-                        binding.timeEditText2.setTextColor(Color.RED);
-                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-                    }else {
-                        binding.timeEditText2.setError(null);
-                    }
-                }
-            }
-
-            // error
-
-            if(hasDate1 && hasDate2 && hasTime1 && !hasTime2){
-                binding.errorDate1Text.setText("");
-                binding.errorDate2Text.setText("");
-                binding.errorTime1Text.setText("");
-                binding.dateEditText1.setTextColor(Color.WHITE);
-                binding.dateEditText2.setTextColor(Color.WHITE);
-                binding.timeEditText1.setTextColor(Color.WHITE);
-
-                String text = getString(R.string.saat_aral_n_eksiksiz_giriniz);
-                binding.errorTime2Text.setText(text);
-                binding.timeEditText2.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }
-
-            if(hasDate1 && hasDate2 && !hasTime1 && hasTime2){
-                binding.errorDate1Text.setText("");
-                binding.errorDate2Text.setText("");
-                binding.errorTime2Text.setText("");
-                binding.dateEditText1.setTextColor(Color.WHITE);
-                binding.dateEditText2.setTextColor(Color.WHITE);
-                binding.timeEditText2.setTextColor(Color.WHITE);
-
-                String text = getString(R.string.saat_aral_n_eksiksiz_giriniz);
-                binding.errorTime1Text.setText(text);
-                binding.timeEditText1.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }
-
-            if(hasDate1 && !hasDate2 && hasTime1 && hasTime2){
-                binding.errorDate1Text.setText("");
-                binding.errorTime1Text.setText("");
-                binding.errorTime2Text.setText("");
-                binding.dateEditText1.setTextColor(Color.WHITE);
-                binding.timeEditText1.setTextColor(Color.WHITE);
-                binding.timeEditText2.setTextColor(Color.WHITE);
-
-                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
-                binding.errorDate2Text.setText(text);
-                binding.dateEditText2.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }
-
-            if(!hasDate1 && hasDate2 && hasTime1 && hasTime2){
-                binding.errorDate2Text.setText("");
-                binding.errorTime1Text.setText("");
-                binding.errorTime2Text.setText("");
-                binding.dateEditText2.setTextColor(Color.WHITE);
-                binding.timeEditText1.setTextColor(Color.WHITE);
-                binding.timeEditText2.setTextColor(Color.WHITE);
-
-                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
-                binding.errorDate1Text.setText(text);
-                binding.dateEditText1.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }
-
-            if(hasDate1 && !hasDate2 && !hasTime1 && !hasTime2){
-                binding.errorDate1Text.setText("");
-                binding.errorTime1Text.setText("");
-                binding.errorTime2Text.setText("");
-                binding.timeEditText1.setHintTextColor(Color.GRAY);
-                binding.timeEditText2.setHintTextColor(Color.GRAY);
-                binding.dateEditText1.setTextColor(Color.WHITE);
-
-                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
-                binding.errorDate2Text.setText(text);
-                binding.dateEditText2.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }
-
-            if(!hasDate1 && hasDate2 && !hasTime1 && !hasTime2){
-                binding.errorDate2Text.setText("");
-                binding.errorTime1Text.setText("");
-                binding.errorTime2Text.setText("");
-                binding.timeEditText1.setHintTextColor(Color.GRAY);
-                binding.timeEditText2.setHintTextColor(Color.GRAY);
-                binding.dateEditText2.setTextColor(Color.WHITE);
-
-                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
-                binding.errorDate1Text.setText(text);
-                binding.dateEditText1.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }
-
-            if(!hasDate1 && !hasDate2 && hasTime1 && !hasTime2){
-                binding.errorDate1Text.setText("");
-                binding.errorDate2Text.setText("");
-                binding.errorTime1Text.setText("");
-                binding.dateEditText1.setHintTextColor(Color.GRAY);
-                binding.dateEditText2.setHintTextColor(Color.GRAY);
-                binding.timeEditText1.setTextColor(Color.WHITE);
-
-                String text = getString(R.string.saat_aral_n_eksiksiz_giriniz);
-                binding.errorTime2Text.setText(text);
-                binding.timeEditText2.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }
-
-            if(!hasDate1 && !hasDate2 && !hasTime1 && hasTime2){
-                binding.errorDate1Text.setText("");
-                binding.errorDate2Text.setText("");
-                binding.errorTime2Text.setText("");
-                binding.dateEditText1.setHintTextColor(Color.GRAY);
-                binding.dateEditText2.setHintTextColor(Color.GRAY);
-                binding.timeEditText2.setTextColor(Color.WHITE);
-
-                String text = getString(R.string.saat_aral_n_eksiksiz_giriniz);
-                binding.errorTime1Text.setText(text);
-                binding.timeEditText1.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }
-
-            if(hasDate1 && !hasDate2 && !hasTime1 && hasTime2){
-                binding.errorDate1Text.setText("");
-                binding.errorTime2Text.setText("");
-                binding.dateEditText1.setTextColor(Color.WHITE);
-                binding.timeEditText2.setTextColor(Color.WHITE);
-
-                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
-                binding.errorDate2Text.setText(text);
-                binding.dateEditText2.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-
-                String text2 = getString(R.string.saat_aral_n_eksiksiz_giriniz);
-                binding.errorTime1Text.setText(text2);
-                binding.timeEditText1.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }
-
-            if(hasDate1 && !hasDate2 && hasTime1 && !hasTime2){
-                binding.errorDate1Text.setText("");
-                binding.errorTime1Text.setText("");
-                binding.dateEditText1.setTextColor(Color.WHITE);
-                binding.timeEditText1.setTextColor(Color.WHITE);
-
-                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
-                binding.errorDate2Text.setText(text);
-                binding.dateEditText2.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-
-                String text2 = getString(R.string.saat_aral_n_eksiksiz_giriniz);
-                binding.errorTime2Text.setText(text2);
-                binding.timeEditText2.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }
-
-            if(!hasDate1 && hasDate2 && !hasTime1 && hasTime2){
-                binding.errorDate2Text.setText("");
-                binding.errorTime2Text.setText("");
-                binding.dateEditText2.setTextColor(Color.WHITE);
-                binding.timeEditText2.setTextColor(Color.WHITE);
-
-                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
-                binding.errorDate1Text.setText(text);
-                binding.dateEditText1.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-
-                String text2 = getString(R.string.saat_aral_n_eksiksiz_giriniz);
-                binding.errorTime1Text.setText(text2);
-                binding.timeEditText1.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }
-
-            if(!hasDate1 && hasDate2 && hasTime1 && !hasTime2){
-                binding.errorDate2Text.setText("");
-                binding.errorTime1Text.setText("");
-                binding.dateEditText2.setTextColor(Color.WHITE);
-                binding.timeEditText1.setTextColor(Color.WHITE);
-
-                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
-                binding.errorDate1Text.setText(text);
-                binding.dateEditText1.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-
-                String text2 = getString(R.string.saat_aral_n_eksiksiz_giriniz);
-                binding.errorTime2Text.setText(text2);
-                binding.timeEditText2.setHintTextColor(Color.RED);
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }
-
-            //error
-
-
-            if(hasDate1 && hasDate2 && !hasTime1 && !hasTime2){
-                checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
-                checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
-
-                if(checkFormatDate1 && checkFormatDate2){
-                    boolean checkComparesDate;
-
-                    checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
-
-                    if(checkComparesDate){
-                        binding.dateEditText1.setError(null);
-                        binding.errorDate1Text.setText("");
-                        binding.dateEditText1.setTextColor(Color.WHITE);
-                        try {
-                            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
-                            Date date_1 = formatter_date.parse(date1);
-                            Date date_2 = formatter_date.parse(date2);
-
-                            if(date_1 != null && date_2 != null){
-
-                                long date1_long = date_1.getTime();
-                                long date2_long = date_2.getTime();
-
-                                if(imageData != null){
-                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
-                                    progressDialog.setCancelable(false);
-                                    progressDialog.setInverseBackgroundForced(false);
-                                    progressDialog.show();
-
-                                    uniqueID = UUID.randomUUID().toString();
-                                    storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
-                                        .addOnSuccessListener(taskSnapshot -> {
-                                            Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
-                                            downloadUrlTask.addOnCompleteListener(task -> {
-                                                String galleryUrl = task.getResult().toString();
-
-                                                HashMap<String,Object> post = new HashMap<>();
-                                                post.put("city",city);
-                                                post.put("district",district);
-                                                post.put("date1",date1_long);
-                                                post.put("time1",0);
-                                                post.put("time2",0);
-                                                post.put("date2",date2_long);
-                                                post.put("lat",latitude);
-                                                post.put("lng",longitude);
-                                                post.put("radius",radius);
-                                                post.put("explain",explain);
-                                                post.put("timestamp",new Date());
-                                                post.put("name",myUserName);
-                                                post.put("imageUrl",myImageUrl);
-                                                post.put("galleryUrl",galleryUrl);
-                                                post.put("mail",userMail);
-
-                                                WriteBatch batch = firestore.batch();
-
-                                                DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
-                                                batch.set(newPostRef, post);
-
-                                                DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
-                                                batch.set(newPostRef2, post);
-
-//                                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+//
+////                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+////                                    batch.set(newPostRef, post);
+////
+////                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+////                                    batch.set(newPostRef2, post);
+//
+//                                    batch.commit().addOnSuccessListener(aVoid -> {
+//                                        progressDialog.dismiss();
+//                                        resetAction();
+//                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
+//                                    }).addOnFailureListener(e -> {
+//                                        progressDialog.dismiss();
+//                                        showSnackbar(view,getString(R.string.error_post));
+//                                    });
+//                                }
+//                            }else {
+//
+//                            }
+//
+//                        }catch (Exception e){
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    else {
+//                        if(!checkComparesDate){
+//                            String text = getString(R.string._2_girdi_iniz_tarihten_b_y_k_olamaz);
+//                            binding.errorDate1Text.setText(text);
+//                            binding.dateEditText1.setTextColor(Color.RED);
+//                            binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//                        }else {
+//                            binding.dateEditText1.setError(null);
+//                            binding.errorDate1Text.setText("");
+//                            binding.dateEditText1.setTextColor(Color.WHITE);
+//                        }
+//                        if(!checkComparesTime){
+//                            String text = getString(R.string._2_girdi_iniz_saatten_b_y_k_olamaz);
+//                            binding.errorTime2Text.setText("");
+//                            binding.errorTime1Text.setText(text);
+//                            binding.timeEditText1.setTextColor(Color.RED);
+//                            binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//                        }else {
+//                            binding.timeEditText1.setError(null);
+//                            binding.errorTime1Text.setText("");
+//                            binding.timeEditText1.setTextColor(Color.WHITE);
+//                        }
+//                    }
+//
+//                }
+//                else {
+//                    if(!checkFormatDate1){
+//                        String text = getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz);
+//                        binding.errorDate1Text.setText(text);
+//                        binding.dateEditText1.setTextColor(Color.RED);
+//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//                    }else {
+//                        binding.dateEditText1.setError(null);
+//                    }
+//                    if(!checkFormatDate2){
+//                        String text = getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz);
+//                        binding.errorDate2Text.setText(text);
+//                        binding.dateEditText2.setTextColor(Color.RED);
+//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//                    }else {
+//                        binding.dateEditText2.setError(null);
+//                    }
+//                    if(!checkFormatTime1){
+//                        String text = getString(R.string.saat_dakika_format_na_uygun_giriniz);
+//                        binding.errorTime1Text.setText(text);
+//                        binding.timeEditText1.setTextColor(Color.RED);
+//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//                    }else {
+//                        binding.timeEditText1.setError(null);
+//                    }
+//                    if(!checkFormatTime2){
+//                        String text = getString(R.string.saat_dakika_format_na_uygun_giriniz);
+//                        binding.errorTime2Text.setText(text);
+//                        binding.timeEditText2.setTextColor(Color.RED);
+//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//                    }else {
+//                        binding.timeEditText2.setError(null);
+//                    }
+//                }
+//            }
+//
+//            // error
+//
+//            if(hasDate1 && hasDate2 && hasTime1 && !hasTime2){
+//                binding.errorDate1Text.setText("");
+//                binding.errorDate2Text.setText("");
+//                binding.errorTime1Text.setText("");
+//                binding.dateEditText1.setTextColor(Color.WHITE);
+//                binding.dateEditText2.setTextColor(Color.WHITE);
+//                binding.timeEditText1.setTextColor(Color.WHITE);
+//
+//                String text = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+//                binding.errorTime2Text.setText(text);
+//                binding.timeEditText2.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//            }
+//
+//            if(hasDate1 && hasDate2 && !hasTime1 && hasTime2){
+//                binding.errorDate1Text.setText("");
+//                binding.errorDate2Text.setText("");
+//                binding.errorTime2Text.setText("");
+//                binding.dateEditText1.setTextColor(Color.WHITE);
+//                binding.dateEditText2.setTextColor(Color.WHITE);
+//                binding.timeEditText2.setTextColor(Color.WHITE);
+//
+//                String text = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+//                binding.errorTime1Text.setText(text);
+//                binding.timeEditText1.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//            }
+//
+//            if(hasDate1 && !hasDate2 && hasTime1 && hasTime2){
+//                binding.errorDate1Text.setText("");
+//                binding.errorTime1Text.setText("");
+//                binding.errorTime2Text.setText("");
+//                binding.dateEditText1.setTextColor(Color.WHITE);
+//                binding.timeEditText1.setTextColor(Color.WHITE);
+//                binding.timeEditText2.setTextColor(Color.WHITE);
+//
+//                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+//                binding.errorDate2Text.setText(text);
+//                binding.dateEditText2.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//            }
+//
+//            if(!hasDate1 && hasDate2 && hasTime1 && hasTime2){
+//                binding.errorDate2Text.setText("");
+//                binding.errorTime1Text.setText("");
+//                binding.errorTime2Text.setText("");
+//                binding.dateEditText2.setTextColor(Color.WHITE);
+//                binding.timeEditText1.setTextColor(Color.WHITE);
+//                binding.timeEditText2.setTextColor(Color.WHITE);
+//
+//                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+//                binding.errorDate1Text.setText(text);
+//                binding.dateEditText1.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//            }
+//
+//            if(hasDate1 && !hasDate2 && !hasTime1 && !hasTime2){
+//                binding.errorDate1Text.setText("");
+//                binding.errorTime1Text.setText("");
+//                binding.errorTime2Text.setText("");
+//                binding.timeEditText1.setHintTextColor(Color.GRAY);
+//                binding.timeEditText2.setHintTextColor(Color.GRAY);
+//                binding.dateEditText1.setTextColor(Color.WHITE);
+//
+//                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+//                binding.errorDate2Text.setText(text);
+//                binding.dateEditText2.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//            }
+//
+//            if(!hasDate1 && hasDate2 && !hasTime1 && !hasTime2){
+//                binding.errorDate2Text.setText("");
+//                binding.errorTime1Text.setText("");
+//                binding.errorTime2Text.setText("");
+//                binding.timeEditText1.setHintTextColor(Color.GRAY);
+//                binding.timeEditText2.setHintTextColor(Color.GRAY);
+//                binding.dateEditText2.setTextColor(Color.WHITE);
+//
+//                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+//                binding.errorDate1Text.setText(text);
+//                binding.dateEditText1.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//            }
+//
+//            if(!hasDate1 && !hasDate2 && hasTime1 && !hasTime2){
+//                binding.errorDate1Text.setText("");
+//                binding.errorDate2Text.setText("");
+//                binding.errorTime1Text.setText("");
+//                binding.dateEditText1.setHintTextColor(Color.GRAY);
+//                binding.dateEditText2.setHintTextColor(Color.GRAY);
+//                binding.timeEditText1.setTextColor(Color.WHITE);
+//
+//                String text = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+//                binding.errorTime2Text.setText(text);
+//                binding.timeEditText2.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//            }
+//
+//            if(!hasDate1 && !hasDate2 && !hasTime1 && hasTime2){
+//                binding.errorDate1Text.setText("");
+//                binding.errorDate2Text.setText("");
+//                binding.errorTime2Text.setText("");
+//                binding.dateEditText1.setHintTextColor(Color.GRAY);
+//                binding.dateEditText2.setHintTextColor(Color.GRAY);
+//                binding.timeEditText2.setTextColor(Color.WHITE);
+//
+//                String text = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+//                binding.errorTime1Text.setText(text);
+//                binding.timeEditText1.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//            }
+//
+//            if(hasDate1 && !hasDate2 && !hasTime1 && hasTime2){
+//                binding.errorDate1Text.setText("");
+//                binding.errorTime2Text.setText("");
+//                binding.dateEditText1.setTextColor(Color.WHITE);
+//                binding.timeEditText2.setTextColor(Color.WHITE);
+//
+//                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+//                binding.errorDate2Text.setText(text);
+//                binding.dateEditText2.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//
+//                String text2 = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+//                binding.errorTime1Text.setText(text2);
+//                binding.timeEditText1.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//            }
+//
+//            if(hasDate1 && !hasDate2 && hasTime1 && !hasTime2){
+//                binding.errorDate1Text.setText("");
+//                binding.errorTime1Text.setText("");
+//                binding.dateEditText1.setTextColor(Color.WHITE);
+//                binding.timeEditText1.setTextColor(Color.WHITE);
+//
+//                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+//                binding.errorDate2Text.setText(text);
+//                binding.dateEditText2.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//
+//                String text2 = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+//                binding.errorTime2Text.setText(text2);
+//                binding.timeEditText2.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//            }
+//
+//            if(!hasDate1 && hasDate2 && !hasTime1 && hasTime2){
+//                binding.errorDate2Text.setText("");
+//                binding.errorTime2Text.setText("");
+//                binding.dateEditText2.setTextColor(Color.WHITE);
+//                binding.timeEditText2.setTextColor(Color.WHITE);
+//
+//                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+//                binding.errorDate1Text.setText(text);
+//                binding.dateEditText1.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//
+//                String text2 = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+//                binding.errorTime1Text.setText(text2);
+//                binding.timeEditText1.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//            }
+//
+//            if(!hasDate1 && hasDate2 && hasTime1 && !hasTime2){
+//                binding.errorDate2Text.setText("");
+//                binding.errorTime1Text.setText("");
+//                binding.dateEditText2.setTextColor(Color.WHITE);
+//                binding.timeEditText1.setTextColor(Color.WHITE);
+//
+//                String text = getString(R.string.tarih_aral_n_eksiksiz_giriniz);
+//                binding.errorDate1Text.setText(text);
+//                binding.dateEditText1.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//
+//                String text2 = getString(R.string.saat_aral_n_eksiksiz_giriniz);
+//                binding.errorTime2Text.setText(text2);
+//                binding.timeEditText2.setHintTextColor(Color.RED);
+//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//            }
+//
+//            //error
+//
+//
+//            if(hasDate1 && hasDate2 && !hasTime1 && !hasTime2){
+//                checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
+//                checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
+//
+//                if(checkFormatDate1 && checkFormatDate2){
+//                    boolean checkComparesDate;
+//
+//                    checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
+//
+//                    if(checkComparesDate){
+//                        binding.dateEditText1.setError(null);
+//                        binding.errorDate1Text.setText("");
+//                        binding.dateEditText1.setTextColor(Color.WHITE);
+//                        try {
+//                            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
+//                            Date date_1 = formatter_date.parse(date1);
+//                            Date date_2 = formatter_date.parse(date2);
+//
+//                            if(date_1 != null && date_2 != null){
+//
+//                                long date1_long = date_1.getTime();
+//                                long date2_long = date_2.getTime();
+//
+//                                if(imageData != null){
+//                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+//                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
+//                                    progressDialog.setCancelable(false);
+//                                    progressDialog.setInverseBackgroundForced(false);
+//                                    progressDialog.show();
+//
+//                                    uniqueID = UUID.randomUUID().toString();
+//                                    storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
+//                                        .addOnSuccessListener(taskSnapshot -> {
+//                                            Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
+//                                            downloadUrlTask.addOnCompleteListener(task -> {
+//                                                String galleryUrl = task.getResult().toString();
+//
+//                                                HashMap<String,Object> post = new HashMap<>();
+//                                                post.put("city",city);
+//                                                post.put("district",district);
+//                                                post.put("date1",date1_long);
+//                                                post.put("time1",0);
+//                                                post.put("time2",0);
+//                                                post.put("date2",date2_long);
+//                                                post.put("lat",latitude);
+//                                                post.put("lng",longitude);
+//                                                post.put("radius",radius);
+//                                                post.put("explain",explain);
+//                                                post.put("timestamp",new Date());
+//                                                post.put("name",myUserName);
+//                                                post.put("imageUrl",myImageUrl);
+//                                                post.put("galleryUrl",galleryUrl);
+//                                                post.put("mail",userMail);
+//
+//                                                WriteBatch batch = firestore.batch();
+//
+//                                                DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
 //                                                batch.set(newPostRef, post);
 //
-//                                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                                DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
 //                                                batch.set(newPostRef2, post);
-
-                                                batch.commit()
-                                                    .addOnSuccessListener(aVoid -> {
-                                                        progressDialog.dismiss();
-                                                        resetAction();
-                                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
-                                                    })
-                                                    .addOnFailureListener(e -> {
-                                                        progressDialog.dismiss();
-                                                        showSnackbar(view,getString(R.string.error_post));
-                                                    });
-                                            }).addOnFailureListener(e -> {
-                                                progressDialog.dismiss();
-                                                showSnackbar(view,getString(R.string.error_post));
-                                            });
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            progressDialog.dismiss();
-                                            showSnackbar(view,getString(R.string.error_post));
-                                        });
-                                }else {
-                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
-                                    progressDialog.setCancelable(false);
-                                    progressDialog.setInverseBackgroundForced(false);
-                                    progressDialog.show();
-
-                                    HashMap<String,Object> post = new HashMap<>();
-                                    post.put("city",city);
-                                    post.put("district",district);
-                                    post.put("date1",date1_long);
-                                    post.put("time1",0);
-                                    post.put("time2",0);
-                                    post.put("date2",date2_long);
-                                    post.put("lat",latitude);
-                                    post.put("lng",longitude);
-                                    post.put("radius",radius);
-                                    post.put("explain",explain);
-                                    post.put("timestamp",new Date());
-                                    post.put("name",myUserName);
-                                    post.put("imageUrl",myImageUrl);
-                                    post.put("galleryUrl","");
-                                    post.put("mail",userMail);
-
-                                    WriteBatch batch = firestore.batch();
-
-                                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
-                                    batch.set(newPostRef, post);
-
-                                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
-                                    batch.set(newPostRef2, post);
-
-//                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+//
+////                                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+////                                                batch.set(newPostRef, post);
+////
+////                                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+////                                                batch.set(newPostRef2, post);
+//
+//                                                batch.commit()
+//                                                    .addOnSuccessListener(aVoid -> {
+//                                                        progressDialog.dismiss();
+//                                                        resetAction();
+//                                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
+//                                                    })
+//                                                    .addOnFailureListener(e -> {
+//                                                        progressDialog.dismiss();
+//                                                        showSnackbar(view,getString(R.string.error_post));
+//                                                    });
+//                                            }).addOnFailureListener(e -> {
+//                                                progressDialog.dismiss();
+//                                                showSnackbar(view,getString(R.string.error_post));
+//                                            });
+//                                        })
+//                                        .addOnFailureListener(e -> {
+//                                            progressDialog.dismiss();
+//                                            showSnackbar(view,getString(R.string.error_post));
+//                                        });
+//                                }else {
+//                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+//                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
+//                                    progressDialog.setCancelable(false);
+//                                    progressDialog.setInverseBackgroundForced(false);
+//                                    progressDialog.show();
+//
+//                                    HashMap<String,Object> post = new HashMap<>();
+//                                    post.put("city",city);
+//                                    post.put("district",district);
+//                                    post.put("date1",date1_long);
+//                                    post.put("time1",0);
+//                                    post.put("time2",0);
+//                                    post.put("date2",date2_long);
+//                                    post.put("lat",latitude);
+//                                    post.put("lng",longitude);
+//                                    post.put("radius",radius);
+//                                    post.put("explain",explain);
+//                                    post.put("timestamp",new Date());
+//                                    post.put("name",myUserName);
+//                                    post.put("imageUrl",myImageUrl);
+//                                    post.put("galleryUrl","");
+//                                    post.put("mail",userMail);
+//
+//                                    WriteBatch batch = firestore.batch();
+//
+//                                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
 //                                    batch.set(newPostRef, post);
 //
-//                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
 //                                    batch.set(newPostRef2, post);
-
-                                    batch.commit().addOnSuccessListener(aVoid -> {
-                                        progressDialog.dismiss();
-                                        resetAction();
-                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
-                                    }).addOnFailureListener(e -> {
-                                        progressDialog.dismiss();
-                                        showSnackbar(view,getString(R.string.error_post));
-                                    });
-                                }
-
-
-                            }else {
-
-                            }
-
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                    else {
-                        String text = getString(R.string._2_girdi_iniz_tarihten_b_y_k_olamaz);
-                        binding.errorDate1Text.setText(text);
-                        binding.dateEditText1.setTextColor(Color.RED);
-                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-                    }
-
-                }
-                else {
-                    if(!checkFormatDate1){
-                        String text = getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz);
-                        binding.errorDate1Text.setText(text);
-                        binding.dateEditText1.setTextColor(Color.RED);
-                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-                    }else {
-                        binding.dateEditText1.setError(null);
-                    }
-                    if(!checkFormatDate2){
-                        String text = getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz);
-                        binding.errorDate2Text.setText(text);
-                        binding.dateEditText2.setTextColor(Color.RED);
-                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-                    }else {
-                        binding.dateEditText2.setError(null);
-                    }
-                }
-            }
-
-            if(!hasDate1 && !hasDate2 && hasTime1 && hasTime2){
-                checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
-                checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
-
-                if(checkFormatTime1 && checkFormatTime2){
-                    boolean checkComparesTime;
-
-                    checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
-
-                    if(checkComparesTime){
-                        binding.timeEditText1.setError(null);
-                        binding.errorTime1Text.setText("");
-                        binding.timeEditText1.setTextColor(Color.WHITE);
-                        try {
-
-                            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
-                            Date time_1 = formatter_time.parse(time1);
-                            Date time_2 = formatter_time.parse(time2);
-
-                            if(time_1 != null && time_2 != null){
-
-                                long time1_long = time_1.getTime();
-                                long time2_long = time_2.getTime();
-
-                                if(imageData != null){
-                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
-                                    progressDialog.setCancelable(false);
-                                    progressDialog.setInverseBackgroundForced(false);
-                                    progressDialog.show();
-
-                                    uniqueID = UUID.randomUUID().toString();
-                                    storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
-                                        .addOnSuccessListener(taskSnapshot -> {
-                                            Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
-                                            downloadUrlTask.addOnCompleteListener(task -> {
-                                                String galleryUrl = task.getResult().toString();
-
-                                                HashMap<String,Object> post = new HashMap<>();
-                                                post.put("city",city);
-                                                post.put("district",district);
-                                                post.put("date1",0);
-                                                post.put("time1",time1_long);
-                                                post.put("time2",time2_long);
-                                                post.put("date2",0);
-                                                post.put("lat",latitude);
-                                                post.put("lng",longitude);
-                                                post.put("radius",radius);
-                                                post.put("explain",explain);
-                                                post.put("timestamp",new Date());
-                                                post.put("name",myUserName);
-                                                post.put("imageUrl",myImageUrl);
-                                                post.put("galleryUrl",galleryUrl);
-                                                post.put("mail",userMail);
-
-                                                WriteBatch batch = firestore.batch();
-
-                                                DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
-                                                batch.set(newPostRef, post);
-
-                                                DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
-                                                batch.set(newPostRef2, post);
-
-//                                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+//
+////                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+////                                    batch.set(newPostRef, post);
+////
+////                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+////                                    batch.set(newPostRef2, post);
+//
+//                                    batch.commit().addOnSuccessListener(aVoid -> {
+//                                        progressDialog.dismiss();
+//                                        resetAction();
+//                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
+//                                    }).addOnFailureListener(e -> {
+//                                        progressDialog.dismiss();
+//                                        showSnackbar(view,getString(R.string.error_post));
+//                                    });
+//                                }
+//
+//
+//                            }else {
+//
+//                            }
+//
+//                        }catch (Exception e){
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    else {
+//                        String text = getString(R.string._2_girdi_iniz_tarihten_b_y_k_olamaz);
+//                        binding.errorDate1Text.setText(text);
+//                        binding.dateEditText1.setTextColor(Color.RED);
+//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//                    }
+//
+//                }
+//                else {
+//                    if(!checkFormatDate1){
+//                        String text = getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz);
+//                        binding.errorDate1Text.setText(text);
+//                        binding.dateEditText1.setTextColor(Color.RED);
+//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//                    }else {
+//                        binding.dateEditText1.setError(null);
+//                    }
+//                    if(!checkFormatDate2){
+//                        String text = getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz);
+//                        binding.errorDate2Text.setText(text);
+//                        binding.dateEditText2.setTextColor(Color.RED);
+//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//                    }else {
+//                        binding.dateEditText2.setError(null);
+//                    }
+//                }
+//            }
+//
+//            if(!hasDate1 && !hasDate2 && hasTime1 && hasTime2){
+//                checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
+//                checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
+//
+//                if(checkFormatTime1 && checkFormatTime2){
+//                    boolean checkComparesTime;
+//
+//                    checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
+//
+//                    if(checkComparesTime){
+//                        binding.timeEditText1.setError(null);
+//                        binding.errorTime1Text.setText("");
+//                        binding.timeEditText1.setTextColor(Color.WHITE);
+//                        try {
+//
+//                            @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
+//                            Date time_1 = formatter_time.parse(time1);
+//                            Date time_2 = formatter_time.parse(time2);
+//
+//                            if(time_1 != null && time_2 != null){
+//
+//                                long time1_long = time_1.getTime();
+//                                long time2_long = time_2.getTime();
+//
+//                                if(imageData != null){
+//                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+//                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
+//                                    progressDialog.setCancelable(false);
+//                                    progressDialog.setInverseBackgroundForced(false);
+//                                    progressDialog.show();
+//
+//                                    uniqueID = UUID.randomUUID().toString();
+//                                    storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
+//                                        .addOnSuccessListener(taskSnapshot -> {
+//                                            Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
+//                                            downloadUrlTask.addOnCompleteListener(task -> {
+//                                                String galleryUrl = task.getResult().toString();
+//
+//                                                HashMap<String,Object> post = new HashMap<>();
+//                                                post.put("city",city);
+//                                                post.put("district",district);
+//                                                post.put("date1",0);
+//                                                post.put("time1",time1_long);
+//                                                post.put("time2",time2_long);
+//                                                post.put("date2",0);
+//                                                post.put("lat",latitude);
+//                                                post.put("lng",longitude);
+//                                                post.put("radius",radius);
+//                                                post.put("explain",explain);
+//                                                post.put("timestamp",new Date());
+//                                                post.put("name",myUserName);
+//                                                post.put("imageUrl",myImageUrl);
+//                                                post.put("galleryUrl",galleryUrl);
+//                                                post.put("mail",userMail);
+//
+//                                                WriteBatch batch = firestore.batch();
+//
+//                                                DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
 //                                                batch.set(newPostRef, post);
 //
-//                                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                                DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
 //                                                batch.set(newPostRef2, post);
-
-                                                batch.commit()
-                                                    .addOnSuccessListener(aVoid -> {
-                                                        progressDialog.dismiss();
-                                                        resetAction();
-                                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
-                                                    })
-                                                    .addOnFailureListener(e -> {
-                                                        progressDialog.dismiss();
-                                                        showSnackbar(view,getString(R.string.error_post));
-                                                    });
-                                            }).addOnFailureListener(e -> {
-                                                progressDialog.dismiss();
-                                                showSnackbar(view,getString(R.string.error_post));
-                                            });
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            progressDialog.dismiss();
-                                            showSnackbar(view,getString(R.string.error_post));
-                                        });
-                                }else {
-                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
-                                    progressDialog.setCancelable(false);
-                                    progressDialog.setInverseBackgroundForced(false);
-                                    progressDialog.show();
-
-                                    HashMap<String,Object> post = new HashMap<>();
-                                    post.put("city",city);
-                                    post.put("district",district);
-                                    post.put("date1",0);
-                                    post.put("time1",time1_long);
-                                    post.put("time2",time2_long);
-                                    post.put("date2",0);
-                                    post.put("lat",latitude);
-                                    post.put("lng",longitude);
-                                    post.put("radius",radius);
-                                    post.put("explain",explain);
-                                    post.put("timestamp",new Date());
-                                    post.put("name",myUserName);
-                                    post.put("imageUrl",myImageUrl);
-                                    post.put("galleryUrl","");
-                                    post.put("mail",userMail);
-
-                                    WriteBatch batch = firestore.batch();
-
-                                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
-                                    batch.set(newPostRef, post);
-
-                                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
-                                    batch.set(newPostRef2, post);
-
-//                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+//
+////                                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+////                                                batch.set(newPostRef, post);
+////
+////                                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+////                                                batch.set(newPostRef2, post);
+//
+//                                                batch.commit()
+//                                                    .addOnSuccessListener(aVoid -> {
+//                                                        progressDialog.dismiss();
+//                                                        resetAction();
+//                                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
+//                                                    })
+//                                                    .addOnFailureListener(e -> {
+//                                                        progressDialog.dismiss();
+//                                                        showSnackbar(view,getString(R.string.error_post));
+//                                                    });
+//                                            }).addOnFailureListener(e -> {
+//                                                progressDialog.dismiss();
+//                                                showSnackbar(view,getString(R.string.error_post));
+//                                            });
+//                                        })
+//                                        .addOnFailureListener(e -> {
+//                                            progressDialog.dismiss();
+//                                            showSnackbar(view,getString(R.string.error_post));
+//                                        });
+//                                }else {
+//                                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+//                                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
+//                                    progressDialog.setCancelable(false);
+//                                    progressDialog.setInverseBackgroundForced(false);
+//                                    progressDialog.show();
+//
+//                                    HashMap<String,Object> post = new HashMap<>();
+//                                    post.put("city",city);
+//                                    post.put("district",district);
+//                                    post.put("date1",0);
+//                                    post.put("time1",time1_long);
+//                                    post.put("time2",time2_long);
+//                                    post.put("date2",0);
+//                                    post.put("lat",latitude);
+//                                    post.put("lng",longitude);
+//                                    post.put("radius",radius);
+//                                    post.put("explain",explain);
+//                                    post.put("timestamp",new Date());
+//                                    post.put("name",myUserName);
+//                                    post.put("imageUrl",myImageUrl);
+//                                    post.put("galleryUrl","");
+//                                    post.put("mail",userMail);
+//
+//                                    WriteBatch batch = firestore.batch();
+//
+//                                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
 //                                    batch.set(newPostRef, post);
 //
-//                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
 //                                    batch.set(newPostRef2, post);
-
-                                    batch.commit().addOnSuccessListener(aVoid -> {
-                                        progressDialog.dismiss();
-                                        resetAction();
-                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
-                                    }).addOnFailureListener(e -> {
-                                        progressDialog.dismiss();
-                                        showSnackbar(view,getString(R.string.error_post));
-                                    });
-                                }
-
-                            }else {
-
-                            }
-
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-                    }
-                    else {
-                        String text = getString(R.string._2_girdi_iniz_saatten_b_y_k_olamaz);
-                        binding.errorTime1Text.setText(text);
-                        binding.timeEditText1.setTextColor(Color.RED);
-                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-                    }
-
-                }
-                else {
-                    if(!checkFormatTime1){
-                        String text = getString(R.string.saat_dakika_format_na_uygun_giriniz);
-                        binding.errorTime1Text.setText(text);
-                        binding.timeEditText1.setTextColor(Color.RED);
-                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-                    }else {
-                        binding.timeEditText1.setError(null);
-                        binding.errorTime1Text.setText("");
-                        binding.timeEditText1.setTextColor(Color.WHITE);
-                    }
-                    if(!checkFormatTime2){
-                        String text = getString(R.string.saat_dakika_format_na_uygun_giriniz);
-                        binding.errorTime2Text.setText(text);
-                        binding.timeEditText2.setTextColor(Color.RED);
-                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-                    }else {
-                        binding.timeEditText2.setError(null);
-                        binding.timeEditText2.setTextColor(Color.WHITE);
-                    }
-                }
-            }
-
-            if(!hasDate1 && !hasDate2 && !hasTime1 && !hasTime2){
-
-                if(imageData != null){
-                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
-                    progressDialog.setCancelable(false);
-                    progressDialog.setInverseBackgroundForced(false);
-                    progressDialog.show();
-
-                    uniqueID = UUID.randomUUID().toString();
-                    storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
-                        .addOnSuccessListener(taskSnapshot -> {
-                            Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
-                            downloadUrlTask.addOnCompleteListener(task -> {
-                                String galleryUrl = task.getResult().toString();
-
-                                HashMap<String,Object> post = new HashMap<>();
-                                post.put("city",city);
-                                post.put("district",district);
-                                post.put("date1",0);
-                                post.put("time1",0);
-                                post.put("time2",0);
-                                post.put("date2",0);
-                                post.put("lat",latitude);
-                                post.put("lng",longitude);
-                                post.put("radius",radius);
-                                post.put("explain",explain);
-                                post.put("timestamp",new Date());
-                                post.put("name",myUserName);
-                                post.put("imageUrl",myImageUrl);
-                                post.put("galleryUrl",galleryUrl);
-                                post.put("mail",userMail);
-
-                                WriteBatch batch = firestore.batch();
-
-                                DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
-                                batch.set(newPostRef, post);
-
-                                DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
-                                batch.set(newPostRef2, post);
-
-//                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+//
+////                                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+////                                    batch.set(newPostRef, post);
+////
+////                                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+////                                    batch.set(newPostRef2, post);
+//
+//                                    batch.commit().addOnSuccessListener(aVoid -> {
+//                                        progressDialog.dismiss();
+//                                        resetAction();
+//                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
+//                                    }).addOnFailureListener(e -> {
+//                                        progressDialog.dismiss();
+//                                        showSnackbar(view,getString(R.string.error_post));
+//                                    });
+//                                }
+//
+//                            }else {
+//
+//                            }
+//
+//                        }catch (Exception e){
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    else {
+//                        String text = getString(R.string._2_girdi_iniz_saatten_b_y_k_olamaz);
+//                        binding.errorTime1Text.setText(text);
+//                        binding.timeEditText1.setTextColor(Color.RED);
+//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//                    }
+//
+//                }
+//                else {
+//                    if(!checkFormatTime1){
+//                        String text = getString(R.string.saat_dakika_format_na_uygun_giriniz);
+//                        binding.errorTime1Text.setText(text);
+//                        binding.timeEditText1.setTextColor(Color.RED);
+//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//                    }else {
+//                        binding.timeEditText1.setError(null);
+//                        binding.errorTime1Text.setText("");
+//                        binding.timeEditText1.setTextColor(Color.WHITE);
+//                    }
+//                    if(!checkFormatTime2){
+//                        String text = getString(R.string.saat_dakika_format_na_uygun_giriniz);
+//                        binding.errorTime2Text.setText(text);
+//                        binding.timeEditText2.setTextColor(Color.RED);
+//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+//                    }else {
+//                        binding.timeEditText2.setError(null);
+//                        binding.timeEditText2.setTextColor(Color.WHITE);
+//                    }
+//                }
+//            }
+//
+//            if(!hasDate1 && !hasDate2 && !hasTime1 && !hasTime2){
+//
+//                if(imageData != null){
+//                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+//                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
+//                    progressDialog.setCancelable(false);
+//                    progressDialog.setInverseBackgroundForced(false);
+//                    progressDialog.show();
+//
+//                    uniqueID = UUID.randomUUID().toString();
+//                    storageReference.child("postsPhoto").child(userMail).child(uniqueID).putFile(imageData)
+//                        .addOnSuccessListener(taskSnapshot -> {
+//                            Task<Uri> downloadUrlTask = taskSnapshot.getStorage().getDownloadUrl();
+//                            downloadUrlTask.addOnCompleteListener(task -> {
+//                                String galleryUrl = task.getResult().toString();
+//
+//                                HashMap<String,Object> post = new HashMap<>();
+//                                post.put("city",city);
+//                                post.put("district",district);
+//                                post.put("date1",0);
+//                                post.put("time1",0);
+//                                post.put("time2",0);
+//                                post.put("date2",0);
+//                                post.put("lat",latitude);
+//                                post.put("lng",longitude);
+//                                post.put("radius",radius);
+//                                post.put("explain",explain);
+//                                post.put("timestamp",new Date());
+//                                post.put("name",myUserName);
+//                                post.put("imageUrl",myImageUrl);
+//                                post.put("galleryUrl",galleryUrl);
+//                                post.put("mail",userMail);
+//
+//                                WriteBatch batch = firestore.batch();
+//
+//                                DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
 //                                batch.set(newPostRef, post);
 //
-//                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                                DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
 //                                batch.set(newPostRef2, post);
-
-                                batch.commit()
-                                    .addOnSuccessListener(aVoid -> {
-                                        progressDialog.dismiss();
-                                        resetAction();
-                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
-                                    })
-                                    .addOnFailureListener(e -> {
-                                        progressDialog.dismiss();
-                                        showSnackbar(view,getString(R.string.error_post));
-                                    });
-                            }).addOnFailureListener(e -> {
-                                progressDialog.dismiss();
-                                showSnackbar(view,getString(R.string.error_post));
-                            });
-                        })
-                        .addOnFailureListener(e -> {
-                            progressDialog.dismiss();
-                            showSnackbar(view,getString(R.string.error_post));
-                        });
-                }else {
-
-                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
-                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
-                    progressDialog.setCancelable(false);
-                    progressDialog.setInverseBackgroundForced(false);
-                    progressDialog.show();
-
-                    HashMap<String,Object> post = new HashMap<>();
-                    post.put("city",city);
-                    post.put("district",district);
-                    post.put("date1",0);
-                    post.put("time1",0);
-                    post.put("time2",0);
-                    post.put("date2",0);
-                    post.put("lat",latitude);
-                    post.put("lng",longitude);
-                    post.put("radius",radius);
-                    post.put("explain",explain);
-                    post.put("timestamp",new Date());
-                    post.put("name",myUserName);
-                    post.put("imageUrl",myImageUrl);
-                    post.put("galleryUrl","");
-                    post.put("mail",userMail);
-
-                    WriteBatch batch = firestore.batch();
-
-                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
-                    batch.set(newPostRef, post);
-
-                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
-                    batch.set(newPostRef2, post);
-
-//                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+//
+////                                DocumentReference newPostRef = firestore.collection("post" + city).document();
+////                                batch.set(newPostRef, post);
+////
+////                                DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+////                                batch.set(newPostRef2, post);
+//
+//                                batch.commit()
+//                                    .addOnSuccessListener(aVoid -> {
+//                                        progressDialog.dismiss();
+//                                        resetAction();
+//                                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
+//                                    })
+//                                    .addOnFailureListener(e -> {
+//                                        progressDialog.dismiss();
+//                                        showSnackbar(view,getString(R.string.error_post));
+//                                    });
+//                            }).addOnFailureListener(e -> {
+//                                progressDialog.dismiss();
+//                                showSnackbar(view,getString(R.string.error_post));
+//                            });
+//                        })
+//                        .addOnFailureListener(e -> {
+//                            progressDialog.dismiss();
+//                            showSnackbar(view,getString(R.string.error_post));
+//                        });
+//                }else {
+//
+//                    ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+//                    progressDialog.setMessage(getString(R.string.g_nderiniz_payla_l_yor));
+//                    progressDialog.setCancelable(false);
+//                    progressDialog.setInverseBackgroundForced(false);
+//                    progressDialog.show();
+//
+//                    HashMap<String,Object> post = new HashMap<>();
+//                    post.put("city",city);
+//                    post.put("district",district);
+//                    post.put("date1",0);
+//                    post.put("time1",0);
+//                    post.put("time2",0);
+//                    post.put("date2",0);
+//                    post.put("lat",latitude);
+//                    post.put("lng",longitude);
+//                    post.put("radius",radius);
+//                    post.put("explain",explain);
+//                    post.put("timestamp",new Date());
+//                    post.put("name",myUserName);
+//                    post.put("imageUrl",myImageUrl);
+//                    post.put("galleryUrl","");
+//                    post.put("mail",userMail);
+//
+//                    WriteBatch batch = firestore.batch();
+//
+//                    DocumentReference newPostRef = firestore.collection("posts").document("post"+city).collection("post"+city).document();
 //                    batch.set(newPostRef, post);
 //
-//                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+//                    DocumentReference newPostRef2 = firestore.collection("myPosts").document(userMail).collection(userMail).document(newPostRef.getId());
 //                    batch.set(newPostRef2, post);
-
-                    batch.commit().addOnSuccessListener(aVoid -> {
-                        progressDialog.dismiss();
-                        resetAction();
-                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
-                    }).addOnFailureListener(e -> {
-                        progressDialog.dismiss();
-                        showSnackbar(view,getString(R.string.error_post));
-                    });
-                }
-
-            }
-
-        }
-        else {
-            if(!checkCity){
-                String text = getString(R.string.il_bos_birakilamaz);
-                binding.cityTextInput.setError(text);
-                binding.cityTextInput.setErrorIconDrawable(null);
-            }else {
-                binding.cityTextInput.setError(null);
-                binding.cityTextInput.setErrorIconDrawable(null);
-            }
-            if(!checkDistrict){
-                String text = getString(R.string.ilce_bos_birakilamaz);
-                binding.districtTextInput.setError(text);
-                binding.districtTextInput.setErrorIconDrawable(null);
-            }else {
-                binding.districtTextInput.setError(null);
-                binding.districtTextInput.setErrorIconDrawable(null);
-            }
-            if(!checkExplain){
-                String text = getString(R.string.aciklama_bos_birakilamaz);
-                binding.explainTextInput.setError(text);
-                binding.explainTextInput.setErrorIconDrawable(null);
-            }else {
-                binding.explainTextInput.setError(null);
-                binding.explainTextInput.setErrorIconDrawable(null);
-            }
-        }
-
-    }
+//
+////                    DocumentReference newPostRef = firestore.collection("post" + city).document();
+////                    batch.set(newPostRef, post);
+////
+////                    DocumentReference newPostRef2 = firestore.collection(userMail).document(newPostRef.getId());
+////                    batch.set(newPostRef2, post);
+//
+//                    batch.commit().addOnSuccessListener(aVoid -> {
+//                        progressDialog.dismiss();
+//                        resetAction();
+//                        showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
+//                    }).addOnFailureListener(e -> {
+//                        progressDialog.dismiss();
+//                        showSnackbar(view,getString(R.string.error_post));
+//                    });
+//                }
+//
+//            }
+//
+//        }
+//        else {
+//            if(!checkCity){
+//                String text = getString(R.string.il_bos_birakilamaz);
+//                binding.cityTextInput.setError(text);
+//                binding.cityTextInput.setErrorIconDrawable(null);
+//            }else {
+//                binding.cityTextInput.setError(null);
+//                binding.cityTextInput.setErrorIconDrawable(null);
+//            }
+//            if(!checkDistrict){
+//                String text = getString(R.string.ilce_bos_birakilamaz);
+//                binding.districtTextInput.setError(text);
+//                binding.districtTextInput.setErrorIconDrawable(null);
+//            }else {
+//                binding.districtTextInput.setError(null);
+//                binding.districtTextInput.setErrorIconDrawable(null);
+//            }
+//            if(!checkExplain){
+//                String text = getString(R.string.aciklama_bos_birakilamaz);
+//                binding.explainTextInput.setError(text);
+//                binding.explainTextInput.setErrorIconDrawable(null);
+//            }else {
+//                binding.explainTextInput.setError(null);
+//                binding.explainTextInput.setErrorIconDrawable(null);
+//            }
+//        }
+//
+//    }
 
     private int getScreenWidth(Context context) {
         return context.getResources().getDisplayMetrics().widthPixels;
     }
 
-    private void resetAction(){
-        binding.mapView.setVisibility(View.GONE);
-        binding.visibleDatePicker.setVisibility(View.GONE);
-
-        binding.cityCompleteText.setText("");
-
-        binding.districtCompleteText.setText("");
-
-        imageData = null;
-        binding.galleryImage.setImageResource(R.drawable.add_gallery);
-
-        binding.explain.setText("");
-
-        binding.dateEditText1.setText("");
-        binding.dateEditText2.setText("");
-
-        binding.timeEditText1.setText("");
-        binding.timeEditText2.setText("");
-
-        binding.markedMapView.setText("");
-
-        binding.errorTime1Text.setText("");
-        binding.errorTime2Text.setText("");
-        binding.errorDate1Text.setText("");
-        binding.errorDate2Text.setText("");
-
-        binding.timeEditText1.setHintTextColor(Color.GRAY);
-        binding.timeEditText2.setHintTextColor(Color.GRAY);
-        binding.dateEditText1.setHintTextColor(Color.GRAY);
-        binding.dateEditText2.setHintTextColor(Color.GRAY);
-
-        lat = 0.0;
-        lng = 0.0;
-        rad = 0.0;
-        address = "";
-
-//        binding.checkBoxContact.setChecked(false);
-
-    }
-    private void showCustomTimeDialog1(View view) {
-        if(timePickerDialog == null){
-            final Calendar currentTime = Calendar.getInstance();
-            int hour = currentTime.get(Calendar.HOUR_OF_DAY);
-            int minute = currentTime.get(Calendar.MINUTE);
-
-            timePickerDialog = new TimePickerDialog(
-                view.getContext(),
-                new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-                        String timeString = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
-                        binding.timeEditText1.setText(timeString);
-                        binding.timeEditText1.setTextColor(Color.WHITE);
-                        binding.errorTime1Text.setText("");
-                    }
-                },
-                hour,
-                minute,
-                true
-            );
-        }
-
-
-        timePickerDialog.show();
-    }
-    private void showCustomDateDialog1(View view) {
-        if(datePickerDialog == null){
-            final Calendar calendar = Calendar.getInstance();
-            mYear = calendar.get(Calendar.YEAR);
-            mMonth = calendar.get(Calendar.MONTH);
-            mDay = calendar.get(Calendar.DAY_OF_MONTH);
-            datePickerDialog = new DatePickerDialog(view.getContext(), new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    String timeString = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, (month + 1), year);
-                    binding.dateEditText1.setText(timeString);
-                    binding.dateEditText1.setTextColor(Color.WHITE);
-                    binding.errorDate1Text.setText("");
-                }
-            },mYear,mMonth,mDay);
-            datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
-        }
-
-        datePickerDialog.show();
-    }
-    private void showCustomTimeDialog2(View view) {
-        if(timePickerDialog2 == null){
-            final Calendar currentTime = Calendar.getInstance();
-            int hour = currentTime.get(Calendar.HOUR_OF_DAY);
-            int minute = currentTime.get(Calendar.MINUTE);
-
-            timePickerDialog2 = new TimePickerDialog(
-                view.getContext(),
-                new TimePickerDialog.OnTimeSetListener() {
-                    @Override
-                    public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-                        String timeString = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
-                        binding.timeEditText2.setText(timeString);
-                        binding.timeEditText2.setTextColor(Color.WHITE);
-                        binding.errorTime2Text.setText("");
-                    }
-                },
-                hour,
-                minute,
-                true
-            );
-        }
-
-        timePickerDialog2.show();
-    }
-    private void showCustomDateDialog2(View view) {
-        if(datePickerDialog2 == null){
-            final Calendar calendar = Calendar.getInstance();
-            mYear = calendar.get(Calendar.YEAR);
-            mMonth = calendar.get(Calendar.MONTH);
-            mDay = calendar.get(Calendar.DAY_OF_MONTH);
-            datePickerDialog2 = new DatePickerDialog(view.getContext(), new DatePickerDialog.OnDateSetListener() {
-                @Override
-                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                    String timeString = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, (month + 1), year);
-                    binding.dateEditText2.setText(timeString);
-                    binding.dateEditText2.setTextColor(Color.WHITE);
-                    binding.errorDate2Text.setText("");
-                }
-            },mYear,mMonth,mDay);
-            datePickerDialog2.getDatePicker().setMaxDate(calendar.getTimeInMillis());
-        }
-        datePickerDialog2.show();
-    }
+//    private void resetAction(){
+//        binding.mapView.setVisibility(View.GONE);
+//        binding.visibleDatePicker.setVisibility(View.GONE);
+//
+//        binding.cityCompleteText.setText("");
+//
+//        binding.districtCompleteText.setText("");
+//
+//        imageData = null;
+//        binding.galleryImage.setImageResource(R.drawable.add_gallery);
+//
+//        binding.explain.setText("");
+//
+//        binding.dateEditText1.setText("");
+//        binding.dateEditText2.setText("");
+//
+//        binding.timeEditText1.setText("");
+//        binding.timeEditText2.setText("");
+//
+//        binding.markedMapView.setText("");
+//
+//        binding.errorTime1Text.setText("");
+//        binding.errorTime2Text.setText("");
+//        binding.errorDate1Text.setText("");
+//        binding.errorDate2Text.setText("");
+//
+//        binding.timeEditText1.setHintTextColor(Color.GRAY);
+//        binding.timeEditText2.setHintTextColor(Color.GRAY);
+//        binding.dateEditText1.setHintTextColor(Color.GRAY);
+//        binding.dateEditText2.setHintTextColor(Color.GRAY);
+//
+//        lat = 0.0;
+//        lng = 0.0;
+//        rad = 0.0;
+//        address = "";
+//
+////        binding.checkBoxContact.setChecked(false);
+//
+//    }
+//    private void showCustomTimeDialog1(View view) {
+//        if(timePickerDialog == null){
+//            final Calendar currentTime = Calendar.getInstance();
+//            int hour = currentTime.get(Calendar.HOUR_OF_DAY);
+//            int minute = currentTime.get(Calendar.MINUTE);
+//
+//            timePickerDialog = new TimePickerDialog(
+//                view.getContext(),
+//                new TimePickerDialog.OnTimeSetListener() {
+//                    @Override
+//                    public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
+//                        String timeString = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
+//                        binding.timeEditText1.setText(timeString);
+//                        binding.timeEditText1.setTextColor(Color.WHITE);
+//                        binding.errorTime1Text.setText("");
+//                    }
+//                },
+//                hour,
+//                minute,
+//                true
+//            );
+//        }
+//
+//
+//        timePickerDialog.show();
+//    }
+//    private void showCustomDateDialog1(View view) {
+//        if(datePickerDialog == null){
+//            final Calendar calendar = Calendar.getInstance();
+//            mYear = calendar.get(Calendar.YEAR);
+//            mMonth = calendar.get(Calendar.MONTH);
+//            mDay = calendar.get(Calendar.DAY_OF_MONTH);
+//            datePickerDialog = new DatePickerDialog(view.getContext(), new DatePickerDialog.OnDateSetListener() {
+//                @Override
+//                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+//                    String timeString = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, (month + 1), year);
+//                    binding.dateEditText1.setText(timeString);
+//                    binding.dateEditText1.setTextColor(Color.WHITE);
+//                    binding.errorDate1Text.setText("");
+//                }
+//            },mYear,mMonth,mDay);
+//            datePickerDialog.getDatePicker().setMaxDate(calendar.getTimeInMillis());
+//        }
+//
+//        datePickerDialog.show();
+//    }
+//    private void showCustomTimeDialog2(View view) {
+//        if(timePickerDialog2 == null){
+//            final Calendar currentTime = Calendar.getInstance();
+//            int hour = currentTime.get(Calendar.HOUR_OF_DAY);
+//            int minute = currentTime.get(Calendar.MINUTE);
+//
+//            timePickerDialog2 = new TimePickerDialog(
+//                view.getContext(),
+//                new TimePickerDialog.OnTimeSetListener() {
+//                    @Override
+//                    public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
+//                        String timeString = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
+//                        binding.timeEditText2.setText(timeString);
+//                        binding.timeEditText2.setTextColor(Color.WHITE);
+//                        binding.errorTime2Text.setText("");
+//                    }
+//                },
+//                hour,
+//                minute,
+//                true
+//            );
+//        }
+//
+//        timePickerDialog2.show();
+//    }
+//    private void showCustomDateDialog2(View view) {
+//        if(datePickerDialog2 == null){
+//            final Calendar calendar = Calendar.getInstance();
+//            mYear = calendar.get(Calendar.YEAR);
+//            mMonth = calendar.get(Calendar.MONTH);
+//            mDay = calendar.get(Calendar.DAY_OF_MONTH);
+//            datePickerDialog2 = new DatePickerDialog(view.getContext(), new DatePickerDialog.OnDateSetListener() {
+//                @Override
+//                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+//                    String timeString = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, (month + 1), year);
+//                    binding.dateEditText2.setText(timeString);
+//                    binding.dateEditText2.setTextColor(Color.WHITE);
+//                    binding.errorDate2Text.setText("");
+//                }
+//            },mYear,mMonth,mDay);
+//            datePickerDialog2.getDatePicker().setMaxDate(calendar.getTimeInMillis());
+//        }
+//        datePickerDialog2.show();
+//    }
 
     private boolean isValidDateFormat(String input) {
         Pattern pattern = Pattern.compile("\\d{2}/\\d{2}/\\d{4}");
@@ -2018,7 +2122,9 @@ public class AddPostFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        binding.mapView.onResume();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onResume();
+        }
 
         cityNames = getResources().getStringArray(R.array.city_names);
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
@@ -2029,28 +2135,35 @@ public class AddPostFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        binding.mapView.onPause();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onPause();
+        }
 
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        binding.mapView.onDestroy();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onDestroy();
+        }
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        binding.mapView.onLowMemory();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onLowMemory();
+        }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        if(binding.mapView != null){
+        if (binding != null && binding.mapView != null) {
             binding.mapView.onSaveInstanceState(outState);
         }
+
     }
 
     private void setImage(View view) {

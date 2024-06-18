@@ -1075,15 +1075,14 @@ public class MainFragment extends Fragment {
                     firestore.collection("users").document(mail).get().addOnSuccessListener(documentSnapshot1 -> {
                         if(documentSnapshot1.exists()){
                             String getLanguage = language.getString("language","");
+                            String token = documentSnapshot1.getString("fcmToken");
+                            FCMNotificationSender fcmNotificationSender;
                             if(getLanguage.equals("english")){
-                                String token = documentSnapshot1.getString("fcmToken");
-                                FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,"",getString(R.string.paylasiminiz)+getString(R.string.tarafindan_goruntulendi)+myUserName,context);
-                                fcmNotificationSender.SendNotification();
+                                fcmNotificationSender = new FCMNotificationSender(token, "", getString(R.string.paylasiminiz) + getString(R.string.tarafindan_goruntulendi) + myUserName, context);
                             }else {
-                                String token = documentSnapshot1.getString("fcmToken");
-                                FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,"",getString(R.string.paylasiminiz)+myUserName+getString(R.string.tarafindan_goruntulendi),context);
-                                fcmNotificationSender.SendNotification();
+                                fcmNotificationSender = new FCMNotificationSender(token, "", getString(R.string.paylasiminiz) + myUserName + getString(R.string.tarafindan_goruntulendi), context);
                             }
+                            fcmNotificationSender.SendNotification();
                         }
                     });
                 });
