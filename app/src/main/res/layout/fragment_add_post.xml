@@ -393,11 +393,11 @@
                                 app:endIconTint="@color/gray">
 
                                 <EditText
-                                    android:id="@+id/date_range"
+                                    android:id="@+id/datetime_range"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:inputType="none"
-                                    android:text="18 Haziran 2024 - 19 Haziran 2024"
+                                    android:text=""
                                     android:enabled="false"
                                     android:paddingTop="10dp"
                                     android:layout_gravity="center"
@@ -538,7 +538,7 @@
                                     android:layout_height="wrap_content"
                                     android:inputType="none"
                                     android:paddingTop="10dp"
-                                    android:text="20:00 - 23:45"
+                                    android:text=""
                                     android:layout_gravity="center"
                                     android:gravity="center"
                                     android:enabled="false"

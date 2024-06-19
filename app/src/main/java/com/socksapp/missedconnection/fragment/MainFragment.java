@@ -172,10 +172,10 @@ public class MainFragment extends Fragment {
             checkRadius = radius;
             checkLat = latitude;
             checkLng = longitude;
-            String date1 = args.getString("date1","");
-            String date2 = args.getString("date2","");
-            String time1 = args.getString("time1","");
-            String time2 = args.getString("time2","");
+            long date1 = args.getLong("date1",0);
+            long date2 = args.getLong("date2",0);
+            long time1 = args.getLong("time1",0);
+            long time2 = args.getLong("time2",0);
 
             getData(city,district,date1,date2,time1,time2,radius,latitude,longitude);
         }else {
@@ -422,12 +422,12 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private void getData(String cityFind,String districtFind,String date1Find,String date2Find,String time1Find,String time2Find,double radiusFind,double latFind,double lngFind){
+    private void getData(String cityFind,String districtFind,long date1Find,long date2Find,long time1Find,long time2Find,double radiusFind,double latFind,double lngFind){
 
         boolean checkDistrict,checkDate,checkTime,checkField;
         checkDistrict = !districtFind.isEmpty();
-        checkDate = !date1Find.isEmpty() && !date2Find.isEmpty();
-        checkTime = !time1Find.isEmpty() && !time2Find.isEmpty();
+        checkDate = date1Find != 0 && date2Find != 0;
+        checkTime = time1Find != 0 && time2Find != 0;
         checkField = radiusFind != 0 && latFind != 0 && lngFind != 0;
 
         Query query = null;
@@ -435,120 +435,46 @@ public class MainFragment extends Fragment {
         if (checkDistrict && checkDate && checkTime && checkField) {
             postArrayList.clear();
             String collection = "post" + cityFind;
-            try {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
-                Date date_1 = formatter_date.parse(date1Find);
-                Date date_2 = formatter_date.parse(date2Find);
-
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
-                Date time_1 = formatter_time.parse(time1Find);
-                Date time_2 = formatter_time.parse(time2Find);
-
-                if(date_1 != null && date_2 != null && time_1 != null && time_2 != null){
-                    long date1_long = date_1.getTime();
-                    long date2_long = date_2.getTime();
-                    long time1_long = time_1.getTime();
-                    long time2_long = time_2.getTime();
-
-                    query = firestore.collection("posts").document(collection).collection(collection)
-                            .whereEqualTo("district", districtFind)
-                            .whereLessThanOrEqualTo("date1",date2_long)
-                            .whereGreaterThanOrEqualTo("date2",date1_long)
-                            .whereLessThanOrEqualTo("time1",time2_long)
-                            .whereGreaterThanOrEqualTo("time2",time1_long)
-                            .orderBy("timestamp", Query.Direction.DESCENDING)
-                            .limit(pageSize);
-                }else {
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+            query = firestore.collection("posts").document(collection).collection(collection)
+                    .whereEqualTo("district", districtFind)
+                    .whereLessThanOrEqualTo("date1",date2Find)
+                    .whereGreaterThanOrEqualTo("date2",date1Find)
+                    .whereLessThanOrEqualTo("time1",time2Find)
+                    .whereGreaterThanOrEqualTo("time2",time1Find)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(pageSize);
         }
         else if (checkDistrict && checkDate && checkTime) {
             postArrayList.clear();
             String collection = "post" + cityFind;
-            try {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
-                Date date_1 = formatter_date.parse(date1Find);
-                Date date_2 = formatter_date.parse(date2Find);
-
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
-                Date time_1 = formatter_time.parse(time1Find);
-                Date time_2 = formatter_time.parse(time2Find);
-
-                if(date_1 != null && date_2 != null && time_1 != null && time_2 != null){
-                    long date1_long = date_1.getTime();
-                    long date2_long = date_2.getTime();
-                    long time1_long = time_1.getTime();
-                    long time2_long = time_2.getTime();
-
-                    query = firestore.collection("posts").document(collection).collection(collection)
-                            .whereEqualTo("district", districtFind)
-                            .whereLessThanOrEqualTo("date1",date2_long)
-                            .whereGreaterThanOrEqualTo("date2",date1_long)
-                            .whereLessThanOrEqualTo("time1",time2_long)
-                            .whereGreaterThanOrEqualTo("time2",time1_long)
-                            .orderBy("timestamp", Query.Direction.DESCENDING)
-                            .limit(pageSize);
-
-                }else {
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+            query = firestore.collection("posts").document(collection).collection(collection)
+                    .whereEqualTo("district", districtFind)
+                    .whereLessThanOrEqualTo("date1",date2Find)
+                    .whereGreaterThanOrEqualTo("date2",date1Find)
+                    .whereLessThanOrEqualTo("time1",time2Find)
+                    .whereGreaterThanOrEqualTo("time2",time1Find)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(pageSize);
         }
         else if (checkDistrict && checkDate && checkField) {
             postArrayList.clear();
             String collection = "post" + cityFind;
-            try {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
-                Date date_1 = formatter_date.parse(date1Find);
-                Date date_2 = formatter_date.parse(date2Find);
-
-                if(date_1 != null && date_2 != null){
-                    long date1_long = date_1.getTime();
-                    long date2_long = date_2.getTime();
-
-                    query = firestore.collection("posts").document(collection).collection(collection)
-                            .whereEqualTo("district", districtFind)
-                            .whereLessThanOrEqualTo("date1",date2_long)
-                            .whereGreaterThanOrEqualTo("date2",date1_long)
-                            .orderBy("timestamp", Query.Direction.DESCENDING)
-                            .limit(pageSize);
-
-                }else {
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+            query = firestore.collection("posts").document(collection).collection(collection)
+                    .whereEqualTo("district", districtFind)
+                    .whereLessThanOrEqualTo("date1",date2Find)
+                    .whereGreaterThanOrEqualTo("date2",date1Find)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(pageSize);
         }
         else if (checkDistrict && checkTime && checkField) {
             postArrayList.clear();
             String collection = "post" + cityFind;
-            try {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
-                Date time_1 = formatter_time.parse(time1Find);
-                Date time_2 = formatter_time.parse(time2Find);
-
-                if(time_1 != null && time_2 != null){
-
-                    long time1_long = time_1.getTime();
-                    long time2_long = time_2.getTime();
-
-                    query = firestore.collection("posts").document(collection).collection(collection)
-                            .whereEqualTo("district", districtFind)
-                            .whereLessThanOrEqualTo("time1",time2_long)
-                            .whereGreaterThanOrEqualTo("time2",time1_long)
-                            .orderBy("timestamp", Query.Direction.DESCENDING)
-                            .limit(pageSize);
-
-                }else {
-                }
-            }catch (Exception e){
-                System.out.println("exception : "+e.getLocalizedMessage());
-                e.printStackTrace();
-            }
-
+            query = firestore.collection("posts").document(collection).collection(collection)
+                    .whereEqualTo("district", districtFind)
+                    .whereLessThanOrEqualTo("time1",time2Find)
+                    .whereGreaterThanOrEqualTo("time2",time1Find)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(pageSize);
         }
         else if (checkDistrict && checkField) {
             postArrayList.clear();
@@ -562,53 +488,22 @@ public class MainFragment extends Fragment {
         else if (checkDistrict && checkDate) {
             postArrayList.clear();
             String collection = "post" + cityFind;
-            try {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
-                Date date_1 = formatter_date.parse(date1Find);
-                Date date_2 = formatter_date.parse(date2Find);
-
-                if(date_1 != null && date_2 != null){
-                    long date1_long = date_1.getTime();
-                    long date2_long = date_2.getTime();
-
-                    query = firestore.collection("posts").document(collection).collection(collection)
-                            .whereEqualTo("district", districtFind)
-                            .whereLessThanOrEqualTo("date1",date2_long)
-                            .whereGreaterThanOrEqualTo("date2",date1_long)
-                            .orderBy("timestamp", Query.Direction.DESCENDING)
-                            .limit(pageSize);
-
-                }else {
-                }
-            }catch (Exception e){
-                System.out.println("error: "+e.getLocalizedMessage());
-                e.printStackTrace();
-            }
+            query = firestore.collection("posts").document(collection).collection(collection)
+                    .whereEqualTo("district", districtFind)
+                    .whereLessThanOrEqualTo("date1",date2Find)
+                    .whereGreaterThanOrEqualTo("date2",date1Find)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(pageSize);
         }
         else if (checkDistrict && checkTime) {
             postArrayList.clear();
             String collection = "post" + cityFind;
-            try {
-                @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
-                Date time_1 = formatter_time.parse(time1Find);
-                Date time_2 = formatter_time.parse(time2Find);
-
-                if(time_1 != null && time_2 != null){
-                    long time1_long = time_1.getTime();
-                    long time2_long = time_2.getTime();
-
-                    query = firestore.collection("posts").document(collection).collection(collection)
-                            .whereEqualTo("district", districtFind)
-                            .whereLessThanOrEqualTo("time1",time2_long)
-                            .whereGreaterThanOrEqualTo("time2",time1_long)
-                            .orderBy("timestamp", Query.Direction.DESCENDING)
-                            .limit(pageSize);
-
-                }else {
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+            query = firestore.collection("posts").document(collection).collection(collection)
+                    .whereEqualTo("district", districtFind)
+                    .whereLessThanOrEqualTo("time1",time2Find)
+                    .whereGreaterThanOrEqualTo("time2",time1Find)
+                    .orderBy("timestamp", Query.Direction.DESCENDING)
+                    .limit(pageSize);
         }
         else if (checkDistrict) {
             postArrayList.clear();
