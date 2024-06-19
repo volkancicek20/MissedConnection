@@ -90,7 +90,7 @@
 
     <!-- recycler_empty_post -->
     <string name="sonuc_bulunmadi">There were no results</string>
-    <string name="sonuc_bulunamadi_aciklamasi">You can get different results by changing the filters you make</string>
+    <string name="sonuc_bulunamadi_aciklamasi">You can get more accurate results by changing the filtering you do</string>
     <string name="tekrar_arama_yap">Search</string>
 
     <!-- recycler_empty_saved_post -->
@@ -253,6 +253,14 @@
 
     <!-- custom_dialog_delete_post -->
     <string name="g_nderinizi_silmek_istiyor_musunuz">Do you want to delete your post?</string>
+
+    <!-- layout_time_range_picker -->
+    <string name="saat_aral_n_belirleyiniz">Specify Time Range</string>
+    <string name="temizle">Clear</string>
+    <string name="sec_ve_devam_et">Select and continue</string>
+
+    <!-- layout_date_range_picker -->
+    <string name="tarih_aral_n_belirleyiniz">Specify Date Range</string>
 
     <string-array name="city_names">
         <item>İstanbul</item>

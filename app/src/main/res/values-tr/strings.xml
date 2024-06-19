@@ -91,7 +91,7 @@
 
     <!-- recycler_empty_post -->
     <string name="sonuc_bulunmadi">Sonuç bulunamadı</string>
-    <string name="sonuc_bulunamadi_aciklamasi">Yaptığınız filtrelemeleri değiştirerek farklı sonuçlar elde edebilirsiniz</string>
+    <string name="sonuc_bulunamadi_aciklamasi">Yaptığınız filtrelemeyi değiştirerek daha doğru sonuçlar elde edebilirsiniz</string>
     <string name="tekrar_arama_yap">Arama yap</string>
 
     <!-- recycler_empty_saved_post -->
@@ -254,6 +254,13 @@
     <!-- custom_dialog_delete_post -->
     <string name="g_nderinizi_silmek_istiyor_musunuz">Gönderinizi silmek istiyor musunuz?</string>
 
+    <!-- layout_time_range_picker -->
+    <string name="saat_aral_n_belirleyiniz">Saat Aralığını Belirleyiniz</string>
+    <string name="temizle">Temizle</string>
+    <string name="sec_ve_devam_et">Seç ve devam et</string>
+
+    <!-- layout_date_range_picker -->
+    <string name="tarih_aral_n_belirleyiniz">Tarih Aralığını Belirleyiniz</string>
 
     <string-array name="city_names">
         <item>İstanbul</item>

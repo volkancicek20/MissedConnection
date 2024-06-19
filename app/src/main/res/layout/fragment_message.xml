@@ -8,6 +8,34 @@
     android:background="@color/black"
     tools:context=".fragment.MessageFragment">
 
+    <TextView
+        android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="-50dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="@string/gelen_mesaj_yok"
+        android:textColor="@color/white"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:paddingHorizontal="20dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="@string/gonderilerinizi_daha_iyi_filtre"
+        android:textColor="@color/gray"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewMessage"
         android:layout_width="match_parent"

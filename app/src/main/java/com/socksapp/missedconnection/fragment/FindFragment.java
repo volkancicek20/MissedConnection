@@ -1,8 +1,6 @@
 package com.socksapp.missedconnection.fragment;
 
 import android.annotation.SuppressLint;
-import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -51,8 +49,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class FindFragment extends Fragment {
 
@@ -63,15 +59,12 @@ public class FindFragment extends Fragment {
     private String[] cityNames,districtNames;
     private ArrayAdapter<String> cityAdapter,districtAdapter;
     private AutoCompleteTextView cityCompleteTextView,districtCompleteTextView;
-    private SharedPreferences nameShared,imageUrlShared;
+    private SharedPreferences nameShared,imageUrlShared,language;
     private String myUserName,myImageUrl,userMail;
     public static Double lat,lng;
     public static Double rad;
     public static String address;
-    private DatePickerDialog datePickerDialog,datePickerDialog2;
-    private TimePickerDialog timePickerDialog,timePickerDialog2;
     private long date1_long,date2_long,time1_long,time2_long;
-    private int mYear,mMonth,mDay;
     private MainActivity mainActivity;
 
     public FindFragment() {
@@ -90,6 +83,7 @@ public class FindFragment extends Fragment {
         rad = 0.0;
         address = "";
 
+        language = requireActivity().getSharedPreferences("Language",Context.MODE_PRIVATE);
         nameShared = requireActivity().getSharedPreferences("Name",Context.MODE_PRIVATE);
         imageUrlShared = requireActivity().getSharedPreferences("ImageUrl",Context.MODE_PRIVATE);
     }
@@ -154,27 +148,6 @@ public class FindFragment extends Fragment {
 
             return false;
         });
-
-//        binding.dateEditText1.setOnTouchListener((v, event) -> {
-//            showCustomDateDialog1(v);
-//            return false;
-//        });
-//
-//        binding.timeEditText1.setOnTouchListener((v, event) -> {
-//            showCustomTimeDialog1(v);
-//            return false;
-//        });
-//
-//        binding.dateEditText2.setOnTouchListener((v, event) -> {
-//            showCustomDateDialog2(v);
-//            return false;
-//        });
-//
-//        binding.timeEditText2.setOnTouchListener((v, event) -> {
-//            showCustomTimeDialog2(v);
-//            return false;
-//        });
-
 
         binding.findPost.setOnClickListener(this::findData);
 
@@ -287,7 +260,6 @@ public class FindFragment extends Fragment {
         View popupView = inflater.inflate(R.layout.layout_time_range_picker, null);
         PopupWindow popupWindow = new PopupWindow(popupView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
 
-
         AppCompatButton selectButton = popupView.findViewById(R.id.selectButton);
         AppCompatButton clearButton = popupView.findViewById(R.id.clearButton);
 
@@ -297,29 +269,75 @@ public class FindFragment extends Fragment {
         TextView startTimeText = popupView.findViewById(R.id.startTime);
         TextView endTimeText = popupView.findViewById(R.id.endTime);
 
-        int startHour = startTimePicker.getCurrentHour();
-        int startMinute = startTimePicker.getCurrentMinute();
-        String startFormattedTime = String.format(Locale.getDefault(), "%02d:%02d", startHour, startMinute);
-        startTimeText.setText(startFormattedTime);
+        Calendar calendar = Calendar.getInstance();
 
-        int endHour = endTimePicker.getCurrentHour();
-        int endMinute = endTimePicker.getCurrentMinute();
-        String endFormattedTime = String.format(Locale.getDefault(), "%02d:%02d", endHour, endMinute);
-        endTimeText.setText(endFormattedTime);
+        String getLanguage = language.getString("language","");
+        if(getLanguage.equals("turkish")){
+            int startHour = startTimePicker.getCurrentHour();
+            int startMinute = startTimePicker.getCurrentMinute();
+            String startFormattedTime = String.format(Locale.getDefault(), "%02d:%02d", startHour, startMinute);
+            startTimeText.setText(startFormattedTime);
+
+            int endHour = endTimePicker.getCurrentHour();
+            int endMinute = endTimePicker.getCurrentMinute();
+            String endFormattedTime = String.format(Locale.getDefault(), "%02d:%02d", endHour, endMinute);
+            endTimeText.setText(endFormattedTime);
+        }else {
+            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.forLanguageTag("en"));
+
+            int startHour = startTimePicker.getCurrentHour();
+            int startMinute = startTimePicker.getCurrentMinute();
+            calendar.set(Calendar.HOUR_OF_DAY, startHour);
+            calendar.set(Calendar.MINUTE, startMinute);
+            String startFormattedTime = timeFormat.format(calendar.getTime());
+            startTimeText.setText(startFormattedTime);
+
+            int endHour = endTimePicker.getCurrentHour();
+            int endMinute = endTimePicker.getCurrentMinute();
+            calendar.set(Calendar.HOUR_OF_DAY, endHour);
+            calendar.set(Calendar.MINUTE, endMinute);
+            String endFormattedTime = timeFormat.format(calendar.getTime());
+            endTimeText.setText(endFormattedTime);
+        }
 
         startTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
-                startTimeText.setText(formattedTime);
+                String getLanguage = language.getString("language","");
+                if(getLanguage.equals("turkish")){
+                    String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+                    startTimeText.setText(formattedTime);
+                }else {
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.forLanguageTag("en"));
+
+                    int startHour = startTimePicker.getCurrentHour();
+                    int startMinute = startTimePicker.getCurrentMinute();
+                    calendar.set(Calendar.HOUR_OF_DAY, startHour);
+                    calendar.set(Calendar.MINUTE, startMinute);
+                    String startFormattedTime = timeFormat.format(calendar.getTime());
+                    startTimeText.setText(startFormattedTime);
+                }
             }
         });
 
         endTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
-                String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
-                endTimeText.setText(formattedTime);
+                String getLanguage = language.getString("language","");
+                if(getLanguage.equals("turkish")){
+                    String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
+                    endTimeText.setText(formattedTime);
+                }else {
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.forLanguageTag("en"));
+
+                    int endHour = endTimePicker.getCurrentHour();
+                    int endMinute = endTimePicker.getCurrentMinute();
+                    calendar.set(Calendar.HOUR_OF_DAY, endHour);
+                    calendar.set(Calendar.MINUTE, endMinute);
+                    String endFormattedTime = timeFormat.format(calendar.getTime());
+                    endTimeText.setText(endFormattedTime);
+                }
+
             }
         });
 
@@ -333,7 +351,13 @@ public class FindFragment extends Fragment {
                 checkComparesTime = compareTimes(firstTime,secondTime);
 
                 if(checkComparesTime){
-                    @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_time = new SimpleDateFormat("HH:mm", Locale.forLanguageTag("tr"));
+                    String getLanguage = language.getString("language","");
+                    SimpleDateFormat formatter_time;
+                    if(getLanguage.equals("turkish")){
+                        formatter_time = new SimpleDateFormat("HH:mm", new Locale("tr"));
+                    }else {
+                        formatter_time = new SimpleDateFormat("hh:mm a", new Locale("en"));
+                    }
                     try {
                         Date time_1 = formatter_time.parse(firstTime);
                         Date time_2 = formatter_time.parse(secondTime);
@@ -388,7 +412,13 @@ public class FindFragment extends Fragment {
         startDatePicker.setMaxDate(calendar.getTimeInMillis());
         endDatePicker.setMaxDate(calendar.getTimeInMillis());
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("tr"));
+        String getLanguage = language.getString("language","");
+        SimpleDateFormat dateFormat;
+        if(getLanguage.equals("turkish")){
+            dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("tr"));
+        }else {
+            dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("en"));
+        }
 
         int startYear = startDatePicker.getYear();
         int startMonth = startDatePicker.getMonth();
@@ -429,7 +459,13 @@ public class FindFragment extends Fragment {
                 String secondDate= endDateText.getText().toString();
                 String allDate = firstDate + " - " + secondDate;
 
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("tr"));
+                String getLanguage = language.getString("language","");
+                SimpleDateFormat dateFormat;
+                if(getLanguage.equals("turkish")){
+                    dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("tr"));
+                }else {
+                    dateFormat = new SimpleDateFormat("dd/MM/yyyy", new Locale("en"));
+                }
 
                 int startYear = startDatePicker.getYear();
                 int startMonth = startDatePicker.getMonth();
@@ -448,7 +484,12 @@ public class FindFragment extends Fragment {
                 checkComparesDate = compareDates(startFormattedDate,endFormattedDate);
 
                 if(checkComparesDate){
-                    @SuppressLint("SimpleDateFormat") SimpleDateFormat formatter_date = new SimpleDateFormat("dd/MM/yyyy", Locale.forLanguageTag("tr"));
+                    SimpleDateFormat formatter_date;
+                    if(getLanguage.equals("turkish")){
+                        formatter_date = new SimpleDateFormat("dd/MM/yyyy", new Locale("tr"));
+                    }else {
+                        formatter_date = new SimpleDateFormat("dd/MM/yyyy", new Locale("en"));
+                    }
                     try {
                         Date date_1 = formatter_date.parse(startFormattedDate);
                         Date date_2 = formatter_date.parse(endFormattedDate);
@@ -540,20 +581,9 @@ public class FindFragment extends Fragment {
         Double radius = rad;
         String city = binding.cityCompleteText.getText().toString();
         String district = binding.districtCompleteText.getText().toString();
-//        String date1 = binding.dateEditText1.getText().toString();
-//        String time1 = binding.timeEditText1.getText().toString();
-//        String date2 = binding.dateEditText2.getText().toString();
-//        String time2 = binding.timeEditText2.getText().toString();
 
         boolean checkCity = !city.isEmpty();
         boolean checkDistrict = !district.isEmpty();
-//
-//        boolean hasDate1 = !date1.isEmpty();
-//        boolean hasTime1 = !time1.isEmpty();
-//        boolean hasDate2 = !date2.isEmpty();
-//        boolean hasTime2 = !time2.isEmpty();
-//
-//        boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
 
         if(checkCity && checkDistrict){
 
@@ -594,556 +624,6 @@ public class FindFragment extends Fragment {
         }
     }
 
-//    private void findData(View v){
-//        Double latitude = lat;
-//        Double longitude = lng;
-//        Double radius = rad;
-//        String city = binding.cityCompleteText.getText().toString();
-//        String district = binding.districtCompleteText.getText().toString();
-////        String place = binding.place.getText().toString();
-//        String date1 = binding.dateEditText1.getText().toString();
-//        String time1 = binding.timeEditText1.getText().toString();
-//        String date2 = binding.dateEditText2.getText().toString();
-//        String time2 = binding.timeEditText2.getText().toString();
-//
-//        boolean checkCity = !city.isEmpty();
-//        boolean checkDistrict = !district.isEmpty();
-////        boolean checkPlace = !place.isEmpty();
-//
-//        boolean hasDate1 = !date1.isEmpty();
-//        boolean hasTime1 = !time1.isEmpty();
-//        boolean hasDate2 = !date2.isEmpty();
-//        boolean hasTime2 = !time2.isEmpty();
-//
-//        boolean checkFormatDate1,checkFormatDate2,checkFormatTime1,checkFormatTime2;
-//
-//        if(checkCity && checkDistrict){
-//
-//            if(hasDate1 && hasDate2 && hasTime1 && hasTime2){
-//                checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
-//                checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
-//
-//                checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
-//                checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
-//
-//                if(checkFormatDate1 && checkFormatDate2 && checkFormatTime1 && checkFormatTime2){
-//                    boolean checkComparesDate,checkComparesTime;
-//
-//                    checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
-//                    checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
-//
-//                    if(checkComparesDate && checkComparesTime){
-//                        Bundle args = new Bundle();
-//                        args.putString("city", city);
-//                        args.putString("district", district);
-////                        args.putString("place", place);
-//                        args.putDouble("radius", radius);
-//                        args.putDouble("latitude", latitude);
-//                        args.putDouble("longitude", longitude);
-//                        args.putString("date1", date1);
-//                        args.putString("date2", date2);
-//                        args.putString("time1", time1);
-//                        args.putString("time2", time2);
-//
-//                        MainFragment mainFragment = new MainFragment();
-//                        mainFragment.setArguments(args);
-//                        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-//                        fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
-//                        fragmentTransaction.addToBackStack(null);
-//                        fragmentTransaction.commit();
-//                    }
-//                    else {
-//                        if(!checkComparesDate){
-//                            binding.errorDate1Text.setText(getString(R.string._2_girdi_iniz_tarihten_b_y_k_olamaz));
-//                            binding.dateEditText1.setTextColor(Color.RED);
-//                            binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//                        }else {
-//                            binding.dateEditText1.setError(null);
-//                            binding.errorDate1Text.setText("");
-//                            binding.dateEditText1.setTextColor(Color.WHITE);
-//                        }
-//                        if(!checkComparesTime){
-//                            binding.errorTime2Text.setText("");
-//                            binding.errorTime1Text.setText(getString(R.string._2_girdi_iniz_tarihten_b_y_k_olamaz));
-//                            binding.timeEditText1.setTextColor(Color.RED);
-//                            binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//                        }else {
-//                            binding.timeEditText1.setError(null);
-//                            binding.errorTime1Text.setText("");
-//                            binding.timeEditText1.setTextColor(Color.WHITE);
-//                        }
-//                    }
-//
-//                }
-//                else {
-//                    if(!checkFormatDate1){
-//                        binding.errorDate1Text.setText(getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz));
-//                        binding.dateEditText1.setTextColor(Color.RED);
-//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//                    }else {
-//                        binding.dateEditText1.setError(null);
-//                    }
-//                    if(!checkFormatDate2){
-//                        binding.errorDate2Text.setText(getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz));
-//                        binding.dateEditText2.setTextColor(Color.RED);
-//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//                    }else {
-//                        binding.dateEditText2.setError(null);
-//                    }
-//                    if(!checkFormatTime1){
-//                        binding.errorTime1Text.setText(getString(R.string.saat_dakika_format_na_uygun_giriniz));
-//                        binding.timeEditText1.setTextColor(Color.RED);
-//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//                    }else {
-//                        binding.timeEditText1.setError(null);
-//                    }
-//                    if(!checkFormatTime2){
-//                        binding.errorTime2Text.setText(getString(R.string.saat_dakika_format_na_uygun_giriniz));
-//                        binding.timeEditText2.setTextColor(Color.RED);
-//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//                    }else {
-//                        binding.timeEditText2.setError(null);
-//                    }
-//                }
-//            }
-//
-//
-//            // error
-//
-//            if(hasDate1 && hasDate2 && hasTime1 && !hasTime2){
-//                binding.errorDate1Text.setText("");
-//                binding.errorDate2Text.setText("");
-//                binding.errorTime1Text.setText("");
-//                binding.dateEditText1.setTextColor(Color.WHITE);
-//                binding.dateEditText2.setTextColor(Color.WHITE);
-//                binding.timeEditText1.setTextColor(Color.WHITE);
-//
-//                binding.errorTime2Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
-//                binding.timeEditText2.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//            }
-//
-//            if(hasDate1 && hasDate2 && !hasTime1 && hasTime2){
-//                binding.errorDate1Text.setText("");
-//                binding.errorDate2Text.setText("");
-//                binding.errorTime2Text.setText("");
-//                binding.dateEditText1.setTextColor(Color.WHITE);
-//                binding.dateEditText2.setTextColor(Color.WHITE);
-//                binding.timeEditText2.setTextColor(Color.WHITE);
-//
-//
-//                binding.errorTime1Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
-//                binding.timeEditText1.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//            }
-//
-//            if(hasDate1 && !hasDate2 && hasTime1 && hasTime2){
-//                binding.errorDate1Text.setText("");
-//                binding.errorTime1Text.setText("");
-//                binding.errorTime2Text.setText("");
-//                binding.dateEditText1.setTextColor(Color.WHITE);
-//                binding.timeEditText1.setTextColor(Color.WHITE);
-//                binding.timeEditText2.setTextColor(Color.WHITE);
-//
-//                binding.errorDate2Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
-//                binding.dateEditText2.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//            }
-//
-//            if(!hasDate1 && hasDate2 && hasTime1 && hasTime2){
-//                binding.errorDate2Text.setText("");
-//                binding.errorTime1Text.setText("");
-//                binding.errorTime2Text.setText("");
-//                binding.dateEditText2.setTextColor(Color.WHITE);
-//                binding.timeEditText1.setTextColor(Color.WHITE);
-//                binding.timeEditText2.setTextColor(Color.WHITE);
-//
-//                binding.errorDate1Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
-//                binding.dateEditText1.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//            }
-//
-//            if(hasDate1 && !hasDate2 && !hasTime1 && !hasTime2){
-//                binding.errorDate1Text.setText("");
-//                binding.errorTime1Text.setText("");
-//                binding.errorTime2Text.setText("");
-//                binding.timeEditText1.setHintTextColor(Color.GRAY);
-//                binding.timeEditText2.setHintTextColor(Color.GRAY);
-//                binding.dateEditText1.setTextColor(Color.WHITE);
-//
-//                binding.errorDate2Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
-//                binding.dateEditText2.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//            }
-//
-//            if(!hasDate1 && hasDate2 && !hasTime1 && !hasTime2){
-//                binding.errorDate2Text.setText("");
-//                binding.errorTime1Text.setText("");
-//                binding.errorTime2Text.setText("");
-//                binding.timeEditText1.setHintTextColor(Color.GRAY);
-//                binding.timeEditText2.setHintTextColor(Color.GRAY);
-//                binding.dateEditText2.setTextColor(Color.WHITE);
-//
-//                binding.errorDate1Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
-//                binding.dateEditText1.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//            }
-//
-//            if(!hasDate1 && !hasDate2 && hasTime1 && !hasTime2){
-//                binding.errorDate1Text.setText("");
-//                binding.errorDate2Text.setText("");
-//                binding.errorTime1Text.setText("");
-//                binding.dateEditText1.setHintTextColor(Color.GRAY);
-//                binding.dateEditText2.setHintTextColor(Color.GRAY);
-//                binding.timeEditText1.setTextColor(Color.WHITE);
-//
-//                binding.errorTime2Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
-//                binding.timeEditText2.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//            }
-//
-//            if(!hasDate1 && !hasDate2 && !hasTime1 && hasTime2){
-//                binding.errorDate1Text.setText("");
-//                binding.errorDate2Text.setText("");
-//                binding.errorTime2Text.setText("");
-//                binding.dateEditText1.setHintTextColor(Color.GRAY);
-//                binding.dateEditText2.setHintTextColor(Color.GRAY);
-//                binding.timeEditText2.setTextColor(Color.WHITE);
-//
-//                binding.errorTime1Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
-//                binding.timeEditText1.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//            }
-//
-//            if(hasDate1 && !hasDate2 && !hasTime1 && hasTime2){
-//                binding.errorDate1Text.setText("");
-//                binding.errorTime2Text.setText("");
-//                binding.dateEditText1.setTextColor(Color.WHITE);
-//                binding.timeEditText2.setTextColor(Color.WHITE);
-//
-//                binding.errorDate2Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
-//                binding.dateEditText2.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//
-//                binding.errorTime1Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
-//                binding.timeEditText1.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//            }
-//
-//            if(hasDate1 && !hasDate2 && hasTime1 && !hasTime2){
-//                binding.errorDate1Text.setText("");
-//                binding.errorTime1Text.setText("");
-//                binding.dateEditText1.setTextColor(Color.WHITE);
-//                binding.timeEditText1.setTextColor(Color.WHITE);
-//
-//                binding.errorDate2Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
-//                binding.dateEditText2.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//
-//                binding.errorTime2Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
-//                binding.timeEditText2.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//            }
-//
-//            if(!hasDate1 && hasDate2 && !hasTime1 && hasTime2){
-//                binding.errorDate2Text.setText("");
-//                binding.errorTime2Text.setText("");
-//                binding.dateEditText2.setTextColor(Color.WHITE);
-//                binding.timeEditText2.setTextColor(Color.WHITE);
-//
-//                binding.errorDate1Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
-//                binding.dateEditText1.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//
-//                binding.errorTime1Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
-//                binding.timeEditText1.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//            }
-//
-//            if(!hasDate1 && hasDate2 && hasTime1 && !hasTime2){
-//                binding.errorDate2Text.setText("");
-//                binding.errorTime1Text.setText("");
-//                binding.dateEditText2.setTextColor(Color.WHITE);
-//                binding.timeEditText1.setTextColor(Color.WHITE);
-//
-//                binding.errorDate1Text.setText(getString(R.string.tarih_aral_n_eksiksiz_giriniz));
-//                binding.dateEditText1.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//
-//                binding.errorTime2Text.setText(getString(R.string.saat_aral_n_eksiksiz_giriniz));
-//                binding.timeEditText2.setHintTextColor(Color.RED);
-//                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//            }
-//
-//            //error
-//
-//
-//            if(hasDate1 && hasDate2 && !hasTime1 && !hasTime2){
-//                checkFormatDate1 = isValidDateFormat(binding.dateEditText1.getText().toString());
-//                checkFormatDate2 = isValidDateFormat(binding.dateEditText2.getText().toString());
-//
-//                if(checkFormatDate1 && checkFormatDate2){
-//                    boolean checkComparesDate;
-//
-//                    checkComparesDate = compareDates(binding.dateEditText1.getText().toString(),binding.dateEditText2.getText().toString());
-//
-//                    if(checkComparesDate){
-//                        binding.dateEditText1.setError(null);
-//                        binding.errorDate1Text.setText("");
-//                        binding.dateEditText1.setTextColor(Color.WHITE);
-//
-//                        Bundle args = new Bundle();
-//                        args.putString("city", city);
-//                        args.putString("district", district);
-////                        args.putString("place", place);
-//                        args.putDouble("radius", radius);
-//                        args.putDouble("latitude", latitude);
-//                        args.putDouble("longitude", longitude);
-//                        args.putString("date1", date1);
-//                        args.putString("date2", date2);
-//                        args.putString("time1", time1);
-//                        args.putString("time2", time2);
-//
-//                        MainFragment mainFragment = new MainFragment();
-//                        mainFragment.setArguments(args);
-//                        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-//                        fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
-//                        fragmentTransaction.addToBackStack(null);
-//                        fragmentTransaction.commit();
-//                    }
-//                    else {
-//                        binding.errorDate1Text.setText(getString(R.string._2_girdi_iniz_tarihten_b_y_k_olamaz));
-//                        binding.dateEditText1.setTextColor(Color.RED);
-//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//                    }
-//
-//                }
-//                else {
-//                    if(!checkFormatDate1){
-//                        binding.errorDate1Text.setText(getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz));
-//                        binding.dateEditText1.setTextColor(Color.RED);
-//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//                    }else {
-//                        binding.dateEditText1.setError(null);
-//                    }
-//                    if(!checkFormatDate2){
-//                        binding.errorDate2Text.setText(getString(R.string.g_n_ay_y_l_format_na_uygun_giriniz));
-//                        binding.dateEditText2.setTextColor(Color.RED);
-//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//                    }else {
-//                        binding.dateEditText2.setError(null);
-//                    }
-//                }
-//            }
-//
-//            if(!hasDate1 && !hasDate2 && hasTime1 && hasTime2){
-//                checkFormatTime1 = isValidTimeFormat(binding.timeEditText1.getText().toString());
-//                checkFormatTime2 = isValidTimeFormat(binding.timeEditText2.getText().toString());
-//
-//                if(checkFormatTime1 && checkFormatTime2){
-//                    boolean checkComparesTime;
-//
-//                    checkComparesTime = compareTimes(binding.timeEditText1.getText().toString(),binding.timeEditText2.getText().toString());
-//
-//                    if(checkComparesTime){
-//                        binding.timeEditText1.setError(null);
-//                        binding.errorTime1Text.setText("");
-//                        binding.timeEditText1.setTextColor(Color.WHITE);
-//
-//                        Bundle args = new Bundle();
-//                        args.putString("city", city);
-//                        args.putString("district", district);
-////                        args.putString("place", place);
-//                        args.putDouble("radius", radius);
-//                        args.putDouble("latitude", latitude);
-//                        args.putDouble("longitude", longitude);
-//                        args.putString("date1", date1);
-//                        args.putString("date2", date2);
-//                        args.putString("time1", time1);
-//                        args.putString("time2", time2);
-//
-//                        MainFragment mainFragment = new MainFragment();
-//                        mainFragment.setArguments(args);
-//                        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-//                        fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
-//                        fragmentTransaction.addToBackStack(null);
-//                        fragmentTransaction.commit();
-//                    }
-//                    else {
-//                        binding.errorTime1Text.setText(getString(R.string._2_girdi_iniz_saatten_b_y_k_olamaz));
-//                        binding.timeEditText1.setTextColor(Color.RED);
-//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//                    }
-//
-//                }
-//                else {
-//                    if(!checkFormatTime1){
-//                        binding.errorTime1Text.setText(getString(R.string.saat_dakika_format_na_uygun_giriniz));
-//                        binding.timeEditText1.setTextColor(Color.RED);
-//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//                    }else {
-//                        binding.timeEditText1.setError(null);
-//                        binding.errorTime1Text.setText("");
-//                        binding.timeEditText1.setTextColor(Color.WHITE);
-//                    }
-//                    if(!checkFormatTime2){
-//                        binding.errorTime2Text.setText(getString(R.string.saat_dakika_format_na_uygun_giriniz));
-//                        binding.timeEditText2.setTextColor(Color.RED);
-//                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
-//                    }else {
-//                        binding.timeEditText2.setError(null);
-//                        binding.timeEditText2.setTextColor(Color.WHITE);
-//                    }
-//                }
-//            }
-//
-//            if(!hasDate1 && !hasDate2 && !hasTime1 && !hasTime2){
-//                Bundle args = new Bundle();
-//                args.putString("city", city);
-//                args.putString("district", district);
-////                args.putString("place", place);
-//                args.putDouble("radius", radius);
-//                args.putDouble("latitude", latitude);
-//                args.putDouble("longitude", longitude);
-//                args.putString("date1", date1);
-//                args.putString("date2", date2);
-//                args.putString("time1", time1);
-//                args.putString("time2", time2);
-//
-//                MainFragment mainFragment = new MainFragment();
-//                mainFragment.setArguments(args);
-//                FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-//                fragmentTransaction.replace(R.id.fragmentContainerView2,mainFragment);
-//                fragmentTransaction.addToBackStack(null);
-//                fragmentTransaction.commit();
-//            }
-//
-//        }
-//        else {
-//            if(!checkCity){
-//                binding.cityTextInput.setError(getString(R.string.il_bos_birakilamaz));
-//                binding.cityTextInput.setErrorIconDrawable(null);
-//            }else {
-//                binding.cityTextInput.setError(null);
-//                binding.cityTextInput.setErrorIconDrawable(null);
-//            }
-//            if(!checkDistrict){
-//                binding.districtTextInput.setError(getString(R.string.ilce_bos_birakilamaz));
-//                binding.districtTextInput.setErrorIconDrawable(null);
-//            }else {
-//                binding.districtTextInput.setError(null);
-//                binding.districtTextInput.setErrorIconDrawable(null);
-//            }
-//        }
-//    }
-
-    private void empty(){
-
-    }
-
-//    private void showCustomTimeDialog1(View view) {
-//        if(timePickerDialog == null){
-//            final Calendar currentTime = Calendar.getInstance();
-//            int hour = currentTime.get(Calendar.HOUR_OF_DAY);
-//            int minute = currentTime.get(Calendar.MINUTE);
-//
-//            timePickerDialog = new TimePickerDialog(
-//                    view.getContext(),
-//                    new TimePickerDialog.OnTimeSetListener() {
-//                        @Override
-//                        public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-//                            String timeString = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
-//                            binding.timeEditText1.setText(timeString);
-//                            binding.timeEditText1.setTextColor(Color.WHITE);
-//                            binding.errorTime1Text.setText("");
-//                        }
-//                    },
-//                    hour,
-//                    minute,
-//                    true
-//            );
-//        }
-//
-//
-//        timePickerDialog.show();
-//    }
-//    private void showCustomDateDialog1(View view) {
-//        if(datePickerDialog == null){
-//            final Calendar calendar = Calendar.getInstance();
-//            mYear = calendar.get(Calendar.YEAR);
-//            mMonth = calendar.get(Calendar.MONTH);
-//            mDay = calendar.get(Calendar.DAY_OF_MONTH);
-//
-//            datePickerDialog = new DatePickerDialog(view.getContext(), new DatePickerDialog.OnDateSetListener() {
-//                @Override
-//                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-//                    String timeString = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, (month + 1), year);
-//                    binding.dateEditText1.setText(timeString);
-//                    binding.dateEditText1.setTextColor(Color.WHITE);
-//                    binding.errorDate1Text.setText("");
-//                }
-//            },mYear,mMonth,mDay);
-//        }
-//
-//        datePickerDialog.show();
-//    }
-//    private void showCustomTimeDialog2(View view) {
-//        if(timePickerDialog2 == null){
-//            final Calendar currentTime = Calendar.getInstance();
-//            int hour = currentTime.get(Calendar.HOUR_OF_DAY);
-//            int minute = currentTime.get(Calendar.MINUTE);
-//
-//            timePickerDialog2 = new TimePickerDialog(
-//                    view.getContext(),
-//                    new TimePickerDialog.OnTimeSetListener() {
-//                        @Override
-//                        public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-//                            String timeString = String.format(Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute);
-//                            binding.timeEditText2.setText(timeString);
-//                            binding.timeEditText2.setTextColor(Color.WHITE);
-//                            binding.errorTime2Text.setText("");
-//                        }
-//                    },
-//                    hour,
-//                    minute,
-//                    true
-//            );
-//        }
-//
-//        timePickerDialog2.show();
-//    }
-//    private void showCustomDateDialog2(View view) {
-//        if(datePickerDialog2 == null){
-//            final Calendar calendar = Calendar.getInstance();
-//            mYear = calendar.get(Calendar.YEAR);
-//            mMonth = calendar.get(Calendar.MONTH);
-//            mDay = calendar.get(Calendar.DAY_OF_MONTH);
-//
-//            datePickerDialog2 = new DatePickerDialog(view.getContext(), new DatePickerDialog.OnDateSetListener() {
-//                @Override
-//                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-//                    String timeString = String.format(Locale.getDefault(), "%02d/%02d/%d", dayOfMonth, (month + 1), year);
-//                    binding.dateEditText2.setText(timeString);
-//                    binding.dateEditText2.setTextColor(Color.WHITE);
-//                    binding.errorDate2Text.setText("");
-//                }
-//            },mYear,mMonth,mDay);
-//        }
-//
-//        datePickerDialog2.show();
-//    }
-
-    private boolean isValidDateFormat(String input) {
-        Pattern pattern = Pattern.compile("\\d{2}/\\d{2}/\\d{4}");
-        Matcher matcher = pattern.matcher(input);
-
-        return matcher.matches();
-    }
-    private boolean isValidTimeFormat(String timeString) {
-        String regexPattern = "^([01]?[0-9]|2[0-3]):[0-5][0-9]$";
-
-        return timeString.matches(regexPattern);
-    }
     private boolean compareDates(String dateText1, String dateText2) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
         Date date1 = null;
@@ -1163,16 +643,33 @@ public class FindFragment extends Fragment {
         return false;
     }
     private boolean compareTimes(String time1, String time2) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            Date date1 = sdf.parse(time1);
-            Date date2 = sdf.parse(time2);
+        System.out.println("time1: "+time1);
+        System.out.println("time2: "+time2);
+        String getLanguage = language.getString("language","");
+        if(getLanguage.equals("turkish")){
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                Date date1 = sdf.parse(time1);
+                Date date2 = sdf.parse(time2);
 
-            if (date1 != null && date2 != null) {
-                return date1.compareTo(date2) <= 0; // Saat1, saat2'den büyük veya eşitse true döndürün
+                if (date1 != null && date2 != null) {
+                    return date1.compareTo(date2) <= 0; // Saat1, saat2'den büyük veya eşitse true döndürün
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-        } catch (ParseException e) {
-            e.printStackTrace();
+        }else {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+                Date date1 = sdf.parse(time1);
+                Date date2 = sdf.parse(time2);
+
+                if (date1 != null && date2 != null) {
+                    return date1.compareTo(date2) <= 0; // Saat1, saat2'den büyük veya eşitse true döndürün
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         return false;

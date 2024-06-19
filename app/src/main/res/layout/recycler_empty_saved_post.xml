@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="-50dp"
+        android:fontFamily="@font/roboto_regular"
         android:text="@string/kaydedilen_gonderi_bulunamadi"
         android:textColor="@color/white"
         android:textSize="22sp"

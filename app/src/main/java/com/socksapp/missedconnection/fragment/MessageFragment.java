@@ -125,6 +125,10 @@ public class MessageFragment extends Fragment implements ConversionListener{
             return;
         }
         if(value != null){
+            if(!value.isEmpty()){
+                binding.text.setVisibility(View.GONE);
+                binding.text2.setVisibility(View.GONE);
+            }
             for(DocumentChange documentChange: value.getDocumentChanges()){
                 if(documentChange.getType() == DocumentChange.Type.ADDED){
                     String senderId = documentChange.getDocument().getString("senderId");

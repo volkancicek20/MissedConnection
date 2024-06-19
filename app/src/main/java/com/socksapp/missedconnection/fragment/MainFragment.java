@@ -1,11 +1,9 @@
 package com.socksapp.missedconnection.fragment;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -24,10 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.os.Handler;
-import android.text.InputType;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,8 +35,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
@@ -61,10 +54,8 @@ import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.adapter.PostAdapter;
 import com.socksapp.missedconnection.databinding.FragmentMainBinding;
-import com.socksapp.missedconnection.model.ChatMessage;
 import com.socksapp.missedconnection.model.FindPost;
 import com.socksapp.missedconnection.myclass.TimedDataManager;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -198,7 +189,6 @@ public class MainFragment extends Fragment {
                 }
             }
         });
-
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -528,10 +518,12 @@ public class MainFragment extends Fragment {
                     }
 
                     lastVisiblePost = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
+
                     boolean empty = true;
+
                     for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots) {
-                        empty = false;
                         if (isPostWithinRadius(querySnapshot,latFind,lngFind,radiusFind)) {
+                            empty = false;
                             FindPost post = createPostFromSnapshot(querySnapshot);
                             postArrayList.add(post);
                         }
@@ -574,6 +566,7 @@ public class MainFragment extends Fragment {
                         binding.shimmerLayout.setVisibility(View.GONE);
                         binding.recyclerViewMain.setVisibility(View.VISIBLE);
                     }
+
                     postAdapter.notifyDataSetChanged();
 
                 })
