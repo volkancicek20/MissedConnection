@@ -271,33 +271,88 @@ public class FindFragment extends Fragment {
 
         Calendar calendar = Calendar.getInstance();
 
-        String getLanguage = language.getString("language","");
-        if(getLanguage.equals("turkish")){
-            int startHour = startTimePicker.getCurrentHour();
-            int startMinute = startTimePicker.getCurrentMinute();
-            String startFormattedTime = String.format(Locale.getDefault(), "%02d:%02d", startHour, startMinute);
-            startTimeText.setText(startFormattedTime);
+        if(binding.timeRange.getText().toString().isEmpty()){
+            String getLanguage = language.getString("language","");
+            if(getLanguage.equals("turkish")){
+                int startHour = startTimePicker.getCurrentHour();
+                int startMinute = startTimePicker.getCurrentMinute();
+                String startFormattedTime = String.format(Locale.getDefault(), "%02d:%02d", startHour, startMinute);
+                startTimeText.setText(startFormattedTime);
 
-            int endHour = endTimePicker.getCurrentHour();
-            int endMinute = endTimePicker.getCurrentMinute();
-            String endFormattedTime = String.format(Locale.getDefault(), "%02d:%02d", endHour, endMinute);
-            endTimeText.setText(endFormattedTime);
+                int endHour = endTimePicker.getCurrentHour();
+                int endMinute = endTimePicker.getCurrentMinute();
+                String endFormattedTime = String.format(Locale.getDefault(), "%02d:%02d", endHour, endMinute);
+                endTimeText.setText(endFormattedTime);
+            }else {
+                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.forLanguageTag("en"));
+
+                int startHour = startTimePicker.getCurrentHour();
+                int startMinute = startTimePicker.getCurrentMinute();
+                calendar.set(Calendar.HOUR_OF_DAY, startHour);
+                calendar.set(Calendar.MINUTE, startMinute);
+                String startFormattedTime = timeFormat.format(calendar.getTime());
+                startTimeText.setText(startFormattedTime);
+
+                int endHour = endTimePicker.getCurrentHour();
+                int endMinute = endTimePicker.getCurrentMinute();
+                calendar.set(Calendar.HOUR_OF_DAY, endHour);
+                calendar.set(Calendar.MINUTE, endMinute);
+                String endFormattedTime = timeFormat.format(calendar.getTime());
+                endTimeText.setText(endFormattedTime);
+            }
         }else {
-            SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.forLanguageTag("en"));
+            String timeRangeText = binding.timeRange.getText().toString();
+            String[] rangeText = timeRangeText.split("-");
+            String firstRangeText = rangeText[0];
+            String secondRangeText = rangeText[1];
 
-            int startHour = startTimePicker.getCurrentHour();
-            int startMinute = startTimePicker.getCurrentMinute();
-            calendar.set(Calendar.HOUR_OF_DAY, startHour);
-            calendar.set(Calendar.MINUTE, startMinute);
-            String startFormattedTime = timeFormat.format(calendar.getTime());
-            startTimeText.setText(startFormattedTime);
+            startTimeText.setText(firstRangeText);
+            endTimeText.setText(secondRangeText);
 
-            int endHour = endTimePicker.getCurrentHour();
-            int endMinute = endTimePicker.getCurrentMinute();
-            calendar.set(Calendar.HOUR_OF_DAY, endHour);
-            calendar.set(Calendar.MINUTE, endMinute);
-            String endFormattedTime = timeFormat.format(calendar.getTime());
-            endTimeText.setText(endFormattedTime);
+            String getLanguage = language.getString("language","");
+            if(getLanguage.equals("turkish")){
+                String[] parts = firstRangeText.split(":");
+                int hour = Integer.parseInt(parts[0].trim());
+                int minute = Integer.parseInt(parts[1].trim());
+                startTimePicker.setHour(hour);
+                startTimePicker.setMinute(minute);
+
+                String[] parts2 = secondRangeText.split(":");
+                int hour2 = Integer.parseInt(parts2[0].trim());
+                int minute2 = Integer.parseInt(parts2[1].trim());
+                endTimePicker.setHour(hour2);
+                endTimePicker.setMinute(minute2);
+            }else {
+                String[] parts1 = firstRangeText.split(":");
+                int hour1 = Integer.parseInt(parts1[0].trim());
+                int minute1 = Integer.parseInt(parts1[1].substring(0, 2).trim());
+                String period1 = firstRangeText.substring(firstRangeText.length() - 2).trim();
+
+                if (period1.equalsIgnoreCase("PM") && hour1 < 12) {
+                    hour1 += 12;
+                } else if (period1.equalsIgnoreCase("AM") && hour1 == 12) {
+                    hour1 = 0;
+                }
+
+                startTimePicker.setHour(hour1);
+                startTimePicker.setMinute(minute1);
+                startTimeText.setText(firstRangeText.trim());
+
+                String[] parts2 = secondRangeText.split(":");
+                int hour2 = Integer.parseInt(parts2[0].trim());
+                int minute2 = Integer.parseInt(parts2[1].substring(0, 2).trim());
+                String period2 = secondRangeText.substring(secondRangeText.length() - 2).trim();
+
+                if (period2.equalsIgnoreCase("PM") && hour2 < 12) {
+                    hour2 += 12;
+                } else if (period2.equalsIgnoreCase("AM") && hour2 == 12) {
+                    hour2 = 0;
+                }
+
+                endTimePicker.setHour(hour2);
+                endTimePicker.setMinute(minute2);
+                endTimeText.setText(secondRangeText.trim());
+            }
         }
 
         startTimePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
