@@ -45,6 +45,8 @@ import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentFindBinding;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -303,8 +305,8 @@ public class FindFragment extends Fragment {
         }else {
             String timeRangeText = binding.timeRange.getText().toString();
             String[] rangeText = timeRangeText.split("-");
-            String firstRangeText = rangeText[0];
-            String secondRangeText = rangeText[1];
+            String firstRangeText = rangeText[0].trim();
+            String secondRangeText = rangeText[1].trim();
 
             startTimeText.setText(firstRangeText);
             endTimeText.setText(secondRangeText);
@@ -464,34 +466,92 @@ public class FindFragment extends Fragment {
         TextView endDateText = popupView.findViewById(R.id.endDate);
 
         Calendar calendar = Calendar.getInstance();
-        startDatePicker.setMaxDate(calendar.getTimeInMillis());
-        endDatePicker.setMaxDate(calendar.getTimeInMillis());
 
-        String getLanguage = language.getString("language","");
-        SimpleDateFormat dateFormat;
-        if(getLanguage.equals("turkish")){
-            dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("tr"));
+        if(binding.datetimeRange.getText().toString().isEmpty()){
+            startDatePicker.setMaxDate(calendar.getTimeInMillis());
+            endDatePicker.setMaxDate(calendar.getTimeInMillis());
+
+            String getLanguage = language.getString("language","");
+            SimpleDateFormat dateFormat;
+            if(getLanguage.equals("turkish")){
+                dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("tr"));
+            }else {
+                dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("en"));
+            }
+
+            int startYear = startDatePicker.getYear();
+            int startMonth = startDatePicker.getMonth();
+            int startDay = startDatePicker.getDayOfMonth();
+            calendar.set(startYear, startMonth, startDay);
+            String startFormattedDate = dateFormat.format(calendar.getTime());
+            startDateText.setText(startFormattedDate);
+
+            int endYear = endDatePicker.getYear();
+            int endMonth = endDatePicker.getMonth();
+            int endDay = endDatePicker.getDayOfMonth();
+            calendar.set(endYear, endMonth, endDay);
+            String endFormattedDate = dateFormat.format(calendar.getTime());
+            endDateText.setText(endFormattedDate);
         }else {
-            dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("en"));
+            String dateRangeText = binding.datetimeRange.getText().toString();
+            String[] rangeText = dateRangeText.split("-");
+            String firstRangeText = rangeText[0].trim();
+            String secondRangeText = rangeText[1].trim();
+
+            startDateText.setText(firstRangeText);
+            endDateText.setText(secondRangeText);
+
+            String getLanguage = language.getString("language","");
+            if(getLanguage.equals("turkish")){
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", new Locale("tr", "TR"));
+
+                LocalDate localDate = LocalDate.parse(firstRangeText, formatter);
+
+                int year = localDate.getYear();
+                int month = localDate.getMonthValue() - 1;
+                int dayOfMonth = localDate.getDayOfMonth();
+
+                startDatePicker.updateDate(year, month, dayOfMonth);
+
+                LocalDate localDate2 = LocalDate.parse(secondRangeText, formatter);
+
+                int year2 = localDate2.getYear();
+                int month2 = localDate2.getMonthValue() - 1;
+                int dayOfMonth2 = localDate2.getDayOfMonth();
+
+                endDatePicker.updateDate(year2, month2, dayOfMonth2);
+            }else {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy", new Locale("en", "US"));
+
+                LocalDate localDate = LocalDate.parse(firstRangeText, formatter);
+
+                int year = localDate.getYear();
+                int month = localDate.getMonthValue() - 1;
+                int dayOfMonth = localDate.getDayOfMonth();
+
+                startDatePicker.updateDate(year, month, dayOfMonth);
+
+                LocalDate localDate2 = LocalDate.parse(secondRangeText, formatter);
+
+                int year2 = localDate2.getYear();
+                int month2 = localDate2.getMonthValue() - 1;
+                int dayOfMonth2 = localDate2.getDayOfMonth();
+
+                endDatePicker.updateDate(year2, month2, dayOfMonth2);
+            }
+
         }
-
-        int startYear = startDatePicker.getYear();
-        int startMonth = startDatePicker.getMonth();
-        int startDay = startDatePicker.getDayOfMonth();
-        calendar.set(startYear, startMonth, startDay);
-        String startFormattedDate = dateFormat.format(calendar.getTime());
-        startDateText.setText(startFormattedDate);
-
-        int endYear = endDatePicker.getYear();
-        int endMonth = endDatePicker.getMonth();
-        int endDay = endDatePicker.getDayOfMonth();
-        calendar.set(endYear, endMonth, endDay);
-        String endFormattedDate = dateFormat.format(calendar.getTime());
-        endDateText.setText(endFormattedDate);
 
         startDatePicker.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                String getLanguage = language.getString("language","");
+                SimpleDateFormat dateFormat;
+                if(getLanguage.equals("turkish")){
+                    dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("tr"));
+                }else {
+                    dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("en"));
+                }
                 calendar.set(year, monthOfYear, dayOfMonth);
                 String formattedDate = dateFormat.format(calendar.getTime());
                 startDateText.setText(formattedDate);
@@ -501,6 +561,13 @@ public class FindFragment extends Fragment {
         endDatePicker.setOnDateChangedListener(new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                String getLanguage = language.getString("language","");
+                SimpleDateFormat dateFormat;
+                if(getLanguage.equals("turkish")){
+                    dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("tr"));
+                }else {
+                    dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("en"));
+                }
                 calendar.set(year, monthOfYear, dayOfMonth);
                 String formattedDate = dateFormat.format(calendar.getTime());
                 endDateText.setText(formattedDate);
@@ -680,19 +747,37 @@ public class FindFragment extends Fragment {
     }
 
     private boolean compareDates(String dateText1, String dateText2) {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-        Date date1 = null;
-        Date date2 = null;
+        String getLanguage = language.getString("language","");
+        if(getLanguage.equals("turkish")){
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("tr"));
+            Date date1 = null;
+            Date date2 = null;
 
-        try {
-            date1 = sdf.parse(dateText1);
-            date2 = sdf.parse(dateText2);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+            try {
+                date1 = sdf.parse(dateText1);
+                date2 = sdf.parse(dateText2);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
-        if (date1 != null && date2 != null) {
-            return date1.compareTo(date2) <= 0;
+            if (date1 != null && date2 != null) {
+                return date1.compareTo(date2) <= 0;
+            }
+        }else {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", new Locale("en"));
+            Date date1 = null;
+            Date date2 = null;
+
+            try {
+                date1 = sdf.parse(dateText1);
+                date2 = sdf.parse(dateText2);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            if (date1 != null && date2 != null) {
+                return date1.compareTo(date2) <= 0;
+            }
         }
 
         return false;
@@ -703,19 +788,19 @@ public class FindFragment extends Fragment {
         String getLanguage = language.getString("language","");
         if(getLanguage.equals("turkish")){
             try {
-                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
+                SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", new Locale("tr"));
                 Date date1 = sdf.parse(time1);
                 Date date2 = sdf.parse(time2);
 
                 if (date1 != null && date2 != null) {
-                    return date1.compareTo(date2) <= 0; // Saat1, saat2'den büyük veya eşitse true döndürün
+                    return date1.compareTo(date2) <= 0;
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
             }
         }else {
             try {
-                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", new Locale("en"));
                 Date date1 = sdf.parse(time1);
                 Date date2 = sdf.parse(time2);
 
