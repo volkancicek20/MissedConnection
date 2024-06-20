@@ -12,7 +12,8 @@
         android:id="@+id/icon_retweet"
         android:layout_width="18dp"
         android:layout_height="18dp"
-        android:src="@drawable/icon_retweet"
+        android:background="@drawable/icon_eyes"
+        android:backgroundTint="@color/gray"
         android:layout_margin="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
@@ -23,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:text=""
-        android:textStyle="italic|bold"
+        android:textStyle="bold"
         android:textColor="@color/gray"
         android:textSize="14sp"
         app:layout_constraintTop_toTopOf="@id/icon_retweet"

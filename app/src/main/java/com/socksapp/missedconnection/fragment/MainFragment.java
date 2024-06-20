@@ -285,7 +285,17 @@ public class MainFragment extends Fragment {
         dialog.setContentView(R.layout.bottom_sheet_layout);
 
         LinearLayout map = dialog.findViewById(R.id.layoutMap);
+        LinearLayout save = dialog.findViewById(R.id.layoutSave);
+        LinearLayout message = dialog.findViewById(R.id.layoutMessage);
+        LinearLayout report = dialog.findViewById(R.id.layoutReport);
+        LinearLayout layoutLine = dialog.findViewById(R.id.layoutLine);
 
+        if(userMail.equals(mail)){
+            save.setVisibility(View.GONE);
+            message.setVisibility(View.GONE);
+            report.setVisibility(View.GONE);
+            layoutLine.setVisibility(View.GONE);
+        }
 
         if(lat == 0.0 && lng == 0.0){
             map.setVisibility(View.GONE);
@@ -305,10 +315,6 @@ public class MainFragment extends Fragment {
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         });
-
-        LinearLayout save = dialog.findViewById(R.id.layoutSave);
-        LinearLayout message = dialog.findViewById(R.id.layoutMessage);
-        LinearLayout report = dialog.findViewById(R.id.layoutReport);
 
         save.setOnClickListener(v ->{
             HashMap<String,Object> data = new HashMap<>();
@@ -344,7 +350,6 @@ public class MainFragment extends Fragment {
                 showSnackbar(view,getString(R.string.mesaj_g_ndermek_i_in_profilinizi_tamamlamal_s_n_z));
                 dialog.dismiss();
             }
-
         });
 
         report.setOnClickListener(v ->{

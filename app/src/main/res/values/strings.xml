@@ -117,7 +117,7 @@
     <string name="s">s</string>
 
     <!-- PustNotificationAdapter -->
-    <string name="taraf_ndan_g_r_nt_lendi">viewed by</string>
+    <string name="taraf_ndan_g_r_nt_lendi">Viewed by</string>
 
     <!-- AddPostFragment -->
     <string name="l_ve_il_eyi_girmeniz_gerekmektedir">You must enter the city and district</string>
@@ -261,6 +261,9 @@
 
     <!-- layout_date_range_picker -->
     <string name="tarih_aral_n_belirleyiniz">Specify Date Range</string>
+
+    <!-- custom_dialog_report_user -->
+    <string name="g_nderiyi_bildirme_sebebini_a_klay_n_z">Explain the reason for reporting the shipment</string>
 
     <string-array name="city_names">
         <item>İstanbul</item>
@@ -507,7 +510,6 @@
         <item>Taşova</item>
     </string-array>
     <string-array name="district_antalya">
-        <item>Akseki</item>
         <item>Akseki</item>
         <item>Alanya</item>
         <item>Döşemealtı</item>

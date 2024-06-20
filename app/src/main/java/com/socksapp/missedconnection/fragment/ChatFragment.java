@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -409,18 +411,7 @@ public class ChatFragment extends Fragment {
                     }
                 }
             }
-        }).addOnFailureListener(e -> {
-
         });
-
-
-//        String id = mainActivity.chatIdDataAccess.getChatsIdByMail(anotherMail);
-//        if(id != null){
-//            firebaseFirestore.collection("chats")
-//                .document(id).collection(id).addSnapshotListener(eventListener);
-//        }else {
-//            // viewType 2
-//        }
     }
 
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
@@ -447,6 +438,7 @@ public class ChatFragment extends Fragment {
             Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
             if(count == 0){
                 chatAdapter.notifyDataSetChanged();
+                binding.recyclerViewChat.smoothScrollToPosition(chatMessages.size());
             }else {
                 chatAdapter.notifyItemRangeInserted(chatMessages.size(),chatMessages.size());
                 binding.recyclerViewChat.smoothScrollToPosition(chatMessages.size());

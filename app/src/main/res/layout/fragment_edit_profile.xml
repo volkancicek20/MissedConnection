@@ -92,7 +92,7 @@
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textColorHint="@color/text_input_title_change"
-            android:textCursorDrawable="@drawable/edittext_cursor_color"
+            android:textCursorDrawable="@drawable/edittext_cursor_color_white"
             />
     </com.google.android.material.textfield.TextInputLayout>
 

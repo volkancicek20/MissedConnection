@@ -28,6 +28,8 @@ import android.widget.DatePicker;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -128,6 +130,17 @@ public class FindFragment extends Fragment {
             binding.districtCompleteText.setText("");
             binding.districtCompleteText.setAdapter(null);
             selectDistrict(selectedCity);
+            lat = 0.0;
+            lng = 0.0;
+            rad = 0.0;
+            binding.markedMapView.setText("");
+        });
+
+        binding.districtCompleteText.setOnItemClickListener((parent, view12, position, id) -> {
+            lat = 0.0;
+            lng = 0.0;
+            rad = 0.0;
+            binding.markedMapView.setText("");
         });
 
         binding.topDatePicker.setOnTouchListener((v, event) -> {
@@ -188,6 +201,23 @@ public class FindFragment extends Fragment {
             }
         });
 
+        binding.cityCompleteText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                binding.cityTextInput.setError(null);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         binding.districtCompleteText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -196,6 +226,8 @@ public class FindFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                binding.districtTextInput.setError(null);
+
                 String city = binding.cityCompleteText.getText().toString();
                 String district = s.toString();
 
@@ -286,7 +318,7 @@ public class FindFragment extends Fragment {
                 String endFormattedTime = String.format(Locale.getDefault(), "%02d:%02d", endHour, endMinute);
                 endTimeText.setText(endFormattedTime);
             }else {
-                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.forLanguageTag("en"));
+                SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.forLanguageTag("en"));
 
                 int startHour = startTimePicker.getCurrentHour();
                 int startMinute = startTimePicker.getCurrentMinute();
@@ -365,7 +397,7 @@ public class FindFragment extends Fragment {
                     String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
                     startTimeText.setText(formattedTime);
                 }else {
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.forLanguageTag("en"));
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.forLanguageTag("en"));
 
                     int startHour = startTimePicker.getCurrentHour();
                     int startMinute = startTimePicker.getCurrentMinute();
@@ -385,7 +417,7 @@ public class FindFragment extends Fragment {
                     String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
                     endTimeText.setText(formattedTime);
                 }else {
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.forLanguageTag("en"));
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.forLanguageTag("en"));
 
                     int endHour = endTimePicker.getCurrentHour();
                     int endMinute = endTimePicker.getCurrentMinute();
@@ -413,7 +445,7 @@ public class FindFragment extends Fragment {
                     if(getLanguage.equals("turkish")){
                         formatter_time = new SimpleDateFormat("HH:mm", new Locale("tr"));
                     }else {
-                        formatter_time = new SimpleDateFormat("hh:mm a", new Locale("en"));
+                        formatter_time = new SimpleDateFormat("h:mm a", new Locale("en"));
                     }
                     try {
                         Date time_1 = formatter_time.parse(firstTime);
@@ -661,6 +693,7 @@ public class FindFragment extends Fragment {
 
                 LatLng location = new LatLng(lat, lng);
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+                // red mark
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_location_mark_100);
                 Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false); // 50x50 boyutunda ikon
                 googleMap.addMarker(new MarkerOptions()
@@ -783,8 +816,6 @@ public class FindFragment extends Fragment {
         return false;
     }
     private boolean compareTimes(String time1, String time2) {
-        System.out.println("time1: "+time1);
-        System.out.println("time2: "+time2);
         String getLanguage = language.getString("language","");
         if(getLanguage.equals("turkish")){
             try {
@@ -800,7 +831,7 @@ public class FindFragment extends Fragment {
             }
         }else {
             try {
-                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", new Locale("en"));
+                SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", new Locale("en"));
                 Date date1 = sdf.parse(time1);
                 Date date2 = sdf.parse(time2);
 
@@ -1319,6 +1350,12 @@ public class FindFragment extends Fragment {
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
         cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
         cityCompleteTextView.setAdapter(cityAdapter);
+
+        if(!binding.cityCompleteText.getText().toString().isEmpty()){
+            String city = binding.cityCompleteText.getText().toString();
+            binding.districtCompleteText.setAdapter(null);
+            selectDistrict(city);
+        }
     }
 
     @Override

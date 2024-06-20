@@ -38,6 +38,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
@@ -174,6 +175,17 @@ public class AddPostFragment extends Fragment {
             binding.districtCompleteText.setText("");
             binding.districtCompleteText.setAdapter(null);
             selectDistrict(selectedCity);
+            lat = 0.0;
+            lng = 0.0;
+            rad = 0.0;
+            binding.markedMapView.setText("");
+        });
+
+        binding.districtCompleteText.setOnItemClickListener((parent, view12, position, id) -> {
+            lat = 0.0;
+            lng = 0.0;
+            rad = 0.0;
+            binding.markedMapView.setText("");
         });
 
         binding.topDatePicker.setOnTouchListener((v, event) -> {
@@ -294,6 +306,10 @@ public class AddPostFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 binding.cityTextInput.setError(null);
+//                lat = 0.0;
+//                lng = 0.0;
+//                rad = 0.0;
+//                binding.markedMapView.setText("");
             }
 
             @Override
@@ -319,8 +335,6 @@ public class AddPostFragment extends Fragment {
                 Geocoder geocoder = new Geocoder(requireContext());
                 try {
                     List<Address> addressList = geocoder.getFromLocationName(city + ", " + district, 1);
-                    System.out.println("city: "+ city);
-                    System.out.println("district: "+ district);
                     if (addressList != null && addressList.size() > 0) {
                         double latitude = addressList.get(0).getLatitude();
                         double longitude = addressList.get(0).getLongitude();
@@ -405,7 +419,7 @@ public class AddPostFragment extends Fragment {
                 String endFormattedTime = String.format(Locale.getDefault(), "%02d:%02d", endHour, endMinute);
                 endTimeText.setText(endFormattedTime);
             }else {
-                SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.forLanguageTag("en"));
+                SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.forLanguageTag("en"));
 
                 int startHour = startTimePicker.getCurrentHour();
                 int startMinute = startTimePicker.getCurrentMinute();
@@ -484,7 +498,7 @@ public class AddPostFragment extends Fragment {
                     String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
                     startTimeText.setText(formattedTime);
                 }else {
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.forLanguageTag("en"));
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.forLanguageTag("en"));
 
                     int startHour = startTimePicker.getCurrentHour();
                     int startMinute = startTimePicker.getCurrentMinute();
@@ -504,7 +518,7 @@ public class AddPostFragment extends Fragment {
                     String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute);
                     endTimeText.setText(formattedTime);
                 }else {
-                    SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.forLanguageTag("en"));
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("h:mm a", Locale.forLanguageTag("en"));
 
                     int endHour = endTimePicker.getCurrentHour();
                     int endMinute = endTimePicker.getCurrentMinute();
@@ -532,7 +546,7 @@ public class AddPostFragment extends Fragment {
                     if(getLanguage.equals("turkish")){
                         formatter_time = new SimpleDateFormat("HH:mm", new Locale("tr"));
                     }else {
-                        formatter_time = new SimpleDateFormat("hh:mm a", new Locale("en"));
+                        formatter_time = new SimpleDateFormat("h:mm a", new Locale("en"));
                     }
                     try {
                         Date time_1 = formatter_time.parse(firstTime);
@@ -1044,7 +1058,7 @@ public class AddPostFragment extends Fragment {
             }
         }else {
             try {
-                SimpleDateFormat sdf = new SimpleDateFormat("hh:mm a", new Locale("en"));
+                SimpleDateFormat sdf = new SimpleDateFormat("h:mm a", new Locale("en"));
                 Date date1 = sdf.parse(time1);
                 Date date2 = sdf.parse(time2);
 
@@ -1564,6 +1578,12 @@ public class AddPostFragment extends Fragment {
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
         cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
         cityCompleteTextView.setAdapter(cityAdapter);
+
+        if(!binding.cityCompleteText.getText().toString().isEmpty()){
+            String city = binding.cityCompleteText.getText().toString();
+            binding.districtCompleteText.setAdapter(null);
+            selectDistrict(city);
+        }
     }
 
     @Override
@@ -1572,7 +1592,6 @@ public class AddPostFragment extends Fragment {
         if (binding != null && binding.mapView != null) {
             binding.mapView.onPause();
         }
-
     }
 
     @Override
@@ -1597,7 +1616,6 @@ public class AddPostFragment extends Fragment {
         if (binding != null && binding.mapView != null) {
             binding.mapView.onSaveInstanceState(outState);
         }
-
     }
 
     private void setImage(View view) {

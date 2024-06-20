@@ -262,6 +262,9 @@
     <!-- layout_date_range_picker -->
     <string name="tarih_aral_n_belirleyiniz">Tarih Aralığını Belirleyiniz</string>
 
+    <!-- custom_dialog_report_user -->
+    <string name="g_nderiyi_bildirme_sebebini_a_klay_n_z">Gönderiyi bildirme sebebini açıklayınız</string>
+
     <string-array name="city_names">
         <item>İstanbul</item>
         <item>Ankara</item>
@@ -507,7 +510,6 @@
         <item>Taşova</item>
     </string-array>
     <string-array name="district_antalya">
-        <item>Akseki</item>
         <item>Akseki</item>
         <item>Alanya</item>
         <item>Döşemealtı</item>
