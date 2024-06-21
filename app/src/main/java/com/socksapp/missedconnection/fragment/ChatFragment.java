@@ -43,8 +43,10 @@ import com.socksapp.missedconnection.model.ChatMessage;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -57,7 +59,7 @@ public class ChatFragment extends Fragment {
     private FirebaseUser user;
     private FirebaseFirestore firebaseFirestore;
     private ChatAdapter chatAdapter;
-    private SharedPreferences nameShared,imageUrlShared;
+    private SharedPreferences nameShared,imageUrlShared,language;
     private String myUserName,myImageUrl,myMail,anotherMail;
     private String conversionId = null;
     private List<ChatMessage> chatMessages;
@@ -66,6 +68,9 @@ public class ChatFragment extends Fragment {
     private DocumentSnapshot lastVisibleMessage;
     private final int pageSize = 15;
     private boolean checkLastMessage;
+    private boolean checkDateTitle;
+    private int checkTitleCount;
+    private String lastDate;
     public ChatFragment() {
         // Required empty public constructor
     }
@@ -78,6 +83,7 @@ public class ChatFragment extends Fragment {
         firebaseFirestore = FirebaseFirestore.getInstance();
         chatMessages = new ArrayList<>();
 
+        language = requireActivity().getSharedPreferences("Language",Context.MODE_PRIVATE);
         nameShared = requireActivity().getSharedPreferences("Name",Context.MODE_PRIVATE);
         imageUrlShared = requireActivity().getSharedPreferences("ImageUrl",Context.MODE_PRIVATE);
     }
@@ -110,6 +116,9 @@ public class ChatFragment extends Fragment {
 
         lastVisibleMessage = null;
         checkLastMessage = true;
+        checkDateTitle = true;
+        checkTitleCount = 0;
+        lastDate = "";
 
         listenMessages();
 
@@ -129,6 +138,29 @@ public class ChatFragment extends Fragment {
                 }
             }
         });
+
+//        binding.recyclerViewChat.addOnScrollListener(new RecyclerView.OnScrollListener() {
+//            @Override
+//            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+//                super.onScrolled(recyclerView, dx, dy);
+//                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+//                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+//
+//                if (firstVisibleItemPosition != RecyclerView.NO_POSITION) {
+//                    ChatMessage topVisibleMessage = chatAdapter.getItem(firstVisibleItemPosition);
+//                    String getLanguage = language.getString("language","");
+//                    if(getLanguage.equals("turkish")){
+//                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("tr"));
+//                        String formattedDate = dateFormat.format(topVisibleMessage.dateObject);
+//                        Toast.makeText(requireContext(),formattedDate,Toast.LENGTH_SHORT).show();
+//                    }else {
+//                        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM yyyy", new Locale("en"));
+//                        String formattedDate = dateFormat.format(topVisibleMessage.dateObject);
+//                        Toast.makeText(requireContext(),formattedDate,Toast.LENGTH_SHORT).show();
+//                    }
+//                }
+//            }
+//        });
 
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
@@ -504,11 +536,14 @@ public class ChatFragment extends Fragment {
         });
     }
 
-
     private String getReadableDateTime(Date date){
         if (date != null) {
-//            return new SimpleDateFormat("MMMM dd, yyyy - hh:mm a", Locale.getDefault()).format(date);
-            return new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(date);
+            String getLanguage = language.getString("language","");
+            if(getLanguage.equals("turkish")){
+                return new SimpleDateFormat("hh:mm a", new Locale("tr")).format(date);
+            }else {
+                return new SimpleDateFormat("hh:mm a", new Locale("en")).format(date);
+            }
         } else {
             return "";
         }
