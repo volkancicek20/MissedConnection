@@ -10,9 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,10 +41,8 @@ import com.socksapp.missedconnection.model.ChatMessage;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -69,8 +65,6 @@ public class ChatFragment extends Fragment {
     private final int pageSize = 15;
     private boolean checkLastMessage;
     private boolean checkDateTitle;
-    private int checkTitleCount;
-    private String lastDate;
     public ChatFragment() {
         // Required empty public constructor
     }
@@ -111,14 +105,12 @@ public class ChatFragment extends Fragment {
         mainActivity.includedLayout.setVisibility(View.GONE);
         mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
-        chatAdapter = new ChatAdapter(chatMessages,myMail);
+        chatAdapter = new ChatAdapter(chatMessages,myMail,view.getContext());
         binding.recyclerViewChat.setAdapter(chatAdapter);
 
         lastVisibleMessage = null;
         checkLastMessage = true;
         checkDateTitle = true;
-        checkTitleCount = 0;
-        lastDate = "";
 
         listenMessages();
 
@@ -521,11 +513,22 @@ public class ChatFragment extends Fragment {
                                     if (!queryDocumentSnapshots.isEmpty()) {
                                         lastVisibleMessage = queryDocumentSnapshots.getDocuments()
                                                 .get(queryDocumentSnapshots.size() - 1);
+                                    }else {
+                                        if(checkDateTitle){
+                                            checkDateTitle = false;
+                                            ChatMessage chatMessage = new ChatMessage();
+                                            chatMessage.dateObject = lastVisibleMessage.getDate("date");
+                                            chatMessage.viewType = 3;
+                                            newMessages.add(chatMessage);
+
+                                            chatMessages.addAll(0, newMessages);
+                                            chatAdapter.notifyItemRangeInserted(0, newMessages.size());
+                                        }
                                     }
 
                                 })
                                 .addOnFailureListener(e -> {
-                                    /* Hata yönetimi */
+
                                 });
                         }
                     }
