@@ -107,7 +107,7 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toTopOf="@id/mapView"
+                        app:layout_constraintBottom_toTopOf="@id/mapViewRadius"
                         >
 
                         <ImageView
@@ -156,16 +156,24 @@
                     </LinearLayout>
 
 
-                    <com.google.android.gms.maps.MapView
-                        android:id="@+id/mapView"
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/mapViewRadius"
                         android:layout_width="match_parent"
                         android:layout_height="150dp"
                         android:layout_margin="16dp"
-                        android:visibility="visible"
+                        app:cardCornerRadius="5dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        />
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <com.google.android.gms.maps.MapView
+                            android:id="@+id/mapView"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:visibility="visible"/>
+
+                    </androidx.cardview.widget.CardView>
+
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -230,51 +238,22 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginBottom="16dp" />
 
-                        <TextView
-                            android:id="@+id/marked_image_view"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:gravity="end"
-                            android:text=""
-                            android:textColor="@color/gray"
-                            android:textSize="12sp"
-                            android:textStyle="normal"
-                            android:fontFamily="@font/roboto_regular"
-                            android:layout_marginTop="16dp"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginEnd="16dp"
-                            android:layout_marginBottom="16dp" />
-
 
                     </LinearLayout>
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/gallery_image"
-                        android:layout_width="0dp"
-                        android:layout_height="150dp"
-                        android:adjustViewBounds="true"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:scaleType="fitCenter"
                         android:layout_margin="16dp"
-                        android:src="@drawable/add_gallery"
+                        android:background="@drawable/bg_shapeable_imageview"
+                        android:src="@drawable/add_image_150"
                         android:visibility="visible"
-                        android:maxHeight="300dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:shapeAppearanceOverlay="@style/RoundCorner"/>
-
-<!--                    <ImageView-->
-<!--                        android:id="@+id/gallery_image"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="150dp"-->
-<!--                        android:layout_margin="16dp"-->
-<!--                        android:src="@drawable/add_gallery"-->
-<!--                        android:visibility="visible"-->
-<!--                        app:layout_constraintStart_toStartOf="parent"-->
-<!--                        app:layout_constraintEnd_toEndOf="parent"-->
-<!--                        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                        />-->
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -408,84 +387,6 @@
                                     android:textSize="12sp" />
 
                             </com.google.android.material.textfield.TextInputLayout>
-
-<!--                            <TextView-->
-<!--                                android:id="@+id/error_date1_text"-->
-<!--                                android:layout_width="wrap_content"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:textSize="10sp"-->
-<!--                                android:textColor="@color/red"-->
-<!--                                app:layout_constraintStart_toStartOf="@id/date_edit_text1"-->
-<!--                                app:layout_constraintEnd_toEndOf="@id/date_edit_text1"-->
-<!--                                app:layout_constraintBottom_toTopOf="@id/date_edit_text1" />-->
-
-<!--                            <EditText-->
-<!--                                android:id="@+id/date_edit_text1"-->
-<!--                                android:layout_width="90dp"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:layout_gravity="center"-->
-<!--                                android:layout_marginStart="16dp"-->
-<!--                                android:layout_marginTop="16dp"-->
-<!--                                android:layout_marginBottom="16dp"-->
-<!--                                android:layout_weight="1"-->
-<!--                                android:gravity="center"-->
-<!--                                android:hint="@string/gg_aa_yyyy"-->
-<!--                                android:inputType="date"-->
-<!--                                android:maxLength="10"-->
-<!--                                android:textColor="@color/white"-->
-<!--                                android:textColorHint="@color/gray"-->
-<!--                                android:textCursorDrawable="@drawable/edittext_cursor_color"-->
-<!--                                android:textSize="14sp"-->
-<!--                                android:fontFamily="@font/roboto_regular"-->
-<!--                                app:layout_constraintTop_toTopOf="parent"-->
-<!--                                app:layout_constraintStart_toEndOf="@id/date_range_text"-->
-<!--                                app:layout_constraintBottom_toBottomOf="parent"/>-->
-
-<!--                            <TextView-->
-<!--                                android:id="@+id/hyphen"-->
-<!--                                android:layout_width="wrap_content"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:text="-"-->
-<!--                                android:textColor="@color/gray"-->
-<!--                                android:textSize="20sp"-->
-<!--                                android:textStyle="bold"-->
-<!--                                app:layout_constraintBottom_toBottomOf="parent"-->
-<!--                                app:layout_constraintEnd_toStartOf="@+id/date_edit_text2"-->
-<!--                                app:layout_constraintStart_toEndOf="@id/date_edit_text1"-->
-<!--                                app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--                            <TextView-->
-<!--                                android:id="@+id/error_date2_text"-->
-<!--                                android:layout_width="wrap_content"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:textSize="10sp"-->
-<!--                                android:textColor="@color/red"-->
-<!--                                app:layout_constraintStart_toStartOf="@id/date_edit_text2"-->
-<!--                                app:layout_constraintEnd_toEndOf="@id/date_edit_text2"-->
-<!--                                app:layout_constraintBottom_toTopOf="@id/date_edit_text2" />-->
-
-<!--                            <EditText-->
-<!--                                android:id="@+id/date_edit_text2"-->
-<!--                                android:layout_width="90dp"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:layout_gravity="center"-->
-<!--                                android:layout_marginStart="16dp"-->
-<!--                                android:layout_marginTop="16dp"-->
-<!--                                android:layout_marginEnd="16dp"-->
-<!--                                android:layout_marginBottom="16dp"-->
-<!--                                android:layout_weight="1"-->
-<!--                                android:gravity="center"-->
-<!--                                android:hint="@string/gg_aa_yyyy"-->
-<!--                                android:inputType="date"-->
-<!--                                android:maxLength="10"-->
-<!--                                android:textColor="@color/white"-->
-<!--                                android:textColorHint="@color/gray"-->
-<!--                                android:textCursorDrawable="@drawable/edittext_cursor_color"-->
-<!--                                android:textSize="14sp"-->
-<!--                                android:fontFamily="@font/roboto_regular"-->
-<!--                                app:layout_constraintTop_toTopOf="parent"-->
-<!--                                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                                app:layout_constraintBottom_toBottomOf="parent"/>-->
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 

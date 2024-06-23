@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatButton;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -36,6 +37,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -189,36 +191,64 @@ public class AddPostFragment extends Fragment {
         });
 
         binding.topDatePicker.setOnTouchListener((v, event) -> {
-            int checkVisible = binding.visibleDatePicker.getVisibility();
-            if(checkVisible == View.GONE){
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }else {
-                binding.visibleDatePicker.setVisibility(View.GONE);
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                int touchX = (int) event.getX();
+
+                int layoutWidth = binding.topDatePicker.getWidth();
+
+                if (touchX <= layoutWidth / 2) {
+                    int checkVisible = binding.visibleDatePicker.getVisibility();
+                    if (checkVisible == View.GONE) {
+                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.visibleDatePicker.setVisibility(View.GONE);
+                    }
+                }
             }
-            return false;
+
+            return true;
         });
+
 
         binding.topImageLinear.setOnTouchListener((v, event) -> {
-            int checkVisible = binding.galleryImage.getVisibility();
-            if(checkVisible == View.GONE){
-                binding.galleryImage.setVisibility(View.VISIBLE);
-            }else {
-                binding.galleryImage.setVisibility(View.GONE);
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                int touchX = (int) event.getX();
+
+                int layoutWidth = binding.topImageLinear.getWidth();
+
+                if (touchX <= layoutWidth / 2) {
+                    int checkVisible = binding.galleryImage.getVisibility();
+                    if (checkVisible == View.GONE) {
+                        binding.galleryImage.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.galleryImage.setVisibility(View.GONE);
+                    }
+                }
             }
 
-            return false;
+            return true;
         });
+
 
         binding.topMapLinear.setOnTouchListener((v, event) -> {
-            int checkVisible = binding.mapView.getVisibility();
-            if(checkVisible == View.GONE){
-                binding.mapView.setVisibility(View.VISIBLE);
-            }else {
-                binding.mapView.setVisibility(View.GONE);
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                int touchX = (int) event.getX();
+
+                int layoutWidth = binding.topMapLinear.getWidth();
+
+                if (touchX <= layoutWidth / 2) {
+                    int checkVisible = binding.mapViewRadius.getVisibility();
+                    if (checkVisible == View.GONE) {
+                        binding.mapViewRadius.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.mapViewRadius.setVisibility(View.GONE);
+                    }
+                }
             }
 
-            return false;
+            return true;
         });
+
 
         binding.mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -566,7 +596,7 @@ public class AddPostFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }else {
-                    showSnackbar(v,"2. seçtiğiniz saat 1. seçtiğiniz saatten küçük olamaz");
+                    showSnackbar(v,getString(R.string._2_se_ti_iniz_saat_1_se_ti_iniz_saatten_k_k_olamaz));
                 }
             }
         });
@@ -626,6 +656,9 @@ public class AddPostFragment extends Fragment {
             String endFormattedDate = dateFormat.format(calendar.getTime());
             endDateText.setText(endFormattedDate);
         }else {
+            startDatePicker.setMaxDate(calendar.getTimeInMillis());
+            endDatePicker.setMaxDate(calendar.getTimeInMillis());
+
             String dateRangeText = binding.datetimeRange.getText().toString();
             String[] rangeText = dateRangeText.split("-");
             String firstRangeText = rangeText[0].trim();
@@ -763,7 +796,7 @@ public class AddPostFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }else {
-                    showSnackbar(v,"2. seçtiğiniz tarih 1. seçtiğiniz tarihten küçük olamaz");
+                    showSnackbar(v,getString(R.string._2_se_ti_iniz_tarih_1_se_ti_iniz_tarihten_k_k_olamaz));
                 }
             }
         });
@@ -992,6 +1025,10 @@ public class AddPostFragment extends Fragment {
         binding.explain.setText("");
 
         binding.markedMapView.setText("");
+
+        binding.datetimeRange.setText("");
+
+        binding.timeRange.setText("");
 
         lat = 0.0;
         lng = 0.0;
@@ -1663,14 +1700,17 @@ public class AddPostFragment extends Fragment {
 
                                 int screenWidth = getScreenWidth(view.getContext());
 
+                                binding.galleryImage.setAdjustViewBounds(true);
+
                                 Glide.with(view.getContext())
                                     .load(imageData)
                                     .apply(new RequestOptions()
-                                    .error(R.drawable.icon_loading)
+                                    .error(R.drawable.add_image_150)
                                     .fitCenter()
                                     .centerCrop())
                                     .override(screenWidth, 500)
                                     .into(binding.galleryImage);
+
 
                             }catch (Exception e){
                                 e.printStackTrace();
@@ -1685,6 +1725,8 @@ public class AddPostFragment extends Fragment {
 //                                }
 
                                 int screenWidth = getScreenWidth(view.getContext());
+
+                                binding.galleryImage.setAdjustViewBounds(true);
 
                                 Glide.with(view.getContext())
                                     .load(imageData)

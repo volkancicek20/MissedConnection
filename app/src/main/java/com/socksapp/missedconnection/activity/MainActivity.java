@@ -6,6 +6,8 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
+import androidx.fragment.app.FragmentTransaction;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +33,7 @@ import com.socksapp.missedconnection.fragment.AboutUsFragment;
 import com.socksapp.missedconnection.fragment.AccountSettingFragment;
 import com.socksapp.missedconnection.fragment.AddPostFragment;
 import com.socksapp.missedconnection.fragment.ChangePasswordFragment;
+import com.socksapp.missedconnection.fragment.ChatFragment;
 import com.socksapp.missedconnection.fragment.DeleteAccountFragment;
 import com.socksapp.missedconnection.fragment.EditProfileFragment;
 import com.socksapp.missedconnection.fragment.FindFragment;
@@ -76,6 +79,19 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        if (getIntent().getExtras() != null) {
+            String senderId = getIntent().getExtras().getString("senderId");
+
+            Bundle args = new Bundle();
+            args.putString("anotherMail", senderId);
+            ChatFragment fragment = new ChatFragment();
+            fragment.setArguments(args);
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
 
         sharedPreferencesHelper = new SharedPreferencesHelper(this);
 

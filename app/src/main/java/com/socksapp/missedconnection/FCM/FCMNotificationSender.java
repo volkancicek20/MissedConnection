@@ -14,14 +14,16 @@ public class FCMNotificationSender {
     private String userFcmToken;
     private String title;
     private String body;
+    private String senderId;
     private Context context;
     private String postUrl = "https://fcm.googleapis.com/v1/projects/missedconnection-c000f/messages:send";
 
-    public FCMNotificationSender(String userFcmToken,String title,String body,Context context){
+    public FCMNotificationSender(String userFcmToken,String title,String body,Context context,String senderId){
         this.userFcmToken = userFcmToken;
         this.title = title;
         this.body = body;
         this.context = context;
+        this.senderId = senderId;
     }
 
     public void SendNotification(){
@@ -29,13 +31,17 @@ public class FCMNotificationSender {
         JSONObject mainObj = new JSONObject();
         try {
             JSONObject messageObject = new JSONObject();
-
             JSONObject notificationObject = new JSONObject();
+            JSONObject dataObject = new JSONObject();
+
             notificationObject.put("title",title);
             notificationObject.put("body",body);
 
+            dataObject.put("senderId", senderId);
+
             messageObject.put("token",userFcmToken);
             messageObject.put("notification",notificationObject);
+            messageObject.put("data", dataObject);
 
             mainObj.put("message",messageObject);
 

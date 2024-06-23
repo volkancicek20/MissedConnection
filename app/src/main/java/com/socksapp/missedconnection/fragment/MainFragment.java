@@ -971,9 +971,9 @@ public class MainFragment extends Fragment {
                             String token = documentSnapshot1.getString("fcmToken");
                             FCMNotificationSender fcmNotificationSender;
                             if(getLanguage.equals("english")){
-                                fcmNotificationSender = new FCMNotificationSender(token, "", getString(R.string.paylasiminiz) + getString(R.string.tarafindan_goruntulendi) + myUserName, context);
+                                fcmNotificationSender = new FCMNotificationSender(token, "", getString(R.string.paylasiminiz) + getString(R.string.tarafindan_goruntulendi) + myUserName, context,userMail);
                             }else {
-                                fcmNotificationSender = new FCMNotificationSender(token, "", getString(R.string.paylasiminiz) + myUserName + getString(R.string.tarafindan_goruntulendi), context);
+                                fcmNotificationSender = new FCMNotificationSender(token, "", getString(R.string.paylasiminiz) + myUserName + getString(R.string.tarafindan_goruntulendi), context,userMail);
                             }
                             fcmNotificationSender.SendNotification();
                         }

@@ -138,6 +138,8 @@
     <string name="izin_ver">İzin ver</string>
     <string name="izinleri_aktif_etmeniz_gerekiyor">İzinleri aktif etmeniz gerekiyor</string>
     <string name="error_post">Gönderi paylaşılırken bir hata oluştu. İnternetinizi kontrol ettikten sonra tekrar deneyiniz.</string>
+    <string name="_2_se_ti_iniz_saat_1_se_ti_iniz_saatten_k_k_olamaz">2. seçtiğiniz saat 1. seçtiğiniz saatten önce olamaz</string>
+    <string name="_2_se_ti_iniz_tarih_1_se_ti_iniz_tarihten_k_k_olamaz">2. seçtiğiniz tarih 1. seçtiğiniz tarihten önce olamaz</string>
 
     <!-- ChangePasswordFragment -->
     <string name="gecersiz_sifre">Geçersiz şifre</string>

@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import com.socksapp.missedconnection.databinding.RecycleViewChatTextMeBinding;
 import com.socksapp.missedconnection.databinding.RecycleViewChatTextYouBinding;
@@ -164,6 +165,23 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             } else {
                 binding.linearDateTitle.setVisibility(View.GONE);
             }
+
+//            if(position > 0){
+//                ChatMessage previousMessage = adapter.getItem(position - 1);
+//                ConstraintLayout constraintLayout = binding.senderBaseConstraintLayout;
+//                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) constraintLayout.getLayoutParams();
+//                if (!chatMessage.senderId.equals(previousMessage.senderId)) {
+//                    layoutParams.topMargin = 20;
+//                }else {
+//                    layoutParams.topMargin = 0;
+//                }
+//                constraintLayout.setLayoutParams(layoutParams);
+//            }else {
+//                ConstraintLayout constraintLayout = binding.senderBaseConstraintLayout;
+//                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) constraintLayout.getLayoutParams();
+//                layoutParams.topMargin = 0;
+//                constraintLayout.setLayoutParams(layoutParams);
+//            }
         }
     }
 
@@ -226,6 +244,23 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             } else {
                 binding.linearDateTitle.setVisibility(View.GONE);
             }
+
+//            if(position > 0){
+//                ChatMessage previousMessage = adapter.getItem(position - 1);
+//                ConstraintLayout constraintLayout = binding.receiverBaseConstraintLayout;
+//                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) constraintLayout.getLayoutParams();
+//                if (!chatMessage.senderId.equals(previousMessage.senderId)) {
+//                    layoutParams.topMargin = 20;
+//                }else {
+//                    layoutParams.topMargin = 0;
+//                }
+//                constraintLayout.setLayoutParams(layoutParams);
+//            }else {
+//                ConstraintLayout constraintLayout = binding.receiverBaseConstraintLayout;
+//                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) constraintLayout.getLayoutParams();
+//                layoutParams.topMargin = 0;
+//                constraintLayout.setLayoutParams(layoutParams);
+//            }
         }
     }
 

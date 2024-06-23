@@ -20,6 +20,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -144,24 +145,41 @@ public class FindFragment extends Fragment {
         });
 
         binding.topDatePicker.setOnTouchListener((v, event) -> {
-            int checkVisible = binding.visibleDatePicker.getVisibility();
-            if(checkVisible == View.GONE){
-                binding.visibleDatePicker.setVisibility(View.VISIBLE);
-            }else {
-                binding.visibleDatePicker.setVisibility(View.GONE);
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                int touchX = (int) event.getX();
+
+                int layoutWidth = binding.topDatePicker.getWidth();
+
+                if (touchX <= layoutWidth / 2) {
+                    int checkVisible = binding.visibleDatePicker.getVisibility();
+                    if (checkVisible == View.GONE) {
+                        binding.visibleDatePicker.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.visibleDatePicker.setVisibility(View.GONE);
+                    }
+                }
             }
-            return false;
+
+            return true;
         });
 
         binding.topMapLinear.setOnTouchListener((v, event) -> {
-            int checkVisible = binding.mapView.getVisibility();
-            if(checkVisible == View.GONE){
-                binding.mapView.setVisibility(View.VISIBLE);
-            }else {
-                binding.mapView.setVisibility(View.GONE);
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                int touchX = (int) event.getX();
+
+                int layoutWidth = binding.topMapLinear.getWidth();
+
+                if (touchX <= layoutWidth / 2) {
+                    int checkVisible = binding.mapViewRadius.getVisibility();
+                    if (checkVisible == View.GONE) {
+                        binding.mapViewRadius.setVisibility(View.VISIBLE);
+                    } else {
+                        binding.mapViewRadius.setVisibility(View.GONE);
+                    }
+                }
             }
 
-            return false;
+            return true;
         });
 
         binding.findPost.setOnClickListener(this::findData);

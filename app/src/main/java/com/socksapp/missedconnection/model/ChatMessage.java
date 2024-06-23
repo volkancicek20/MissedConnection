@@ -8,6 +8,8 @@ public class ChatMessage {
     public Date dateObject;
     public String conversionId,conversionName,conversionImage;
 
+    public Boolean loadMoreMessages;
+
     public int getViewType() {
         return viewType;
     }

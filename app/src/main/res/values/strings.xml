@@ -137,6 +137,8 @@
     <string name="izin_ver">Allow</string>
     <string name="izinleri_aktif_etmeniz_gerekiyor">You need to enable permissions</string>
     <string name="error_post">There was an error sharing the post. Try again after checking your internet connection.</string>
+    <string name="_2_se_ti_iniz_saat_1_se_ti_iniz_saatten_k_k_olamaz">Your 2nd selected time cannot be before your 1st selected time</string>
+    <string name="_2_se_ti_iniz_tarih_1_se_ti_iniz_tarihten_k_k_olamaz">Your 2nd selected date cannot be before your 1st selected date</string>
 
     <!-- ChangePasswordFragment -->
     <string name="gecersiz_sifre">Invalid password</string>
@@ -264,6 +266,7 @@
 
     <!-- custom_dialog_report_user -->
     <string name="g_nderiyi_bildirme_sebebini_a_klay_n_z">Explain the reason for reporting the shipment</string>
+
 
     <string-array name="city_names">
         <item>İstanbul</item>

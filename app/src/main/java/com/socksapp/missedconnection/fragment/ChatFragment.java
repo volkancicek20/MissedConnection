@@ -59,7 +59,7 @@ public class ChatFragment extends Fragment {
     private String myUserName,myImageUrl,myMail,anotherMail;
     private String conversionId = null;
     private List<ChatMessage> chatMessages;
-    private ListenerRegistration collectionListener; // ilerde chat ile anlık silme eklersen bunu kullan veya uyarı
+    private ListenerRegistration collectionListener;
     private MainActivity mainActivity;
     private DocumentSnapshot lastVisibleMessage;
     private final int pageSize = 15;
@@ -233,7 +233,7 @@ public class ChatFragment extends Fragment {
                                             String name;
                                             name = documentSnapshot1.getString("name");
                                             if(name == null) name = "";
-                                            FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,name,msg,view.getContext());
+                                            FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,name,msg,view.getContext(),myMail);
                                             fcmNotificationSender.SendNotification();
                                         }
                                     });
@@ -288,7 +288,7 @@ public class ChatFragment extends Fragment {
                                         String name;
                                         name = documentSnapshot1.getString("name");
                                         if(name == null) name = "";
-                                        FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,name,msg,view.getContext());
+                                        FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,name,msg,view.getContext(),myMail);
                                         fcmNotificationSender.SendNotification();
                                     }
                                 });
@@ -341,7 +341,7 @@ public class ChatFragment extends Fragment {
                                     String name;
                                     name = documentSnapshot1.getString("name");
                                     if(name == null) name = "";
-                                    FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,name,msg,view.getContext());
+                                    FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,name,msg,view.getContext(),myMail);
                                     fcmNotificationSender.SendNotification();
                                 }
                             });
@@ -396,7 +396,7 @@ public class ChatFragment extends Fragment {
                             String name;
                             name = documentSnapshot1.getString("name");
                             if(name == null) name = "";
-                            FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,name,msg,view.getContext());
+                            FCMNotificationSender fcmNotificationSender = new FCMNotificationSender(token,name,msg,view.getContext(),myMail);
                             fcmNotificationSender.SendNotification();
                         }
                     });
@@ -456,6 +456,7 @@ public class ChatFragment extends Fragment {
                     chatMessage.message = documentChange.getDocument().getString("message");
                     chatMessage.dateTime = getReadableDateTime(documentChange.getDocument().getDate("date"));
                     chatMessage.dateObject = documentChange.getDocument().getDate("date");
+                    chatMessage.loadMoreMessages = false;
                     chatMessages.add(chatMessage);
                 }
             }
@@ -502,6 +503,7 @@ public class ChatFragment extends Fragment {
                                         chatMessage.message = documentSnapshot2.getString("message");
                                         chatMessage.dateTime = getReadableDateTime(documentSnapshot2.getDate("date"));
                                         chatMessage.dateObject = documentSnapshot2.getDate("date");
+                                        chatMessage.loadMoreMessages = true;
                                         newMessages.add(chatMessage);
                                     }
 
