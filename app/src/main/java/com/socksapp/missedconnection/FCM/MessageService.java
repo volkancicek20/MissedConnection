@@ -9,6 +9,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -27,15 +28,19 @@ import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.myclass.SharedPreferencesHelperMessage;
 import com.socksapp.missedconnection.myclass.SharedPreferencesHelperPost;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 public class MessageService extends FirebaseMessagingService {
-    private static final String CHANNEL_ID = "Notification";
-    private static final int NOTIFICATION_ID = 100;
-    private NotificationManagerCompat notificationManagerCompat;
-    private SharedPreferencesHelperMessage sharedPreferencesHelperMessage;
-    private SharedPreferencesHelperPost sharedPreferencesHelperPost;
+    private final static String CHANNEL_ID = "default";
+    public static final String NOTIFICATION_ID = "10001";
+
+    NotificationManagerCompat notificationManagerCompat;
+
 
     @Override
     public void onNewToken(@NonNull String token) {
@@ -52,7 +57,6 @@ public class MessageService extends FirebaseMessagingService {
         String senderId = message.getData().get("senderId");
 
         if (!isAppInForeground(this)) {
-
             Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             long[] pattern = {0, 10, 100, 200};
             vibrator.vibrate(pattern,-1);
@@ -66,6 +70,8 @@ public class MessageService extends FirebaseMessagingService {
             }
             builder.setContentText(body);
             builder.setStyle(new NotificationCompat.BigTextStyle().bigText(body));
+            builder.setGroup(senderId);
+            builder.setGroupSummary(true);
             builder.setAutoCancel(true);
             builder.setSmallIcon(R.drawable.icon_notifications_base);
             builder.setVibrate(pattern);
@@ -87,7 +93,7 @@ public class MessageService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
             builder.setChannelId(channelID);
 
-            notificationManager.notify(NOTIFICATION_ID,builder.build());
+            notificationManager.notify((int) System.currentTimeMillis(),builder.build());
         }
 
     }

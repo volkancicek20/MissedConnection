@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.location.Address;
@@ -98,6 +99,8 @@ public class SettingsFragment extends Fragment {
         binding.aboutUsLinearLayout.setOnClickListener(v -> goToAboutUsFragment());
         binding.myLocationLinearLayout.setOnClickListener(this::setMyLocation);
 //        binding.notificationLinearLayout.setOnClickListener(this::changeNotification);
+
+        setVersionName(view);
     }
 
 //    private void changeNotification(View v){
@@ -159,6 +162,17 @@ public class SettingsFragment extends Fragment {
 //        AlertDialog dialog = builder.create();
 //        dialog.show();
 //    }
+
+    private void setVersionName(View view){
+        try {
+            PackageManager packageManager = view.getContext().getPackageManager();
+            PackageInfo packageInfo = packageManager.getPackageInfo(view.getContext().getPackageName(), 0);
+            String app_details = "Missed Connection - v" + packageInfo.versionName;
+            binding.appDetails.setText(app_details);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     private void setMyLocation(View view){
         checkLocationPermission();

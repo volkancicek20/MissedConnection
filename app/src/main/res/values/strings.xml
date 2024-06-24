@@ -248,6 +248,10 @@
     <string name="use_missed_connection_4">• Maybe you can create a friendship that lasts for years!</string>
     <string name="contact_me">The addresses where you can reach us are below.</string>
     <string name="contact_mail_address">socksapp@protonmail.com</string>
+    <string name="connect_with_us">CONNECT WITH US!</string>
+    <string name="contact_us">Contact us</string>
+    <string name="rate_us_on_the_play_store">Rate us on the Play Store</string>
+    <string name="follow_us_on_instagram">Follow us on Instagram</string>
 
     <!-- custom_dialog_message_delete -->
     <string name="info_message_delete">If you delete the message, the entire chat will be irreversibly deleted.</string>

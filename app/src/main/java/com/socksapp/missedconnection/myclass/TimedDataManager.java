@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class TimedDataManager {
     private static final String PREF_NAME = "timed_data_preferences";
     private static final String DATA_KEY = "data";
-    private static final long EXPIRATION_TIME_MS = TimeUnit.MINUTES.toMillis(1);
+    private static final long EXPIRATION_TIME_MS = TimeUnit.MINUTES.toMillis(1440);
 
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;

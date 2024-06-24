@@ -177,8 +177,10 @@ public class PostsActivityFragment extends Fragment {
                 if (queryDocumentSnapshots.isEmpty()) {
                     PostNotification postNotification = new PostNotification();
                     postNotification.viewType = 2;
-
                     postNotificationArrayList.add(postNotification);
+                    binding.shimmerLayout.stopShimmer();
+                    binding.shimmerLayout.setVisibility(View.GONE);
+                    binding.recyclerViewPostActivity.setVisibility(View.VISIBLE);
                     postNotificationAdapter.notifyDataSetChanged();
                     return;
                 }

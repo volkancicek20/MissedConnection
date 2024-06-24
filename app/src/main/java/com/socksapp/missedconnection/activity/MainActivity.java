@@ -83,14 +83,23 @@ public class MainActivity extends AppCompatActivity {
         if (getIntent().getExtras() != null) {
             String senderId = getIntent().getExtras().getString("senderId");
 
-            Bundle args = new Bundle();
-            args.putString("anotherMail", senderId);
-            ChatFragment fragment = new ChatFragment();
-            fragment.setArguments(args);
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
+            if(senderId != null && senderId.isEmpty()){
+                PostsActivityFragment fragment = new PostsActivityFragment();
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }else {
+                Bundle args = new Bundle();
+                args.putString("anotherMail", senderId);
+                ChatFragment fragment = new ChatFragment();
+                fragment.setArguments(args);
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
+            }
+
         }
 
         sharedPreferencesHelper = new SharedPreferencesHelper(this);

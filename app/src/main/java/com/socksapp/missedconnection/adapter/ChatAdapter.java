@@ -171,15 +171,15 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 //                ConstraintLayout constraintLayout = binding.senderBaseConstraintLayout;
 //                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) constraintLayout.getLayoutParams();
 //                if (!chatMessage.senderId.equals(previousMessage.senderId)) {
-//                    layoutParams.topMargin = 20;
+//                    layoutParams.bottomMargin = 20;
 //                }else {
-//                    layoutParams.topMargin = 0;
+//                    layoutParams.bottomMargin = 0;
 //                }
 //                constraintLayout.setLayoutParams(layoutParams);
 //            }else {
 //                ConstraintLayout constraintLayout = binding.senderBaseConstraintLayout;
 //                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) constraintLayout.getLayoutParams();
-//                layoutParams.topMargin = 0;
+//                layoutParams.bottomMargin = 0;
 //                constraintLayout.setLayoutParams(layoutParams);
 //            }
         }
@@ -250,15 +250,15 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 //                ConstraintLayout constraintLayout = binding.receiverBaseConstraintLayout;
 //                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) constraintLayout.getLayoutParams();
 //                if (!chatMessage.senderId.equals(previousMessage.senderId)) {
-//                    layoutParams.topMargin = 20;
+//                    layoutParams.bottomMargin = 20;
 //                }else {
-//                    layoutParams.topMargin = 0;
+//                    layoutParams.bottomMargin = 0;
 //                }
 //                constraintLayout.setLayoutParams(layoutParams);
 //            }else {
 //                ConstraintLayout constraintLayout = binding.receiverBaseConstraintLayout;
 //                ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) constraintLayout.getLayoutParams();
-//                layoutParams.topMargin = 0;
+//                layoutParams.bottomMargin = 0;
 //                constraintLayout.setLayoutParams(layoutParams);
 //            }
         }

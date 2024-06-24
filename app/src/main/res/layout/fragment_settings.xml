@@ -171,7 +171,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
-        android:text="Missed Connection - v1.0"
+        android:text=""
         android:textColor="@color/gray"
         android:textSize="16sp"
         android:textStyle="normal"
