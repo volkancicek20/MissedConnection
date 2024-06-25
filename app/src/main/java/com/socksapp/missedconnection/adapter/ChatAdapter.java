@@ -10,9 +10,14 @@ import android.widget.RelativeLayout;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.databinding.RecycleViewChatTextMeBinding;
 import com.socksapp.missedconnection.databinding.RecycleViewChatTextYouBinding;
+import com.socksapp.missedconnection.databinding.RecyclerViewChatBlock1Binding;
+import com.socksapp.missedconnection.databinding.RecyclerViewChatBlock2Binding;
 import com.socksapp.missedconnection.databinding.RecyclerViewDateTitleBinding;
+import com.socksapp.missedconnection.fragment.ChatFragment;
 import com.socksapp.missedconnection.model.ChatMessage;
 import com.socksapp.missedconnection.myclass.SharedPreferencesGetLanguage;
 
@@ -31,14 +36,16 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     private final List<ChatMessage> chatMessages;
     private final String senderId;
     private final Context context;
+    public ChatFragment fragment;
     public static final int VIEW_TYPE_SENT = 1;
     public static final int VIEW_TYPE_RECEIVED = 2;
     private SharedPreferencesGetLanguage sharedPreferencesGetLanguage;
 
-    public ChatAdapter(List<ChatMessage> chatMessages, String senderId, Context context) {
+    public ChatAdapter(List<ChatMessage> chatMessages, String senderId, Context context,ChatFragment fragment) {
         this.chatMessages = chatMessages;
         this.senderId = senderId;
         this.context = context;
+        this.fragment = fragment;
     }
 
     @NonNull
@@ -60,9 +67,25 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
                             false
                     ),this
             );
-        }else {
+        }else if (viewType == 3){
             return new DateTitleViewHolder(
                     RecyclerViewDateTitleBinding.inflate(
+                            LayoutInflater.from(parent.getContext()),
+                            parent,
+                            false
+                    ),this
+            );
+        } else if (viewType == 4) {
+            return new BlockOneViewHolder(
+                    RecyclerViewChatBlock1Binding.inflate(
+                            LayoutInflater.from(parent.getContext()),
+                            parent,
+                            false
+                    ),this
+            );
+        }else {
+            return new BlockTwoViewHolder(
+                    RecyclerViewChatBlock2Binding.inflate(
                             LayoutInflater.from(parent.getContext()),
                             parent,
                             false
@@ -79,8 +102,12 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             ((SentMessageViewHolder) holder).setData(chatMessages.get(position),position,language);
         }else if (getItemViewType(position) == VIEW_TYPE_RECEIVED){
             ((ReceiverMessageViewHolder) holder).setData(chatMessages.get(position),position,language);
-        }else {
+        }else if (getItemViewType(position) == 3){
             ((DateTitleViewHolder) holder).setData(chatMessages.get(position),position,language);
+        } else if (getItemViewType(position) == 4) {
+            ((BlockOneViewHolder) holder).setData(chatMessages.get(position),position,language,context,fragment);
+        }else {
+            ((BlockTwoViewHolder) holder).setData(chatMessages.get(position),position,language);
         }
     }
 
@@ -97,7 +124,11 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     public int getItemViewType(int position) {
         if(chatMessages.get(position).viewType == 3){
             return 3;
-        }else {
+        } else if (chatMessages.get(position).viewType == 4) {
+            return 4;
+        } else if (chatMessages.get(position).viewType == 5) {
+            return 5;
+        } else {
             if (chatMessages.get(position).senderId.equals(senderId)){
                 return VIEW_TYPE_SENT;
             }else {
@@ -308,6 +339,38 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
             }
 //            String title = dateFormat.format(chatMessage.dateObject);
             binding.dateTitle.setText(displayDate);
+        }
+    }
+
+    static class BlockOneViewHolder extends RecyclerView.ViewHolder{
+        private final RecyclerViewChatBlock1Binding binding;
+        private final ChatAdapter adapter;
+        BlockOneViewHolder(RecyclerViewChatBlock1Binding recyclerViewChatBlock1Binding, ChatAdapter adapter){
+            super(recyclerViewChatBlock1Binding.getRoot());
+            binding = recyclerViewChatBlock1Binding;
+            this.adapter = adapter;
+        }
+        void setData(ChatMessage chatMessage,int position,String language,Context context,ChatFragment fragment){
+            String anotherId = chatMessage.receiverId;
+            String myId = chatMessage.senderId;
+            String name = chatMessage.message;
+
+            binding.unblock.setOnClickListener(v ->{
+                fragment.unBlock(anotherId,myId,name,v);
+            });
+        }
+    }
+
+    static class BlockTwoViewHolder extends RecyclerView.ViewHolder{
+        private final RecyclerViewChatBlock2Binding binding;
+        private final ChatAdapter adapter;
+        BlockTwoViewHolder(RecyclerViewChatBlock2Binding recyclerViewChatBlock2Binding, ChatAdapter adapter){
+            super(recyclerViewChatBlock2Binding.getRoot());
+            binding = recyclerViewChatBlock2Binding;
+            this.adapter = adapter;
+        }
+        void setData(ChatMessage chatMessage,int position,String language){
+
         }
     }
 

@@ -12,10 +12,11 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="-50dp"
-        android:text="@string/sonuc_bulunmadi"
+        android:text="@string/engellendiniz"
         android:textColor="@color/white"
         android:textSize="22sp"
         android:fontFamily="@font/roboto_regular"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,30 +26,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
-        android:paddingHorizontal="20dp"
         android:fontFamily="@font/roboto_regular"
-        android:text="@string/sonuc_bulunamadi_aciklamasi"
+        android:text="@string/engeliniz_a_lana_kadar_mesaj_g_nderemezsiniz"
         android:textColor="@color/gray"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text" />
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/goFind"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/button_ripple_effect"
-            android:paddingHorizontal="20dp"
-            android:layout_marginHorizontal="20dp"
-            android:text="@string/tekrar_arama_yap"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="normal"
-            android:textAllCaps="false"
-            app:layout_constraintStart_toStartOf="@id/text2"
-            app:layout_constraintTop_toBottomOf="@id/text2" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

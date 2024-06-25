@@ -271,6 +271,20 @@
     <!-- custom_dialog_report_user -->
     <string name="g_nderiyi_bildirme_sebebini_a_klay_n_z">Explain the reason for reporting the shipment</string>
 
+    <!-- chat_menu -->
+    <string name="block">Block</string>
+
+    <!-- custom_dialog_block_user -->
+    <string name="block_explain">If you block the user, they will not be able to send messages until you unblock them.</string>
+
+    <!-- recycler_view_chat_block_1 -->
+    <string name="kullan_c_y_engellediniz">You have blocked the user</string>
+    <string name="engeli_kald_r">Unblock</string>
+
+    <!-- recycler_view_chat_block_2 -->
+    <string name="engellendiniz">You are blocked</string>
+    <string name="engeliniz_a_lana_kadar_mesaj_g_nderemezsiniz">You cannot send messages until unblocked</string>
+
 
     <string-array name="city_names">
         <item>İstanbul</item>

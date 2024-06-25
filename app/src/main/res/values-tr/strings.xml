@@ -271,6 +271,21 @@
     <!-- custom_dialog_report_user -->
     <string name="g_nderiyi_bildirme_sebebini_a_klay_n_z">Gönderiyi bildirme sebebini açıklayınız</string>
 
+    <!-- chat_menu -->
+    <string name="block">Engelle</string>
+
+    <!-- custom_dialog_block_user -->
+    <string name="block_explain">Eğer kullanıcıyı engellersen siz engeli açana kadar mesaj atamayacak.</string>
+
+    <!-- recycler_view_chat_block_1 -->
+    <string name="kullan_c_y_engellediniz">Kullanıcıyı engellediniz</string>
+    <string name="engeli_kald_r">Engeli kaldır</string>
+
+    <!-- recycler_view_chat_block_2 -->
+    <string name="engellendiniz">Engellendiniz</string>
+    <string name="engeliniz_a_lana_kadar_mesaj_g_nderemezsiniz">Engeliniz açılana kadar mesaj gönderemezsiniz</string>
+
+
     <string-array name="city_names">
         <item>İstanbul</item>
         <item>Ankara</item>
