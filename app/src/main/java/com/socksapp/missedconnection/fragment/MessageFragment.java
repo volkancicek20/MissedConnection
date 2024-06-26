@@ -1,10 +1,9 @@
 package com.socksapp.missedconnection.fragment;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -13,32 +12,23 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
+import android.widget.TextView;
 import com.google.android.gms.tasks.Continuation;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.FirebaseFunctionsException;
-import com.google.firebase.functions.HttpsCallableReference;
 import com.google.firebase.functions.HttpsCallableResult;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
@@ -52,7 +42,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class MessageFragment extends Fragment implements ConversionListener{
 
@@ -65,7 +54,8 @@ public class MessageFragment extends Fragment implements ConversionListener{
     private List<ChatMessage> conversations;
     private RecentConversationsAdapter conversationsAdapter;
     private String myMail;
-    private ListenerRegistration listenerRegistration;
+    private ListenerRegistration senderListenerRegistration;
+    private ListenerRegistration receiverListenerRegistration;
 
     public MessageFragment() {
         // Required empty public constructor
@@ -102,8 +92,6 @@ public class MessageFragment extends Fragment implements ConversionListener{
         conversationsAdapter = new RecentConversationsAdapter(conversations,this,MessageFragment.this,view.getContext());
         binding.recyclerViewMessage.setAdapter(conversationsAdapter);
 
-        listenConversations();
-
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -124,14 +112,14 @@ public class MessageFragment extends Fragment implements ConversionListener{
         fragmentTransaction.commit();
     }
 
-
     private void listenConversations(){
-        firebaseFirestore.collection("conversations")
-            .whereEqualTo("senderId",myMail)
-            .addSnapshotListener(eventListener);
-        firebaseFirestore.collection("conversations")
-            .whereEqualTo("receiverId",myMail)
-            .addSnapshotListener(eventListener);
+        senderListenerRegistration = firebaseFirestore.collection("conversations")
+                .whereEqualTo("senderId", myMail)
+                .addSnapshotListener(eventListener);
+
+        receiverListenerRegistration = firebaseFirestore.collection("conversations")
+                .whereEqualTo("receiverId", myMail)
+                .addSnapshotListener(eventListener);
     }
 
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {
@@ -157,15 +145,9 @@ public class MessageFragment extends Fragment implements ConversionListener{
                     if(myMail.equals(senderId)){
                         String id = documentChange.getDocument().getString("receiverId");
                         getUsersDetails(id,chatMessage);
-//                        chatMessage.conversionId = documentChange.getDocument().getString("receiverId");
-//                        chatMessage.conversionName = documentChange.getDocument().getString("receiverName");
-//                        chatMessage.conversionImage = documentChange.getDocument().getString("receiverImage");
                     }else {
                         String id = documentChange.getDocument().getString("senderId");
                         getUsersDetails(id,chatMessage);
-//                        chatMessage.conversionId = documentChange.getDocument().getString("senderId");
-//                        chatMessage.conversionName = documentChange.getDocument().getString("senderName");
-//                        chatMessage.conversionImage = documentChange.getDocument().getString("senderImage");
                     }
                 } else if (documentChange.getType() == DocumentChange.Type.MODIFIED) {
                     for(int i = 0; i<conversations.size(); i++){
@@ -174,6 +156,16 @@ public class MessageFragment extends Fragment implements ConversionListener{
                         if (conversations.get(i).senderId.equals(senderId) && conversations.get(i).receiverId.equals(receiverId)){
                             conversations.get(i).message = documentChange.getDocument().getString("lastMessage");
                             conversations.get(i).dateObject = documentChange.getDocument().getDate("date");
+                            break;
+                        }
+                    }
+                }else if (documentChange.getType() == DocumentChange.Type.REMOVED){
+                    for (int i = 0; i < conversations.size(); i++) {
+                        String senderId = documentChange.getDocument().getString("senderId");
+                        String receiverId = documentChange.getDocument().getString("receiverId");
+                        if (conversations.get(i).senderId.equals(senderId) && conversations.get(i).receiverId.equals(receiverId)) {
+                            conversations.remove(i);
+                            conversationsAdapter.notifyItemRemoved(i);
                             break;
                         }
                     }
@@ -186,6 +178,16 @@ public class MessageFragment extends Fragment implements ConversionListener{
         }
     };
 
+    private void stopListeningConversations() {
+        if (senderListenerRegistration != null) {
+            senderListenerRegistration.remove();
+            senderListenerRegistration = null;
+        }
+        if (receiverListenerRegistration != null) {
+            receiverListenerRegistration.remove();
+            receiverListenerRegistration = null;
+        }
+    }
 
     private void getUsersDetails(String mail,ChatMessage chatMessage){
         firebaseFirestore.collection("users").document(mail).get().addOnSuccessListener(documentSnapshot -> {
@@ -247,13 +249,8 @@ public class MessageFragment extends Fragment implements ConversionListener{
         cancelButton.setOnClickListener(v -> dialog.dismiss());
 
         deleteButton.setOnClickListener(v -> {
-//            deleteConversations(userMail, "senderId", "receiverId");
-//            deleteConversations(userMail, "receiverId", "senderId");
-//            deleteChats(userMail, position);
-//            deleteBothConversationsFunctions(userMail,"senderId","receiverId");
-//            deleteChatsFunctions(userMail,position);
-//            deleteChatsAndConversationFunctions(userMail,position);
             deleteChatsAndConversationFunctions(userMail,position,v);
+//            deleteConversation(userMail);
             dialog.dismiss();
         });
     }
@@ -297,24 +294,23 @@ public class MessageFragment extends Fragment implements ConversionListener{
                                             Map<String, Object> result = task.getResult();
                                             Log.d("Function Success", "Result: " + result);
                                             progressDialog.dismiss();
-                                            conversationsAdapter.notifyItemRemoved(position);
-                                            conversations.remove(position);
-                                            conversationsAdapter.notifyDataSetChanged();
                                         } else {
                                             progressDialog.dismiss();
+                                            showSnackbar(view,getString(R.string.mesaj_silinirken_hata_olustu));
                                             // Hataları işleyin
-                                            Exception e = task.getException();
-                                            if (e instanceof FirebaseFunctionsException) {
-                                                FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
-                                                FirebaseFunctionsException.Code code = ffe.getCode();
-                                                Object details = ffe.getDetails();
-                                                Log.e("Function Error", "Code: " + code + ", Details: " + details, e);
-                                            } else {
-                                                Log.e("Function Error", "Error: ", e);
-                                            }
+//                                            Exception e = task.getException();
+//                                            if (e instanceof FirebaseFunctionsException) {
+//                                                FirebaseFunctionsException ffe = (FirebaseFunctionsException) e;
+//                                                FirebaseFunctionsException.Code code = ffe.getCode();
+//                                                Object details = ffe.getDetails();
+//                                                Log.e("Function Error", "Code: " + code + ", Details: " + details, e);
+//                                            } else {
+//                                                Log.e("Function Error", "Error: ", e);
+//                                            }
                                         }
                                     }).addOnFailureListener(e -> {
                                         progressDialog.dismiss();
+                                        showSnackbar(view,getString(R.string.mesaj_silinirken_hata_olustu));
                                     });
                             }
                         }
@@ -326,116 +322,19 @@ public class MessageFragment extends Fragment implements ConversionListener{
         });
     }
 
-//    private void deleteBothConversationsFunctions(String userMail, String senderId, String receiverId) {
+//    private void deleteConversation(String userMail){
 //        Map<String, Object> data = new HashMap<>();
 //        data.put("userMail", userMail);
-//        data.put("senderId", senderId);
-//        data.put("receiverId", receiverId);
+//        data.put("senderId", "senderId");
+//        data.put("receiverId", "receiverId");
 //
-//        functions.getHttpsCallable("deleteBothConversations")
-//                .call(data)
-//                .addOnSuccessListener(new OnSuccessListener<HttpsCallableResult>() {
-//                    @Override
-//                    public void onSuccess(HttpsCallableResult httpsCallableResult) {
-//                        Log.d("FirebaseFunctions", "deleteBothConversations başarıyla çağrıldı. aşağıdaki");
-//                    }
-//                })
-//                .addOnFailureListener(e -> {
-//                    Log.e("FirebaseFunctions", "deleteBothConversations çağrılırken hata oluştu.", e);
-//                });
-//    }
-//
-//    private void deleteChatsFunctions(String userMail,int position){
-//        firebaseFirestore.collection("chatsId").document(myMail).get().addOnSuccessListener(documentSnapshot -> {
-//            if(documentSnapshot.exists()){
-//                Map<String,Object> data = documentSnapshot.getData();
-//                if(data != null){
-//                    if(!data.isEmpty()){
-//                        if(data.containsKey(userMail)){
-//                            String id = (String) data.get(userMail);
-//                            if(id != null && !id.isEmpty()){
-//
-//                                Map<String, Object> deleteData = new HashMap<>();
-//                                deleteData.put("mainCollectionPath", "chats");
-//                                deleteData.put("documentId", id);
-//                                deleteData.put("subcollectionId", id);
-//
-//                                functions.getHttpsCallable("deleteSubcollection")
-//                                    .call(deleteData)
-//                                    .addOnSuccessListener(httpsCallableResult -> {
-//                                        conversationsAdapter.notifyItemRemoved(position);
-//                                        conversations.remove(position);
-//                                        conversationsAdapter.notifyDataSetChanged();
-//                                    })
-//                                    .addOnFailureListener(e -> {
-//                                        // Hata durumu
-//                                        Log.e("FirebaseFunctionsError", "Error calling function", e);
-//                                    });
-//                            }
-//                        }
-//                    }
+//        functions.getHttpsCallable("deleteBothConversations").call(data)
+//            .continueWith(new Continuation<HttpsCallableResult, Object>() {
+//                @Override
+//                public Object then(@NonNull Task<HttpsCallableResult> task) throws Exception {
+//                    return (Map<String, Object>) task.getResult().getData();
 //                }
-//            }
-//        }).addOnFailureListener(e -> {
-//
-//        });
-//    }
-//
-//    public void deleteConversations(String userMail, String senderId, String receiverId){
-//        FirebaseFirestore firebaseFirestore = FirebaseFirestore.getInstance();
-//        CollectionReference collectionReference = firebaseFirestore.collection("conversations");
-//        collectionReference.whereEqualTo(senderId, userMail).whereEqualTo(receiverId,myMail).get().addOnCompleteListener(task -> {
-//            if (task.isSuccessful()) {
-//                for (QueryDocumentSnapshot document : task.getResult()) {
-//                    document.getReference().delete();
-//                }
-//            }
-//        });
-//    }
-//    public void deleteChats(String userMail, int position){
-//        firebaseFirestore.collection("chatsId").document(myMail).get().addOnSuccessListener(documentSnapshot -> {
-//            if(documentSnapshot.exists()){
-//                Map<String,Object> data = documentSnapshot.getData();
-//                if(data != null){
-//                    if(!data.isEmpty()){
-//                        if(data.containsKey(userMail)){
-//                            String id = (String) data.get(userMail);
-//                            if(id != null && !id.isEmpty()){
-//                                deleteSubCollections(id,position);
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }).addOnFailureListener(e -> {
-//
-//        });
-//    }
-//    public void deleteSubCollections(String documentId, int position) {
-//        WriteBatch batch = firebaseFirestore.batch();
-//        CollectionReference subCollectionReference = firebaseFirestore.collection("chats").document(documentId).collection(documentId);
-//        subCollectionReference.get().addOnCompleteListener(task -> {
-//            if (task.isSuccessful()) {
-//                for (QueryDocumentSnapshot document : task.getResult()) {
-//                    batch.delete(document.getReference());
-//                }
-//
-//                DocumentReference documentReference = firebaseFirestore.collection("chats").document(documentId);
-//                batch.delete(documentReference);
-//
-//                batch.commit().addOnCompleteListener(subTask -> {
-//                    if (subTask.isSuccessful()) {
-//                        conversationsAdapter.notifyItemRemoved(position);
-//                        conversations.remove(position);
-//                        conversationsAdapter.notifyDataSetChanged();
-//                    }else {
-//
-//                    }
-//                });
-//            } else {
-//
-//            }
-//        });
+//            });
 //    }
 
     @Override
@@ -445,42 +344,24 @@ public class MessageFragment extends Fragment implements ConversionListener{
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
         mainActivity.includedLayout.setVisibility(View.VISIBLE);
         mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
-//        startListeningToChanges();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-//        if (listenerRegistration != null) {
-//            listenerRegistration.remove();
-//        }
     }
 
-//    public void startListeningToChanges() {
-//        listenerRegistration = firebaseFirestore.collection("chatsId").document(myMail).addSnapshotListener(MetadataChanges.INCLUDE, new EventListener<DocumentSnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable DocumentSnapshot snapshot,
-//                                @Nullable FirebaseFirestoreException e) {
-//                if (e != null) {
-//                    return;
-//                }
-//
-//                if (snapshot != null && snapshot.exists()) {
-//                    Map<String, Object> data = snapshot.getData();
-//                    if (data != null) {
-//                        for (Map.Entry<String, Object> entry : data.entrySet()) {
-//                            String mail = entry.getKey();
-//                            String id = (String) entry.getValue();
-//                            ContentValues values = new ContentValues();
-//                            values.put("mail", mail);
-//                            values.put("id", id);
-//                            mainActivity.chatIdDataAccess.addChatsId(mail,id);
-//                        }
-//                    }
-//                }
-//            }
-//        });
-//    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        listenConversations();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        stopListeningConversations();
+    }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -488,5 +369,17 @@ public class MessageFragment extends Fragment implements ConversionListener{
         if (context instanceof MainActivity) {
             mainActivity = (MainActivity) context;
         }
+    }
+
+    private void showSnackbar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_SHORT);
+
+        snackbar.setBackgroundTint(Color.rgb(48, 44, 44));
+
+        View snackbarView = snackbar.getView();
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 }

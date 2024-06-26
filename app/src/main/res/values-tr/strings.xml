@@ -199,6 +199,7 @@
 
     <!-- MessageFragment -->
     <string name="mesaji_silmek_istiyor_musunuz">Mesajı silmek istiyor musunuz?</string>
+    <string name="mesaj_silinirken_hata_olustu">Mesaj silinirken hata oluştu.</string>
 
     <!-- MyPostFragment -->
     <string name="gonderiniz_silindi">Gönderiniz silindi.</string>
