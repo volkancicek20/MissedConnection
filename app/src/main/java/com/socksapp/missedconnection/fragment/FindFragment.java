@@ -20,6 +20,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,6 +73,8 @@ public class FindFragment extends Fragment {
     public static String address;
     private long date1_long,date2_long,time1_long,time2_long;
     private MainActivity mainActivity;
+    private Menu menu;
+    private MenuItem menuItem;
 
     public FindFragment() {
         // Required empty public constructor
@@ -115,6 +119,10 @@ public class FindFragment extends Fragment {
         cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
         cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
         cityCompleteTextView.setAdapter(cityAdapter);
+
+        menu = mainActivity.navigationView.getMenu();
+        menuItem = menu.findItem(R.id.nav_drawer_home);
+        menuItem.setIcon(R.drawable.home_default_96);
 
         userMail = user.getEmail();
 
@@ -710,14 +718,12 @@ public class FindFragment extends Fragment {
 //                googleMap.addMarker(new MarkerOptions().position(location).title(address));
 
                 LatLng location = new LatLng(lat, lng);
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
-                // red mark
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_location_mark_100);
-                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false); // 50x50 boyutunda ikon
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16));
+//                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_location_mark_100);
+//                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false); // 50x50 boyutunda ikon
                 googleMap.addMarker(new MarkerOptions()
                 .position(location)
                 .title(address)
-                .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap))
                 );
             }
         });

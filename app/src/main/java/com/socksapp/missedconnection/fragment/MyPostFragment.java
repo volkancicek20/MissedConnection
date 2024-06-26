@@ -536,6 +536,7 @@ public class MyPostFragment extends Fragment {
         fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+        mainActivity.bottomNavigationView.setSelectedItemId(R.id.navAdd);
     }
 
     @Override

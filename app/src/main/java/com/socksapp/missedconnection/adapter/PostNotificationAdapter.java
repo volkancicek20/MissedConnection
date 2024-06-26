@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -123,7 +124,7 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
                     getGalleryShow(v,galleryUrl);
                 });
 
-                getShow(language,name,other_name,imageUrl,galleryUrl,explain,action_explain,city,district,timestamp,timestamp2,postNotificationHolder);
+                getShow(name,other_name,imageUrl,galleryUrl,explain,action_explain,city,district,timestamp,timestamp2,postNotificationHolder,language);
 
                 break;
             case LAYOUT_EMPTY:
@@ -160,7 +161,7 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
         }
     }
 
-    private void getShow(String language,String name,String other_name,String imageUrl,String galleryUrl,String explain,String action_explain,String city,String district,Timestamp timestamp,Timestamp timestamp2,PostNotificationHolder holder){
+    private void getShow(String name,String other_name,String imageUrl,String galleryUrl,String explain,String action_explain,String city,String district,Timestamp timestamp,Timestamp timestamp2,PostNotificationHolder holder,String language){
         if(action_explain.equals("view")){
             action_explain = context.getString(R.string.taraf_ndan_g_r_nt_lendi);
         }
@@ -202,7 +203,7 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
                 .error(R.drawable.icon_loading)
                 .fitCenter()
                 .centerCrop())
-                .override(screenWidth, 500)
+                .override(screenWidth, Target.SIZE_ORIGINAL)
                 .into(holder.recyclerViewNotificationBinding.galleryImage);
         }
 
@@ -211,21 +212,61 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
         long secondsElapsed = (Timestamp.now().getSeconds() - timestamp.getSeconds());
         String elapsedTime;
 
-        if(secondsElapsed < 0){
-            elapsedTime = context.getString(R.string.azonce);
-        } else if (secondsElapsed >= 31536000) {
-            elapsedTime = "• " + (secondsElapsed / 31536000) + context.getString(R.string.yil);
-        } else if (secondsElapsed >= 2592000) {
-            elapsedTime = "• " + (secondsElapsed / 2592000) + context.getString(R.string.ay);
-        } else if (secondsElapsed >= 86400) {
-            elapsedTime = "• " + (secondsElapsed / 86400) + context.getString(R.string.g);
-        } else if (secondsElapsed >= 3600) {
-            elapsedTime = "• " + (secondsElapsed / 3600) + context.getString(R.string.sa);
-        } else if (secondsElapsed >= 60) {
-            elapsedTime = "• " + (secondsElapsed / 60) + context.getString(R.string.d);
+        if (language.equals("turkish")) {
+            if(secondsElapsed < 0){
+                elapsedTime = "şimdi";
+            } else if (secondsElapsed >= 31536000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", new Locale("tr"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 2592000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", new Locale("tr"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 86400) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", new Locale("tr"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 3600) {
+                elapsedTime = "• " + (secondsElapsed / 3600) + "s";
+            } else if (secondsElapsed >= 60) {
+                elapsedTime = "• " + (secondsElapsed / 60) + "d";
+            } else {
+                elapsedTime = "• " + secondsElapsed + " saniye";
+            }
         } else {
-            elapsedTime = "• " + secondsElapsed + context.getString(R.string.s);
+            if(secondsElapsed < 0){
+                elapsedTime = "now";
+            } else if (secondsElapsed >= 31536000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", new Locale("en"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 2592000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", new Locale("en"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 86400) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", new Locale("en"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 3600) {
+                elapsedTime = "• " + (secondsElapsed / 3600) + "h";
+            } else if (secondsElapsed >= 60) {
+                elapsedTime = "• " + (secondsElapsed / 60) + "m";
+            } else {
+                elapsedTime = "• " + secondsElapsed + " seconds";
+            }
         }
+
+//        if(secondsElapsed < 0){
+//            elapsedTime = context.getString(R.string.azonce);
+//        } else if (secondsElapsed >= 31536000) {
+//            elapsedTime = "• " + (secondsElapsed / 31536000) + context.getString(R.string.yil);
+//        } else if (secondsElapsed >= 2592000) {
+//            elapsedTime = "• " + (secondsElapsed / 2592000) + context.getString(R.string.ay);
+//        } else if (secondsElapsed >= 86400) {
+//            elapsedTime = "• " + (secondsElapsed / 86400) + context.getString(R.string.g);
+//        } else if (secondsElapsed >= 3600) {
+//            elapsedTime = "• " + (secondsElapsed / 3600) + context.getString(R.string.sa);
+//        } else if (secondsElapsed >= 60) {
+//            elapsedTime = "• " + (secondsElapsed / 60) + context.getString(R.string.d);
+//        } else {
+//            elapsedTime = "• " + secondsElapsed + context.getString(R.string.s);
+//        }
 
         holder.recyclerViewNotificationBinding.timestampTime.setText(elapsedTime);
 
@@ -233,21 +274,61 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
         long secondsElapsed2 = (Timestamp.now().getSeconds() - timestamp2.getSeconds());
         String elapsedTime2;
 
-        if(secondsElapsed2 < 0){
-            elapsedTime2 = context.getString(R.string.azonce);
-        } else if (secondsElapsed2 >= 31536000) {
-            elapsedTime2 = "• " + (secondsElapsed2 / 31536000) + context.getString(R.string.yil);
-        } else if (secondsElapsed2 >= 2592000) {
-            elapsedTime2 = "• " + (secondsElapsed2 / 2592000) + context.getString(R.string.ay);
-        } else if (secondsElapsed2 >= 86400) {
-            elapsedTime2 = "• " + (secondsElapsed2 / 86400) + context.getString(R.string.g);
-        } else if (secondsElapsed2 >= 3600) {
-            elapsedTime2 = "• " + (secondsElapsed2 / 3600) + context.getString(R.string.sa);
-        } else if (secondsElapsed2 >= 60) {
-            elapsedTime2 = "• " + (secondsElapsed2 / 60) + context.getString(R.string.d);
+        if (language.equals("turkish")) {
+            if(secondsElapsed2 < 0){
+                elapsedTime2 = "şimdi";
+            } else if (secondsElapsed2 >= 31536000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", new Locale("tr"));
+                elapsedTime2 = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed2 >= 2592000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", new Locale("tr"));
+                elapsedTime2 = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed2 >= 86400) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", new Locale("tr"));
+                elapsedTime2 = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed2 >= 3600) {
+                elapsedTime2 = "• " + (secondsElapsed2 / 3600) + "s";
+            } else if (secondsElapsed2 >= 60) {
+                elapsedTime2 = "• " + (secondsElapsed2 / 60) + "d";
+            } else {
+                elapsedTime2 = "• " + secondsElapsed2 + " saniye";
+            }
         } else {
-            elapsedTime2 = "• " + secondsElapsed2 + context.getString(R.string.s);
+            if(secondsElapsed2 < 0){
+                elapsedTime2 = "now";
+            } else if (secondsElapsed2 >= 31536000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", new Locale("en"));
+                elapsedTime2 = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed2 >= 2592000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", new Locale("en"));
+                elapsedTime2 = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed2 >= 86400) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", new Locale("en"));
+                elapsedTime2 = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed2 >= 3600) {
+                elapsedTime2 = "• " + (secondsElapsed2 / 3600) + "h";
+            } else if (secondsElapsed2 >= 60) {
+                elapsedTime2 = "• " + (secondsElapsed2 / 60) + "m";
+            } else {
+                elapsedTime2 = "• " + secondsElapsed2 + " seconds";
+            }
         }
+
+//        if(secondsElapsed2 < 0){
+//            elapsedTime2 = context.getString(R.string.azonce);
+//        } else if (secondsElapsed2 >= 31536000) {
+//            elapsedTime2 = "• " + (secondsElapsed2 / 31536000) + context.getString(R.string.yil);
+//        } else if (secondsElapsed2 >= 2592000) {
+//            elapsedTime2 = "• " + (secondsElapsed2 / 2592000) + context.getString(R.string.ay);
+//        } else if (secondsElapsed2 >= 86400) {
+//            elapsedTime2 = "• " + (secondsElapsed2 / 86400) + context.getString(R.string.g);
+//        } else if (secondsElapsed2 >= 3600) {
+//            elapsedTime2 = "• " + (secondsElapsed2 / 3600) + context.getString(R.string.sa);
+//        } else if (secondsElapsed2 >= 60) {
+//            elapsedTime2 = "• " + (secondsElapsed2 / 60) + context.getString(R.string.d);
+//        } else {
+//            elapsedTime2 = "• " + secondsElapsed2 + context.getString(R.string.s);
+//        }
 
         holder.recyclerViewNotificationBinding.recyclerTimestampTime.setText(elapsedTime2);
     }
@@ -322,7 +403,7 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
             .error(R.drawable.icon_loading)
             .fitCenter()
             .centerCrop())
-            .override(screenWidth, 500)
+            .override(screenWidth, Target.SIZE_ORIGINAL)
             .into(imageView);
 
         ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);

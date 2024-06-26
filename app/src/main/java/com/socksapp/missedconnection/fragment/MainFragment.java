@@ -25,6 +25,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -83,6 +85,8 @@ public class MainFragment extends Fragment {
     private DocumentSnapshot lastVisiblePost;
     private final int pageSize = 10;
     private String loadCity,loadDistrict;
+    private Menu menu;
+    private MenuItem menuItem;
     public MainFragment() {
         // Required empty public constructor
     }
@@ -130,6 +134,10 @@ public class MainFragment extends Fragment {
 
         binding.shimmerLayout.startShimmer();
 
+        menu = mainActivity.navigationView.getMenu();
+        menuItem = menu.findItem(R.id.nav_drawer_home);
+        menuItem.setIcon(R.drawable.home_active_96);
+
         userMail = user.getEmail();
 
         timedDataManager = new TimedDataManager(view.getContext());
@@ -167,6 +175,8 @@ public class MainFragment extends Fragment {
             long date2 = args.getLong("date2",0);
             long time1 = args.getLong("time1",0);
             long time2 = args.getLong("time2",0);
+
+            mainActivity.bottomNavigationView.setSelectedItemId(R.id.navHome);
 
             getData(city,district,date1,date2,time1,time2,radius,latitude,longitude);
         }else {
@@ -354,59 +364,53 @@ public class MainFragment extends Fragment {
         });
 
         report.setOnClickListener(v ->{
-            if(!mail.equals(userMail)){
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
 
-                View dialogView = getLayoutInflater().inflate(R.layout.custom_dialog_report_user, null);
-                builder.setView(dialogView);
+            View dialogView = getLayoutInflater().inflate(R.layout.custom_dialog_report_user, null);
+            builder.setView(dialogView);
 
-                Button cancelButton = dialogView.findViewById(R.id.cancelButton);
-                Button reportButton = dialogView.findViewById(R.id.reportButton);
-                TextView title = dialogView.findViewById(R.id.dialogTitle);
-                EditText explain = dialogView.findViewById(R.id.explain);
+            Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+            Button reportButton = dialogView.findViewById(R.id.reportButton);
+            TextView title = dialogView.findViewById(R.id.dialogTitle);
+            EditText explain = dialogView.findViewById(R.id.explain);
 
-                AlertDialog dlg = builder.create();
+            AlertDialog dlg = builder.create();
 
-                String getLanguage = language.getString("language","");
-                String txt;
-                if(getLanguage.equals("english")){
-                    txt = "You are reporting the user named " + name;
-                }else {
-                    txt = name + " adlı kullanıcıyı bildiriyorsunuz!";
-                }
-                title.setText(txt);
-
-                cancelButton.setOnClickListener(v2 -> {
-                    dlg.dismiss();
-                    dialog.dismiss();
-                });
-
-                reportButton.setOnClickListener(v3 -> {
-                    String text = explain.getText().toString().trim();
-                    if(!text.isEmpty()){
-                        Map<String,Object> data = new HashMap<>();
-                        data.put("report",text);
-                        firestore.collection("report").document(mail).collection(mail).add(data).addOnSuccessListener(documentReference1 -> {
-                            dlg.dismiss();
-                            dialog.dismiss();
-                            showSnackbar(view,getString(R.string.kullanici_bildirildi));
-                        }).addOnFailureListener(e -> {
-                            dlg.dismiss();
-                            dialog.dismiss();
-                            showSnackbar(view,getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz));
-                        });
-                    }else {
-                        dialog.dismiss();
-                        dlg.dismiss();
-                    }
-                });
-
-                dlg.show();
+            String getLanguage = language.getString("language","");
+            String txt;
+            if(getLanguage.equals("english")){
+                txt = "You are reporting the user named " + name;
             }else {
-                showSnackbar(view,getString(R.string.kendinizi_bildiremezsiniz));
-                dialog.dismiss();
+                txt = name + " adlı kullanıcıyı bildiriyorsunuz!";
             }
+            title.setText(txt);
 
+            cancelButton.setOnClickListener(v2 -> {
+                dlg.dismiss();
+                dialog.dismiss();
+            });
+
+            reportButton.setOnClickListener(v3 -> {
+                String text = explain.getText().toString().trim();
+                if(!text.isEmpty()){
+                    Map<String,Object> data = new HashMap<>();
+                    data.put("report",text);
+                    firestore.collection("report").document(mail).collection(mail).add(data).addOnSuccessListener(documentReference1 -> {
+                        dlg.dismiss();
+                        dialog.dismiss();
+                        showSnackbar(view,getString(R.string.kullanici_bildirildi));
+                    }).addOnFailureListener(e -> {
+                        dlg.dismiss();
+                        dialog.dismiss();
+                        showSnackbar(view,getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz));
+                    });
+                }else {
+                    dialog.dismiss();
+                    dlg.dismiss();
+                }
+            });
+
+            dlg.show();
         });
 
         if(dialog.getWindow() != null){

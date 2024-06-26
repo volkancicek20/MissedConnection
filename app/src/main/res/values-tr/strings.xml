@@ -38,6 +38,7 @@
     <string name="ss_dd">ss:dd</string>
     <string name="aciklama">Açıklama</string>
     <string name="ekle">EKLE</string>
+    <string name="resim_yukle">Resim yükle</string>
 
     <!-- fragment_chat -->
     <string name="mesaj">Mesaj</string>

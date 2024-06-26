@@ -37,6 +37,7 @@
     <string name="ss_dd">hh:mm</string>
     <string name="aciklama">Description</string>
     <string name="ekle">ADD</string>
+    <string name="resim_yukle">Upload image</string>
 
     <!-- fragment_chat -->
     <string name="mesaj">Message</string>

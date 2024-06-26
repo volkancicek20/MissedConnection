@@ -14,6 +14,8 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -56,6 +58,8 @@ public class MessageFragment extends Fragment implements ConversionListener{
     private String myMail;
     private ListenerRegistration senderListenerRegistration;
     private ListenerRegistration receiverListenerRegistration;
+    private Menu menu;
+    private MenuItem menuItem;
 
     public MessageFragment() {
         // Required empty public constructor
@@ -83,6 +87,10 @@ public class MessageFragment extends Fragment implements ConversionListener{
 
         mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
+
+        menu = mainActivity.navigationView.getMenu();
+        menuItem = menu.findItem(R.id.nav_drawer_home);
+        menuItem.setIcon(R.drawable.home_default_96);
 
         myMail = user.getEmail();
 
@@ -171,6 +179,7 @@ public class MessageFragment extends Fragment implements ConversionListener{
                     }
                 }
             }
+
             Collections.sort(conversations, (obj1, obj2)-> obj2.dateObject.compareTo(obj1.dateObject));
             binding.recyclerViewMessage.smoothScrollToPosition(0);
             binding.recyclerViewMessage.setVisibility(View.VISIBLE);

@@ -37,6 +37,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,6 +52,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -102,11 +105,10 @@ public class AddPostFragment extends Fragment {
     private MainActivity mainActivity;
     public ActivityResultLauncher<Intent> activityResultLauncher;
     public ActivityResultLauncher<String> permissionLauncher;
-    private Bitmap selectedBitmap;
     private Uri imageData;
     private String uniqueID;
-
-    public static MapView mapView;
+    private Menu menu;
+    private MenuItem menuItem;
 
     public AddPostFragment() {
         // Required empty public constructor
@@ -156,6 +158,10 @@ public class AddPostFragment extends Fragment {
         cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
         cityCompleteTextView.setAdapter(cityAdapter);
 
+        menu = mainActivity.navigationView.getMenu();
+        menuItem = menu.findItem(R.id.nav_drawer_home);
+        menuItem.setIcon(R.drawable.home_default_96);
+
         userMail = user.getEmail();
 
         imageData = null;
@@ -168,6 +174,7 @@ public class AddPostFragment extends Fragment {
         registerLauncher(view);
 
         binding.galleryImage.setOnClickListener(v -> setImage(view));
+        binding.uploadImage.setOnClickListener(v -> setImage(view));
 
         myUserName = nameShared.getString("name","");
         myImageUrl = imageUrlShared.getString("imageUrl","");
@@ -209,7 +216,6 @@ public class AddPostFragment extends Fragment {
             return true;
         });
 
-
         binding.topImageLinear.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 int touchX = (int) event.getX();
@@ -220,15 +226,20 @@ public class AddPostFragment extends Fragment {
                     int checkVisible = binding.galleryImage.getVisibility();
                     if (checkVisible == View.GONE) {
                         binding.galleryImage.setVisibility(View.VISIBLE);
+                        if(imageData == null){
+                            binding.uploadImage.setVisibility(View.VISIBLE);
+                        }
                     } else {
                         binding.galleryImage.setVisibility(View.GONE);
+                        if(imageData == null){
+                            binding.uploadImage.setVisibility(View.GONE);
+                        }
                     }
                 }
             }
 
             return true;
         });
-
 
         binding.topMapLinear.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -248,7 +259,6 @@ public class AddPostFragment extends Fragment {
 
             return true;
         });
-
 
         binding.mapView.getMapAsync(new OnMapReadyCallback() {
             @Override
@@ -279,7 +289,7 @@ public class AddPostFragment extends Fragment {
                             fragmentTransaction.addToBackStack(null);
                             fragmentTransaction.commit();
                         }else {
-                            Toast.makeText(requireContext(), getString(R.string.l_ve_il_eyi_girmeniz_gerekmektedir),Toast.LENGTH_SHORT).show();
+                            showSnackbar(view,getString(R.string.l_ve_il_eyi_girmeniz_gerekmektedir));
                         }
                     }
                 });
@@ -336,10 +346,6 @@ public class AddPostFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 binding.cityTextInput.setError(null);
-//                lat = 0.0;
-//                lng = 0.0;
-//                rad = 0.0;
-//                binding.markedMapView.setText("");
             }
 
             @Override
@@ -409,7 +415,6 @@ public class AddPostFragment extends Fragment {
                 showTimePickerDialogs(v);
             }
         });
-
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -826,13 +831,12 @@ public class AddPostFragment extends Fragment {
 //                googleMap.addMarker(new MarkerOptions().position(location).title(address));
 
                 LatLng location = new LatLng(lat, lng);
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.icon_location_mark_100);
-                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false); // 50x50 boyutunda ikon
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16));
+//                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loca);
+//                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false); // 50x50 boyutunda ikon
                 googleMap.addMarker(new MarkerOptions()
                     .position(location)
                     .title(address)
-                    .icon(BitmapDescriptorFactory.fromBitmap(resizedBitmap))
                 );
             }
         });
@@ -918,7 +922,7 @@ public class AddPostFragment extends Fragment {
                             batch.commit()
                                 .addOnSuccessListener(aVoid -> {
                                     progressDialog.dismiss();
-                                    resetAction();
+                                    refreshFragment();
                                     showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
                                 })
                                 .addOnFailureListener(e -> {
@@ -969,7 +973,7 @@ public class AddPostFragment extends Fragment {
 
                 batch.commit().addOnSuccessListener(aVoid -> {
                     progressDialog.dismiss();
-                    resetAction();
+                    refreshFragment();
                     showSnackbar(view,getString(R.string.g_nderiniz_payla_ld));
                 }).addOnFailureListener(e -> {
                     progressDialog.dismiss();
@@ -1011,35 +1015,12 @@ public class AddPostFragment extends Fragment {
         return context.getResources().getDisplayMetrics().widthPixels;
     }
 
-    private void resetAction(){
-        binding.mapView.setVisibility(View.GONE);
-        binding.visibleDatePicker.setVisibility(View.GONE);
-
-        binding.cityCompleteText.setText("");
-
-        binding.districtCompleteText.setText("");
-
-        imageData = null;
-        binding.galleryImage.setImageResource(R.drawable.add_gallery);
-
-        binding.explain.setText("");
-
-        binding.markedMapView.setText("");
-
-        binding.datetimeRange.setText("");
-
-        binding.timeRange.setText("");
-
-        lat = 0.0;
-        lng = 0.0;
-        rad = 0.0;
-        address = "";
-        time1_long = 0;
-        time2_long = 0;
-        date1_long = 0;
-        date2_long = 0;
-
-//        binding.checkBoxContact.setChecked(false);
+    public void refreshFragment() {
+        AddPostFragment fragment = new AddPostFragment();
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+//        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     private boolean compareDates(String dateText1, String dateText2) {
@@ -1692,55 +1673,20 @@ public class AddPostFragment extends Fragment {
                     Intent intentForResult = result.getData();
                     if(intentForResult != null){
                         imageData = intentForResult.getData();
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                            try {
-//                                ImageDecoder.Source source = ImageDecoder.createSource(view.getContext().getContentResolver(),imageData);
-//                                selectedBitmap = ImageDecoder.decodeBitmap(source);
-//                                binding.galleryImage.setImageBitmap(selectedBitmap);
 
-                                int screenWidth = getScreenWidth(view.getContext());
+                        int screenWidth = getScreenWidth(view.getContext());
 
-                                binding.galleryImage.setAdjustViewBounds(true);
+                        binding.uploadImage.setVisibility(View.GONE);
+                        binding.galleryImage.setAdjustViewBounds(true);
 
-                                Glide.with(view.getContext())
-                                    .load(imageData)
-                                    .apply(new RequestOptions()
-                                    .error(R.drawable.add_image_150)
-                                    .fitCenter()
-                                    .centerCrop())
-                                    .override(screenWidth, 500)
-                                    .into(binding.galleryImage);
-
-
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }else {
-                            try {
-//                                InputStream inputStream = view.getContext().getContentResolver().openInputStream(imageData);
-//                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-//                                binding.galleryImage.setImageBitmap(bitmap);
-//                                if (inputStream != null) {
-//                                    inputStream.close();
-//                                }
-
-                                int screenWidth = getScreenWidth(view.getContext());
-
-                                binding.galleryImage.setAdjustViewBounds(true);
-
-                                Glide.with(view.getContext())
-                                    .load(imageData)
-                                    .apply(new RequestOptions()
-                                    .error(R.drawable.icon_loading)
-                                    .fitCenter()
-                                    .centerCrop())
-                                    .override(screenWidth, 500)
-                                    .into(binding.galleryImage);
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        Glide.with(view.getContext())
+                            .load(imageData)
+                            .apply(new RequestOptions()
+                            .error(R.drawable.icon_loading)
+                            .fitCenter()
+                            .centerCrop())
+                            .override(screenWidth, Target.SIZE_ORIGINAL)
+                            .into(binding.galleryImage);
 
                     }
                 }

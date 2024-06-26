@@ -64,7 +64,7 @@
         android:layout_marginStart="16dp"
         android:text=""
         android:textSize="14sp"
-        android:textStyle="bold"
+        android:textStyle="normal"
         android:textColor="@color/gray"
         android:fontFamily="@font/roboto_regular"
         app:layout_constraintStart_toEndOf="@id/recycler_name"

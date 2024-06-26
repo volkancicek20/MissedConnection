@@ -241,19 +241,35 @@
 
                     </LinearLayout>
 
+
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/gallery_image"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:scaleType="fitCenter"
                         android:layout_margin="16dp"
                         android:background="@drawable/bg_shapeable_imageview"
-                        android:src="@drawable/add_image_150"
-                        android:visibility="visible"
-                        app:layout_constraintStart_toStartOf="parent"
+                        android:scaleType="fitCenter"
+                        app:layout_constraintBottom_toTopOf="@id/upload_image"
                         app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:shapeAppearanceOverlay="@style/RoundCorner" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/upload_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_marginHorizontal="16dp"
+                        android:layout_marginBottom="16dp"
+                        android:background="@drawable/upload_button_background"
+                        android:text="@string/resim_yukle"
+                        android:textSize="14sp"
+                        android:textColor="@color/white"
+                        android:textAllCaps="false"
+                        android:fontFamily="@font/roboto_regular"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:shapeAppearanceOverlay="@style/RoundCorner"/>
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
+
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

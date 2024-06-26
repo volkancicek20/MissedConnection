@@ -45,7 +45,8 @@
     </style>
 
     <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
-        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:editTextColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
     </style>
 
     <style name="RoundCorner">

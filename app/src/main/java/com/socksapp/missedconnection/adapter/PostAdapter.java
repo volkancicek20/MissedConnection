@@ -16,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -27,8 +28,13 @@ import com.socksapp.missedconnection.databinding.RecyclerEmptyPostBinding;
 import com.socksapp.missedconnection.databinding.RecyclerPostBinding;
 import com.socksapp.missedconnection.fragment.MainFragment;
 import com.socksapp.missedconnection.model.FindPost;
+import com.socksapp.missedconnection.myclass.SharedPreferencesGetLanguage;
 import com.socksapp.missedconnection.myclass.SharedPreferencesHelper;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostAdapter extends RecyclerView.Adapter {
@@ -37,6 +43,7 @@ public class PostAdapter extends RecyclerView.Adapter {
     private FirebaseUser user;
     private FirebaseFirestore firebaseFirestore;
     private SharedPreferencesHelper sharedPreferencesHelper;
+    private SharedPreferencesGetLanguage sharedPreferencesGetLanguage;
 
     public ArrayList<FindPost> arrayList;
     public Context context;
@@ -85,6 +92,8 @@ public class PostAdapter extends RecyclerView.Adapter {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         sharedPreferencesHelper = new SharedPreferencesHelper(context);
+        sharedPreferencesGetLanguage = new SharedPreferencesGetLanguage(context);
+        String language = sharedPreferencesGetLanguage.getString("language","");
         String myMail = sharedPreferencesHelper.getString("myMail", "");
         String imageUrl,name,mail,city,district,place,explain,galleryUrl;
         double lat,lng;
@@ -118,6 +127,12 @@ public class PostAdapter extends RecyclerView.Adapter {
 
                 postHolder.recyclerPostBinding.baseConstraint.setClickable(true);
 
+                if(mail.equals(myMail) && lat == 0.0 && lng == 0.0 && radius == 0.0){
+                    postHolder.recyclerPostBinding.verticalMenu.setVisibility(View.GONE);
+                }else {
+                    postHolder.recyclerPostBinding.verticalMenu.setVisibility(View.VISIBLE);
+                }
+
                 if(galleryUrl != null && !galleryUrl.isEmpty()){
                     postHolder.recyclerPostBinding.galleryImage.setVisibility(View.VISIBLE);
                 }else {
@@ -132,7 +147,7 @@ public class PostAdapter extends RecyclerView.Adapter {
                     getGalleryShow(v,galleryUrl);
                 });
 
-                getShow(imageUrl,galleryUrl,name,city,district,explain,timestamp,postHolder);
+                getShow(imageUrl,galleryUrl,name,city,district,explain,timestamp,postHolder,language);
 
                 ((PostHolder) holder).recyclerPostBinding.verticalMenu.setOnClickListener(v ->{
                     fragment.dialogShow(v,mail,name,lat,lng,radius,documentReference);
@@ -175,7 +190,7 @@ public class PostAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void getShow(String imageUrl,String galleryUrl,String name,String city,String district,String explain,Timestamp timestamp,PostHolder holder){
+    public void getShow(String imageUrl,String galleryUrl,String name,String city,String district,String explain,Timestamp timestamp,PostHolder holder,String language){
         if(imageUrl.isEmpty()){
             ImageView imageView;
             imageView = holder.recyclerPostBinding.recyclerProfileImage;
@@ -199,7 +214,7 @@ public class PostAdapter extends RecyclerView.Adapter {
                 .error(R.drawable.icon_loading)
                 .fitCenter()
                 .centerCrop())
-                .override(screenWidth, 500)
+                .override(screenWidth, Target.SIZE_ORIGINAL)
                 .into(holder.recyclerPostBinding.galleryImage);
         }
 
@@ -212,25 +227,64 @@ public class PostAdapter extends RecyclerView.Adapter {
         holder.recyclerPostBinding.recyclerName.setText(name);
         holder.recyclerPostBinding.recyclerExplain.setText(explain);
 
-
         long secondsElapsed = (Timestamp.now().getSeconds() - timestamp.getSeconds());
         String elapsedTime;
 
-        if(secondsElapsed < 0){
-            elapsedTime = context.getString(R.string.azonce);
-        } else if (secondsElapsed >= 31536000) {
-            elapsedTime = "• " + (secondsElapsed / 31536000) + context.getString(R.string.yil);
-        } else if (secondsElapsed >= 2592000) {
-            elapsedTime = "• " + (secondsElapsed / 2592000) + context.getString(R.string.ay);
-        } else if (secondsElapsed >= 86400) {
-            elapsedTime = "• " + (secondsElapsed / 86400) + context.getString(R.string.g);
-        } else if (secondsElapsed >= 3600) {
-            elapsedTime = "• " + (secondsElapsed / 3600) + context.getString(R.string.sa);
-        } else if (secondsElapsed >= 60) {
-            elapsedTime = "• " + (secondsElapsed / 60) + context.getString(R.string.d);
+        if (language.equals("turkish")) {
+            if(secondsElapsed < 0){
+                elapsedTime = "şimdi";
+            } else if (secondsElapsed >= 31536000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", new Locale("tr"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 2592000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", new Locale("tr"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 86400) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", new Locale("tr"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 3600) {
+                elapsedTime = "• " + (secondsElapsed / 3600) + "s";
+            } else if (secondsElapsed >= 60) {
+                elapsedTime = "• " + (secondsElapsed / 60) + "d";
+            } else {
+                elapsedTime = "• " + secondsElapsed + " saniye";
+            }
         } else {
-            elapsedTime = "• " + secondsElapsed + context.getString(R.string.s);
+            if(secondsElapsed < 0){
+                elapsedTime = "now";
+            } else if (secondsElapsed >= 31536000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", new Locale("en"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 2592000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", new Locale("en"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 86400) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", new Locale("en"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 3600) {
+                elapsedTime = "• " + (secondsElapsed / 3600) + "h";
+            } else if (secondsElapsed >= 60) {
+                elapsedTime = "• " + (secondsElapsed / 60) + "m";
+            } else {
+                elapsedTime = "• " + secondsElapsed + " seconds";
+            }
         }
+
+//        if(secondsElapsed < 0){
+//            elapsedTime = context.getString(R.string.azonce);
+//        } else if (secondsElapsed >= 31536000) {
+//            elapsedTime = "• " + (secondsElapsed / 31536000) + context.getString(R.string.yil);
+//        } else if (secondsElapsed >= 2592000) {
+//            elapsedTime = "• " + (secondsElapsed / 2592000) + context.getString(R.string.ay);
+//        } else if (secondsElapsed >= 86400) {
+//            elapsedTime = "• " + (secondsElapsed / 86400) + context.getString(R.string.g);
+//        } else if (secondsElapsed >= 3600) {
+//            elapsedTime = "• " + (secondsElapsed / 3600) + context.getString(R.string.sa);
+//        } else if (secondsElapsed >= 60) {
+//            elapsedTime = "• " + (secondsElapsed / 60) + context.getString(R.string.d);
+//        } else {
+//            elapsedTime = "• " + secondsElapsed + context.getString(R.string.s);
+//        }
 
         holder.recyclerPostBinding.timestampTime.setText(elapsedTime);
 
@@ -306,7 +360,7 @@ public class PostAdapter extends RecyclerView.Adapter {
             .error(R.drawable.icon_loading)
             .fitCenter()
             .centerCrop())
-            .override(screenWidth, 500)
+            .override(screenWidth, Target.SIZE_ORIGINAL)
             .into(imageView);
 
         ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);

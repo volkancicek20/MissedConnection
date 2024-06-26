@@ -2,17 +2,22 @@ package com.socksapp.missedconnection.fragment;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -77,7 +82,7 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
 
         if(type.equals("main")){
             binding.slider.setVisibility(View.GONE);
-            binding.mapSearch.setVisibility(View.GONE);
+            binding.mapSearch.setVisibility(View.INVISIBLE);
             binding.saveLocation.setVisibility(View.GONE);
         }
 
@@ -89,6 +94,8 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
             int intValue = Math.round(value);
             return String.valueOf(intValue);
         });
+
+        changeSearchViewIconColor(view,binding.mapSearch,R.color.white);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
@@ -126,6 +133,10 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
         if(mapFragment != null){
             mapFragment.getMapAsync(this);
         }
+
+        binding.backSpace.setOnClickListener(v ->{
+            requireActivity().onBackPressed();
+        });
     }
 
     @Override
@@ -267,6 +278,19 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
 
         requireActivity().getSupportFragmentManager().popBackStack();
 
+    }
+
+    private void changeSearchViewIconColor(View view, SearchView searchView, int color) {
+        ImageView searchIcon = searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
+
+        searchIcon.setColorFilter(ContextCompat.getColor(view.getContext(), color), PorterDuff.Mode.SRC_IN);
+
+        ImageView clearIcon = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
+
+        clearIcon.setColorFilter(ContextCompat.getColor(view.getContext(), color), PorterDuff.Mode.SRC_IN);
+
+        SearchView.SearchAutoComplete searchAutoComplete = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        searchAutoComplete.setTextColor(Color.WHITE);
     }
 
     @Override

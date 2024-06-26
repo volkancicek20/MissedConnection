@@ -10,6 +10,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
@@ -23,6 +25,8 @@ public class ProfileFragment extends Fragment {
     private FragmentProfileBinding binding;
     private SharedPreferences nameShared,imageUrlShared;
     private MainActivity mainActivity;
+    private Menu menu;
+    private MenuItem menuItem;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -51,6 +55,10 @@ public class ProfileFragment extends Fragment {
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
         mainActivity.includedLayout.setVisibility(View.VISIBLE);
         mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+
+        menu = mainActivity.navigationView.getMenu();
+        menuItem = menu.findItem(R.id.nav_drawer_home);
+        menuItem.setIcon(R.drawable.home_default_96);
 
         setProfile(view);
 

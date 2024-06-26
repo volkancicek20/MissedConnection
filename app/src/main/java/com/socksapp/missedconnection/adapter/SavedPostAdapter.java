@@ -17,6 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,7 +29,11 @@ import com.socksapp.missedconnection.databinding.RecyclerEmptySavedPostBinding;
 import com.socksapp.missedconnection.databinding.RecyclerSavedPostBinding;
 import com.socksapp.missedconnection.fragment.SavedPostFragment;
 import com.socksapp.missedconnection.model.FindPost;
+import com.socksapp.missedconnection.myclass.SharedPreferencesGetLanguage;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -40,6 +45,7 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
     public ArrayList<FindPost> arrayList;
     public Context context;
     public SavedPostFragment fragment;
+    private SharedPreferencesGetLanguage sharedPreferencesGetLanguage;
 
     public SavedPostAdapter(ArrayList<FindPost> arrayList, Context context, SavedPostFragment fragment) {
         this.arrayList = arrayList;
@@ -83,7 +89,8 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         firebaseFirestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
-
+        sharedPreferencesGetLanguage = new SharedPreferencesGetLanguage(context);
+        String language = sharedPreferencesGetLanguage.getString("language","");
         String imageUrl,name,mail,city,district,place,explain,galleryUrl;
         double lat,lng;
         double radius;
@@ -129,7 +136,7 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
                     getGalleryShow(v,galleryUrl);
                 });
 
-                getShow(imageUrl,galleryUrl,name,city,district,explain,timestamp,savedPostHolder);
+                getShow(imageUrl,galleryUrl,name,city,district,explain,timestamp,savedPostHolder,language);
 
                 savedPostHolder.recyclerSavedPostBinding.removeSavedMenu.setOnClickListener(v ->{
                     fragment.removeSaved(v,documentReference.getId(),holder.getAdapterPosition());
@@ -169,7 +176,7 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void getShow(String imageUrl,String galleryUrl, String name, String city, String district, String explain, Timestamp timestamp, SavedPostAdapter.SavedPostHolder holder){
+    public void getShow(String imageUrl,String galleryUrl, String name, String city, String district, String explain, Timestamp timestamp, SavedPostAdapter.SavedPostHolder holder,String language){
         if(imageUrl.isEmpty()){
             ImageView imageView;
             imageView = holder.recyclerSavedPostBinding.recyclerProfileImage;
@@ -192,7 +199,7 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
                 .error(R.drawable.icon_loading)
                 .fitCenter()
                 .centerCrop())
-                .override(screenWidth, 500)
+                .override(screenWidth, Target.SIZE_ORIGINAL)
                 .into(holder.recyclerSavedPostBinding.galleryImage);
         }
 
@@ -209,21 +216,61 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         long secondsElapsed = (Timestamp.now().getSeconds() - timestamp.getSeconds());
         String elapsedTime;
 
-        if(secondsElapsed < 0){
-            elapsedTime = context.getString(R.string.azonce);
-        } else if (secondsElapsed >= 31536000) {
-            elapsedTime = "• " + (secondsElapsed / 31536000) + context.getString(R.string.yil);
-        } else if (secondsElapsed >= 2592000) {
-            elapsedTime = "• " + (secondsElapsed / 2592000) + context.getString(R.string.ay);
-        } else if (secondsElapsed >= 86400) {
-            elapsedTime = "• " + (secondsElapsed / 86400) + context.getString(R.string.g);
-        } else if (secondsElapsed >= 3600) {
-            elapsedTime = "• " + (secondsElapsed / 3600) + context.getString(R.string.sa);
-        } else if (secondsElapsed >= 60) {
-            elapsedTime = "• " + (secondsElapsed / 60) + context.getString(R.string.d);
+        if (language.equals("turkish")) {
+            if(secondsElapsed < 0){
+                elapsedTime = "şimdi";
+            } else if (secondsElapsed >= 31536000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", new Locale("tr"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 2592000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", new Locale("tr"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 86400) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM", new Locale("tr"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 3600) {
+                elapsedTime = "• " + (secondsElapsed / 3600) + "s";
+            } else if (secondsElapsed >= 60) {
+                elapsedTime = "• " + (secondsElapsed / 60) + "d";
+            } else {
+                elapsedTime = "• " + secondsElapsed + " saniye";
+            }
         } else {
-            elapsedTime = "• " + secondsElapsed + context.getString(R.string.s);
+            if(secondsElapsed < 0){
+                elapsedTime = "now";
+            } else if (secondsElapsed >= 31536000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", new Locale("en"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 2592000) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", new Locale("en"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 86400) {
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd", new Locale("en"));
+                elapsedTime = "• " + dateFormat.format(timestamp.toDate());
+            } else if (secondsElapsed >= 3600) {
+                elapsedTime = "• " + (secondsElapsed / 3600) + "h";
+            } else if (secondsElapsed >= 60) {
+                elapsedTime = "• " + (secondsElapsed / 60) + "m";
+            } else {
+                elapsedTime = "• " + secondsElapsed + " seconds";
+            }
         }
+
+//        if(secondsElapsed < 0){
+//            elapsedTime = context.getString(R.string.azonce);
+//        } else if (secondsElapsed >= 31536000) {
+//            elapsedTime = "• " + (secondsElapsed / 31536000) + context.getString(R.string.yil);
+//        } else if (secondsElapsed >= 2592000) {
+//            elapsedTime = "• " + (secondsElapsed / 2592000) + context.getString(R.string.ay);
+//        } else if (secondsElapsed >= 86400) {
+//            elapsedTime = "• " + (secondsElapsed / 86400) + context.getString(R.string.g);
+//        } else if (secondsElapsed >= 3600) {
+//            elapsedTime = "• " + (secondsElapsed / 3600) + context.getString(R.string.sa);
+//        } else if (secondsElapsed >= 60) {
+//            elapsedTime = "• " + (secondsElapsed / 60) + context.getString(R.string.d);
+//        } else {
+//            elapsedTime = "• " + secondsElapsed + context.getString(R.string.s);
+//        }
 
         holder.recyclerSavedPostBinding.timestampTime.setText(elapsedTime);
 
@@ -299,7 +346,7 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
             .error(R.drawable.icon_loading)
             .fitCenter()
             .centerCrop())
-            .override(screenWidth, 500)
+            .override(screenWidth, Target.SIZE_ORIGINAL)
             .into(imageView);
 
         ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
