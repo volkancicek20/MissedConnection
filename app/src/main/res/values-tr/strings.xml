@@ -213,7 +213,8 @@
     <string name="kayit_olurken_bir_hata_olustu">"Kayıt olurken bir hata oluştu. Hata: "</string>
 
     <!-- SavedPostFragment -->
-    <string name="kaydedilenlerden_silindi">Kaydedilenlerden Silindi</string>
+    <string name="kaydedilenlerden_silindi">Kaydedilenlerden silindi</string>
+    <string name="kaydedilenlerden_kald_r">Kaydedilenlerden kaldır</string>
 
     <!-- SettingsFragment -->
     <string name="konum_izni_gerekli">Konum İzni Gerekli</string>
@@ -287,5 +288,8 @@
     <!-- recycler_view_chat_block_2 -->
     <string name="engellendiniz">Engellendiniz</string>
     <string name="engeliniz_a_lana_kadar_mesaj_g_nderemezsiniz">Engeliniz açılana kadar mesaj gönderemezsiniz</string>
+
+    <!-- recycler_saved_removed_post -->
+    <string name="g_nderi_silinmi">Gönderi silinmiş</string>
 
 </resources>

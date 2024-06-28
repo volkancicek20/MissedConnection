@@ -122,12 +122,12 @@ public class MessageFragment extends Fragment implements ConversionListener{
 
     private void listenConversations(){
         senderListenerRegistration = firebaseFirestore.collection("conversations")
-                .whereEqualTo("senderId", myMail)
-                .addSnapshotListener(eventListener);
+            .whereEqualTo("senderId", myMail)
+            .addSnapshotListener(eventListener);
 
         receiverListenerRegistration = firebaseFirestore.collection("conversations")
-                .whereEqualTo("receiverId", myMail)
-                .addSnapshotListener(eventListener);
+            .whereEqualTo("receiverId", myMail)
+            .addSnapshotListener(eventListener);
     }
 
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {

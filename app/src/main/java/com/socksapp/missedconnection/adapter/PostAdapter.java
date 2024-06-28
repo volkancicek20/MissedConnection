@@ -149,7 +149,7 @@ public class PostAdapter extends RecyclerView.Adapter {
 
                 getShow(imageUrl,galleryUrl,name,city,district,explain,timestamp,postHolder,language);
 
-                ((PostHolder) holder).recyclerPostBinding.verticalMenu.setOnClickListener(v ->{
+                postHolder.recyclerPostBinding.verticalMenu.setOnClickListener(v ->{
                     fragment.dialogShow(v,mail,name,lat,lng,radius,documentReference);
                 });
 

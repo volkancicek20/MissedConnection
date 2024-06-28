@@ -13,7 +13,7 @@
     <!-- bottom_sheet_layout -->
     <string name="haritada_goster">Show on map</string>
     <string name="kaydet">Save</string>
-    <string name="mesaj_gonder">Sender Message</string>
+    <string name="mesaj_gonder">Sender message</string>
     <string name="bildir">Report</string>
 
     <!-- bottom_sheet_layout -->
@@ -212,7 +212,8 @@
     <string name="kayit_olurken_bir_hata_olustu">"An error occurred while registering. Error: "</string>
 
     <!-- SavedPostFragment -->
-    <string name="kaydedilenlerden_silindi">Deleted from Saved</string>
+    <string name="kaydedilenlerden_silindi">Deleted from saved</string>
+    <string name="kaydedilenlerden_kald_r">Remove from saved</string>
 
     <!-- SettingsFragment -->
     <string name="konum_izni_gerekli">Location Permission Required</string>
@@ -286,5 +287,9 @@
     <!-- recycler_view_chat_block_2 -->
     <string name="engellendiniz">You are blocked</string>
     <string name="engeliniz_a_lana_kadar_mesaj_g_nderemezsiniz">You cannot send messages until unblocked</string>
+
+    <!-- recycler_saved_removed_post -->
+    <string name="g_nderi_silinmi">Post deleted</string>
+
 
 </resources>

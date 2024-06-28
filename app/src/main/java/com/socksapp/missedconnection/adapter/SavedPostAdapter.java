@@ -27,6 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.databinding.RecyclerEmptySavedPostBinding;
 import com.socksapp.missedconnection.databinding.RecyclerSavedPostBinding;
+import com.socksapp.missedconnection.databinding.RecyclerSavedRemovedPostBinding;
 import com.socksapp.missedconnection.fragment.SavedPostFragment;
 import com.socksapp.missedconnection.model.FindPost;
 import com.socksapp.missedconnection.myclass.SharedPreferencesGetLanguage;
@@ -64,6 +65,9 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
             if (arrayList.get(position).getViewType() == 2) {
                 return LAYOUT_EMPTY;
             }
+            if(arrayList.get(position).getViewType() == 3){
+                return 3;
+            }
             return -1;
         }
     }
@@ -78,6 +82,9 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
             case LAYOUT_EMPTY:
                 RecyclerEmptySavedPostBinding recyclerEmptySavedPostBinding = RecyclerEmptySavedPostBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
                 return new SavedPostEmptyHolder(recyclerEmptySavedPostBinding);
+            case 3:
+                RecyclerSavedRemovedPostBinding recyclerSavedRemovedPostBinding = RecyclerSavedRemovedPostBinding.inflate(LayoutInflater.from(parent.getContext()),parent,false);
+                return new SavedPostRemovedHolder(recyclerSavedRemovedPostBinding);
             default:
                 return null;
 
@@ -109,10 +116,10 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
                 mail = arrayList.get(position).mail;
                 city = arrayList.get(position).city;
                 district = arrayList.get(position).district;
-                date1 = arrayList.get(position).date1;
-                date2 = arrayList.get(position).date2;
-                time1 = arrayList.get(position).time1;
-                time2 = arrayList.get(position).time2;
+//                date1 = arrayList.get(position).date1;
+//                date2 = arrayList.get(position).date2;
+//                time1 = arrayList.get(position).time1;
+//                time2 = arrayList.get(position).time2;
                 explain = arrayList.get(position).explain;
                 lat = arrayList.get(position).lat;
                 lng = arrayList.get(position).lng;
@@ -142,12 +149,27 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
                     fragment.removeSaved(v,documentReference.getId(),holder.getAdapterPosition());
                 });
 
+                savedPostHolder.recyclerSavedPostBinding.verticalMenu.setOnClickListener(v ->{
+                    fragment.dialogShow(v,mail,name,lat,lng,radius,documentReference.getId(),holder.getAdapterPosition());
+                });
+
                 break;
             case LAYOUT_EMPTY:
 
                 SavedPostEmptyHolder savedPostEmptyHolder = (SavedPostEmptyHolder) holder;
 
                 savedPostEmptyHolder.recyclerEmptySavedPostBinding.goMain.setOnClickListener(v -> fragment.goMain());
+
+                break;
+            case 3:
+
+                SavedPostRemovedHolder savedPostRemovedHolder = (SavedPostRemovedHolder) holder;
+
+                documentReference = arrayList.get(position).documentReference;
+
+                savedPostRemovedHolder.recyclerSavedRemovedPostBinding.removeSavedMenu.setOnClickListener(v ->{
+                    fragment.removeSaved(v,documentReference.getId(),holder.getAdapterPosition());
+                });
 
                 break;
         }
@@ -173,6 +195,15 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         public SavedPostEmptyHolder(RecyclerEmptySavedPostBinding recyclerEmptySavedPostBinding) {
             super(recyclerEmptySavedPostBinding.getRoot());
             this.recyclerEmptySavedPostBinding = recyclerEmptySavedPostBinding;
+        }
+    }
+
+    public static class SavedPostRemovedHolder extends RecyclerView.ViewHolder {
+
+        RecyclerSavedRemovedPostBinding recyclerSavedRemovedPostBinding;
+        public SavedPostRemovedHolder(RecyclerSavedRemovedPostBinding recyclerSavedRemovedPostBinding) {
+            super(recyclerSavedRemovedPostBinding.getRoot());
+            this.recyclerSavedRemovedPostBinding = recyclerSavedRemovedPostBinding;
         }
     }
 

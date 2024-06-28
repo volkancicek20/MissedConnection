@@ -977,8 +977,8 @@ public class AddPostFragment extends Fragment {
                             post.put("radius",radius);
                             post.put("explain",explain);
                             post.put("timestamp",new Date());
-                            post.put("name",myUserName);
-                            post.put("imageUrl",myImageUrl);
+//                            post.put("name",myUserName);
+//                            post.put("imageUrl",myImageUrl);
                             post.put("galleryUrl",galleryUrl);
                             post.put("mail",userMail);
 
@@ -1029,8 +1029,8 @@ public class AddPostFragment extends Fragment {
                 post.put("radius",radius);
                 post.put("explain",explain);
                 post.put("timestamp",new Date());
-                post.put("name",myUserName);
-                post.put("imageUrl",myImageUrl);
+//                post.put("name",myUserName);
+//                post.put("imageUrl",myImageUrl);
                 post.put("galleryUrl","");
                 post.put("mail",userMail);
 

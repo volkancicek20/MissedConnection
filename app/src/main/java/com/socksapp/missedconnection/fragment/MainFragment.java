@@ -38,6 +38,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
@@ -71,6 +74,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 public class MainFragment extends Fragment {
 
@@ -206,8 +210,6 @@ public class MainFragment extends Fragment {
             }
         });
 
-//        getCityDistrict(view);
-
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -216,44 +218,6 @@ public class MainFragment extends Fragment {
         });
 
     }
-
-//    private void getCityDistrict(View view){
-//        Geocoder geocoder = new Geocoder(view.getContext(), Locale.getDefault());
-//        String ilAdi = "İstanbul"; // Bulmak istediğiniz ilin adı
-//        List<Address> addresses = null;
-//        try {
-//            addresses = geocoder.getFromLocationName(ilAdi, 1); // İl adına göre konum bilgisi al
-//        } catch (Exception e) {
-//            System.out.println("ilk hata: "+e.getLocalizedMessage());
-//            e.printStackTrace();
-//        }
-//
-//        if (addresses != null && !addresses.isEmpty()) {
-//            Address address = addresses.get(0);
-//            double latitude = address.getLatitude();
-//            double longitude = address.getLongitude();
-//
-//            List<Address> ilceAddresses = null;
-//            try {
-//                ilceAddresses = geocoder.getFromLocation(latitude, longitude, 5); // İlçeleri al
-//            } catch (Exception e) {
-//                System.out.println("ikinci hata: "+e.getLocalizedMessage());
-//                e.printStackTrace();
-//            }
-//
-//            if (ilceAddresses != null) {
-//                for (Address ilceAddress : ilceAddresses) {
-//                    String ilceAdi = ilceAddress.getSubAdminArea();
-//                    if (ilceAdi != null) {
-//                        System.out.println("İlçe: " + ilceAdi);
-//                    }
-//                }
-//            }
-//        }else {
-//            System.out.println("null : ");
-//        }
-//    }
-
 
     private void checkLocationPermission(){
         if(ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -480,6 +444,7 @@ public class MainFragment extends Fragment {
 
         if (checkDistrict && checkDate && checkTime && checkField) {
             postArrayList.clear();
+
             String collection = "post" + cityFind;
             query = firestore.collection("posts").document(collection).collection(collection)
                     .whereEqualTo("district", districtFind)
@@ -492,6 +457,7 @@ public class MainFragment extends Fragment {
         }
         else if (checkDistrict && checkDate && checkTime) {
             postArrayList.clear();
+
             String collection = "post" + cityFind;
             query = firestore.collection("posts").document(collection).collection(collection)
                     .whereEqualTo("district", districtFind)
@@ -504,6 +470,7 @@ public class MainFragment extends Fragment {
         }
         else if (checkDistrict && checkDate && checkField) {
             postArrayList.clear();
+
             String collection = "post" + cityFind;
             query = firestore.collection("posts").document(collection).collection(collection)
                     .whereEqualTo("district", districtFind)
@@ -514,6 +481,7 @@ public class MainFragment extends Fragment {
         }
         else if (checkDistrict && checkTime && checkField) {
             postArrayList.clear();
+
             String collection = "post" + cityFind;
             query = firestore.collection("posts").document(collection).collection(collection)
                     .whereEqualTo("district", districtFind)
@@ -524,6 +492,7 @@ public class MainFragment extends Fragment {
         }
         else if (checkDistrict && checkField) {
             postArrayList.clear();
+
             String collection = "post" + cityFind;
             query = firestore.collection("posts").document(collection).collection(collection)
                     .whereEqualTo("district", districtFind)
@@ -533,6 +502,7 @@ public class MainFragment extends Fragment {
         }
         else if (checkDistrict && checkDate) {
             postArrayList.clear();
+
             String collection = "post" + cityFind;
             query = firestore.collection("posts").document(collection).collection(collection)
                     .whereEqualTo("district", districtFind)
@@ -543,6 +513,7 @@ public class MainFragment extends Fragment {
         }
         else if (checkDistrict && checkTime) {
             postArrayList.clear();
+
             String collection = "post" + cityFind;
             query = firestore.collection("posts").document(collection).collection(collection)
                     .whereEqualTo("district", districtFind)
@@ -553,6 +524,7 @@ public class MainFragment extends Fragment {
         }
         else if (checkDistrict) {
             postArrayList.clear();
+
             String collection = "post" + cityFind;
             query = firestore.collection("posts").document(collection).collection(collection)
                     .whereEqualTo("district", districtFind)
@@ -575,22 +547,33 @@ public class MainFragment extends Fragment {
 
                     lastVisiblePost = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
 
+                    List<CompletableFuture<Void>> futures = new ArrayList<>();
+
                     boolean empty = true;
 
                     for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots) {
                         if (isPostWithinRadius(querySnapshot,latFind,lngFind,radiusFind)) {
                             empty = false;
-                            FindPost post = createPostFromSnapshot(querySnapshot);
-                            postArrayList.add(post);
+                            CompletableFuture<Void> future = createPostFromSnapshot(querySnapshot)
+                                    .thenAccept(post -> postArrayList.add(post));
+                            futures.add(future);
+//                            FindPost post = createPostFromSnapshot(querySnapshot);
+//                            postArrayList.add(post);
                         }
                     }
 
                     if (empty) {
                         displayNoPostsFoundMessage();
                     } else {
-                        binding.shimmerLayout.stopShimmer();
-                        binding.shimmerLayout.setVisibility(View.GONE);
-                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+                        allFutures.thenRun(() -> {
+                            binding.shimmerLayout.stopShimmer();
+                            binding.shimmerLayout.setVisibility(View.GONE);
+                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                        });
+//                        binding.shimmerLayout.stopShimmer();
+//                        binding.shimmerLayout.setVisibility(View.GONE);
+//                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
                     }
                     postAdapter.notifyDataSetChanged();
                 })
@@ -607,20 +590,31 @@ public class MainFragment extends Fragment {
 
                     lastVisiblePost = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
 
+                    List<CompletableFuture<Void>> futures = new ArrayList<>();
+
                     boolean empty = true;
 
                     for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots) {
                         empty = false;
-                        FindPost post = createPostFromSnapshot(querySnapshot);
-                        postArrayList.add(post);
+                        CompletableFuture<Void> future = createPostFromSnapshot(querySnapshot)
+                                .thenAccept(post -> postArrayList.add(post));
+                        futures.add(future);
+//                        FindPost post = createPostFromSnapshot(querySnapshot);
+//                        postArrayList.add(post);
                     }
 
                     if (empty) {
                         displayNoPostsFoundMessage();
                     } else {
-                        binding.shimmerLayout.stopShimmer();
-                        binding.shimmerLayout.setVisibility(View.GONE);
-                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+                        allFutures.thenRun(() -> {
+                            binding.shimmerLayout.stopShimmer();
+                            binding.shimmerLayout.setVisibility(View.GONE);
+                            binding.recyclerViewMain.setVisibility(View.VISIBLE);
+                        });
+//                        binding.shimmerLayout.stopShimmer();
+//                        binding.shimmerLayout.setVisibility(View.GONE);
+//                        binding.recyclerViewMain.setVisibility(View.VISIBLE);
                     }
 
                     postAdapter.notifyDataSetChanged();
@@ -672,15 +666,28 @@ public class MainFragment extends Fragment {
 
         lastVisiblePost = queryDocumentSnapshots.getDocuments().get(queryDocumentSnapshots.size() - 1);
 
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
         for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots) {
-            FindPost post = createPostFromSnapshot(querySnapshot);
-            postArrayList.add(post);
+            CompletableFuture<Void> future = createPostFromSnapshot(querySnapshot)
+                    .thenAccept(post -> postArrayList.add(post));
+            futures.add(future);
+//            FindPost post = createPostFromSnapshot(querySnapshot);
+//            postArrayList.add(post);
         }
 
-        binding.shimmerLayout.stopShimmer();
-        binding.shimmerLayout.setVisibility(View.GONE);
-        binding.recyclerViewMain.setVisibility(View.VISIBLE);
-        postAdapter.notifyDataSetChanged();
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        allFutures.thenRun(() -> {
+            binding.shimmerLayout.stopShimmer();
+            binding.shimmerLayout.setVisibility(View.GONE);
+            binding.recyclerViewMain.setVisibility(View.VISIBLE);
+            postAdapter.notifyDataSetChanged();
+        });
+
+//        binding.shimmerLayout.stopShimmer();
+//        binding.shimmerLayout.setVisibility(View.GONE);
+//        binding.recyclerViewMain.setVisibility(View.VISIBLE);
+//        postAdapter.notifyDataSetChanged();
     }
 
     private void handleFailure(Exception e) {
@@ -712,14 +719,25 @@ public class MainFragment extends Fragment {
             .addOnSuccessListener(queryDocumentSnapshots -> {
                 binding.progressBar.setVisibility(View.GONE);
 
+                List<CompletableFuture<Void>> futures = new ArrayList<>();
+
                 List<FindPost> newPosts = new ArrayList<>();
                 for (QueryDocumentSnapshot querySnapshot : queryDocumentSnapshots) {
-                    FindPost post = createPostFromSnapshot(querySnapshot);
-                    newPosts.add(post);
+                    CompletableFuture<Void> future = createPostFromSnapshot(querySnapshot)
+                            .thenAccept(post -> newPosts.add(post));
+                    futures.add(future);
+//                    FindPost post = createPostFromSnapshot(querySnapshot);
+//                    newPosts.add(post);
                 }
 
-                postArrayList.addAll(newPosts);
-                postAdapter.notifyItemRangeInserted(postArrayList.size() - newPosts.size(), newPosts.size());
+                CompletableFuture<Void> allFutures = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+                allFutures.thenRun(() -> {
+                    postArrayList.addAll(newPosts);
+                    postAdapter.notifyItemRangeInserted(postArrayList.size() - newPosts.size(), newPosts.size());
+                });
+
+//                postArrayList.addAll(newPosts);
+//                postAdapter.notifyItemRangeInserted(postArrayList.size() - newPosts.size(), newPosts.size());
 
                 if(!queryDocumentSnapshots.isEmpty()){
                     lastVisiblePost = queryDocumentSnapshots.getDocuments()
@@ -751,10 +769,12 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private FindPost createPostFromSnapshot(QueryDocumentSnapshot querySnapshot) {
-        String imageUrl = querySnapshot.getString("imageUrl");
+    private CompletableFuture<FindPost> createPostFromSnapshot(QueryDocumentSnapshot querySnapshot) {
+        CompletableFuture<FindPost> future = new CompletableFuture<>();
+
+//        String imageUrl = querySnapshot.getString("imageUrl");
         String galleryUrl = querySnapshot.getString("galleryUrl");
-        String name = querySnapshot.getString("name");
+//        String name = querySnapshot.getString("name");
         String mail = querySnapshot.getString("mail");
         String city = querySnapshot.getString("city");
         String district = querySnapshot.getString("district");
@@ -772,9 +792,7 @@ public class MainFragment extends Fragment {
 
         FindPost post = new FindPost();
         post.viewType = 1;
-        post.imageUrl = imageUrl;
         post.galleryUrl = galleryUrl;
-        post.name = name;
         post.mail = mail;
         post.city = city;
         post.district = district;
@@ -789,8 +807,65 @@ public class MainFragment extends Fragment {
         post.radius = radius;
         post.documentReference = documentReference;
 
-        return post;
+        firestore.collection("users").document(mail).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful() && task.getResult() != null) {
+                    DocumentSnapshot userSnapshot = task.getResult();
+                    String userName = userSnapshot.getString("name");
+                    String userImageUrl = userSnapshot.getString("imageUrl");
+
+                    post.name = userName;
+                    post.imageUrl = userImageUrl;
+                }
+
+                future.complete(post);
+            }
+        });
+
+        return future;
     }
+
+//    private FindPost createPostFromSnapshot(QueryDocumentSnapshot querySnapshot) {
+//        String imageUrl = querySnapshot.getString("imageUrl");
+//        String galleryUrl = querySnapshot.getString("galleryUrl");
+//        String name = querySnapshot.getString("name");
+//        String mail = querySnapshot.getString("mail");
+//        String city = querySnapshot.getString("city");
+//        String district = querySnapshot.getString("district");
+//        Long time1 = querySnapshot.getLong("time1");
+//        Long time2 = querySnapshot.getLong("time2");
+//        Long date1 = querySnapshot.getLong("date1");
+//        Long date2 = querySnapshot.getLong("date2");
+//        String explain = querySnapshot.getString("explain");
+//        Double lat = querySnapshot.getDouble("lat");
+//        Double lng = querySnapshot.getDouble("lng");
+//        Long x = querySnapshot.getLong("radius");
+//        double radius = (x != null) ? x : 0;
+//        Timestamp timestamp = querySnapshot.getTimestamp("timestamp");
+//        DocumentReference documentReference = querySnapshot.getReference();
+//
+//        FindPost post = new FindPost();
+//        post.viewType = 1;
+//        post.imageUrl = imageUrl;
+//        post.galleryUrl = galleryUrl;
+//        post.name = name;
+//        post.mail = mail;
+//        post.city = city;
+//        post.district = district;
+//        post.time1 = (time1 != null) ? time1 : 0;
+//        post.time2 = (time2 != null) ? time2 : 0;
+//        post.date1 = (date1 != null) ? date1 : 0;
+//        post.date2 = (date2 != null) ? date2 : 0;
+//        post.explain = explain;
+//        post.timestamp = timestamp;
+//        post.lat = lat;
+//        post.lng = lng;
+//        post.radius = radius;
+//        post.documentReference = documentReference;
+//
+//        return post;
+//    }
 
     public void setActivityNotification(String mail, DocumentReference ref,Context context){
 
