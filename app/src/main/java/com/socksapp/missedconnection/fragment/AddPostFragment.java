@@ -9,8 +9,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -26,7 +24,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -35,6 +32,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,23 +40,19 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.DatePicker;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -71,13 +65,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.WriteBatch;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentAddPostBinding;
+import com.socksapp.missedconnection.myclass.Utils;
+import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -153,10 +152,11 @@ public class AddPostFragment extends Fragment {
         mainActivity.includedLayout.setVisibility(View.VISIBLE);
         mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 
-        cityNames = getResources().getStringArray(R.array.city_names);
-        cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
-        cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
-        cityCompleteTextView.setAdapter(cityAdapter);
+        getAllCities(view);
+//        cityNames = getResources().getStringArray(R.array.city_names);
+//        cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
+//        cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
+//        cityCompleteTextView.setAdapter(cityAdapter);
 
         menu = mainActivity.navigationView.getMenu();
         menuItem = menu.findItem(R.id.nav_drawer_home);
@@ -183,7 +183,8 @@ public class AddPostFragment extends Fragment {
             String selectedCity = parent.getItemAtPosition(position).toString();
             binding.districtCompleteText.setText("");
             binding.districtCompleteText.setAdapter(null);
-            selectDistrict(selectedCity);
+            getAllDistricts(view,selectedCity);
+//            selectDistrict(selectedCity);
             lat = 0.0;
             lng = 0.0;
             rad = 0.0;
@@ -368,26 +369,7 @@ public class AddPostFragment extends Fragment {
                 String city = binding.cityCompleteText.getText().toString();
                 String district = s.toString();
 
-                Geocoder geocoder = new Geocoder(requireContext());
-                try {
-                    List<Address> addressList = geocoder.getFromLocationName(city + ", " + district, 1);
-                    if (addressList != null && addressList.size() > 0) {
-                        double latitude = addressList.get(0).getLatitude();
-                        double longitude = addressList.get(0).getLongitude();
-                        LatLng location = new LatLng(latitude, longitude);
-                        binding.mapView.getMapAsync(new OnMapReadyCallback() {
-                            @Override
-                            public void onMapReady(@NonNull GoogleMap googleMap) {
-                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
-                            }
-                        });
-                    } else {
-                        System.out.println("No location found for the given address.");
-                    }
-                } catch (Exception e) {
-                    System.out.println("exception: "+e.getLocalizedMessage());
-                    e.printStackTrace();
-                }
+                getCoordinatesFromAddress(view,city,district);
             }
 
             @Override
@@ -423,6 +405,95 @@ public class AddPostFragment extends Fragment {
             }
         });
 
+    }
+
+    private void getCoordinatesFromAddress(View view,String city,String district){
+        LatLng latLng = handleManualDistricts(city,district);
+        if(latLng != null){
+            binding.mapView.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(@NonNull GoogleMap googleMap) {
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
+                }
+            });
+        }else {
+            Geocoder geocoder = new Geocoder(requireContext());
+            try {
+                List<Address> addressList = geocoder.getFromLocationName(city + ", " + district, 1);
+                if (addressList != null && addressList.size() > 0) {
+                    double latitude = addressList.get(0).getLatitude();
+                    double longitude = addressList.get(0).getLongitude();
+
+                    LatLng location = new LatLng(latitude, longitude);
+                    binding.mapView.getMapAsync(new OnMapReadyCallback() {
+                        @Override
+                        public void onMapReady(@NonNull GoogleMap googleMap) {
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+                        }
+                    });
+                } else {
+//                        Toast.makeText(view.getContext(),"No location found for the given address.",Toast.LENGTH_SHORT).show();
+                    System.out.println("No location found for the given address.");
+                }
+            } catch (Exception e) {
+                System.out.println("exception: "+e.getLocalizedMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void getAllDistricts(View view, String selectedCity) {
+        String json = Utils.loadJSONFromAsset(view.getContext(), "city_district.json");
+        if (json == null) {
+            // Handle error if JSON is null
+            return;
+        }
+
+        Type listType = new TypeToken<Utils.CityData>() {}.getType();
+        Utils.CityData cityData = new Gson().fromJson(json, listType);
+
+        if(cityData != null){
+            List<Utils.City> cities = cityData.getData();
+            for (Utils.City city : cities) {
+                if (city.getIl_adi().equalsIgnoreCase(selectedCity)) {
+                    List<String> districtNamesList = new ArrayList<>();
+                    for (Utils.District district : city.getIlceler()) {
+                        districtNamesList.add(district.getIlce_adi());
+                    }
+                    districtNames = districtNamesList.toArray(new String[0]);
+                    districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
+                    districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
+                    districtCompleteTextView.setAdapter(districtAdapter);
+                    return;
+                }
+            }
+        }
+    }
+
+    private void getAllCities(View view) {
+        String json = Utils.loadJSONFromAsset(view.getContext(), "city_district.json");
+        if (json == null) {
+            // JSON dosyası okunamadı, hatayı loglayın veya kullanıcıya bildirin
+            Log.e("MainActivity", "JSON dosyası okunamadı");
+            return;
+        }
+
+        Type listType = new TypeToken<Utils.CityData>() {}.getType();
+        Utils.CityData cityData = new Gson().fromJson(json, listType);
+
+        if (cityData != null) {
+            List<Utils.City> cities = cityData.getData();
+
+            cityNames = new String[cities.size()]; // Initialize the array with the correct size
+
+            for (int i = 0; i < cities.size(); i++) {
+                cityNames[i] = cities.get(i).getIl_adi();
+            }
+        }
+
+        cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
+        cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
+        cityCompleteTextView.setAdapter(cityAdapter);
     }
 
     private void showTimePickerDialogs(View view) {
@@ -1091,500 +1162,6 @@ public class AddPostFragment extends Fragment {
         return false;
     }
 
-
-    private void selectDistrict(String selectedCity){
-        switch (selectedCity){
-            case "İstanbul":
-                districtNames = getResources().getStringArray(R.array.district_istanbul);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Ankara":
-                districtNames = getResources().getStringArray(R.array.district_ankara);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "İzmir":
-                districtNames = getResources().getStringArray(R.array.district_izmir);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Adana":
-                districtNames = getResources().getStringArray(R.array.district_adana);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Adıyaman":
-                districtNames = getResources().getStringArray(R.array.district_adiyaman);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Afyonkarahisar":
-                districtNames = getResources().getStringArray(R.array.district_afyonkarahisar);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Ağrı":
-                districtNames = getResources().getStringArray(R.array.district_agri);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Amasya":
-                districtNames = getResources().getStringArray(R.array.district_amasya);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Antalya":
-                districtNames = getResources().getStringArray(R.array.district_antalya);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Artvin":
-                districtNames = getResources().getStringArray(R.array.district_artvin);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Aydın":
-                districtNames = getResources().getStringArray(R.array.district_aydin);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Balıkesir":
-                districtNames = getResources().getStringArray(R.array.district_balikesir);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Bilecik":
-                districtNames = getResources().getStringArray(R.array.district_bilecik);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Bingöl":
-                districtNames = getResources().getStringArray(R.array.district_bingol);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Bitlis":
-                districtNames = getResources().getStringArray(R.array.district_bitlis);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Bolu":
-                districtNames = getResources().getStringArray(R.array.district_bolu);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Burdur":
-                districtNames = getResources().getStringArray(R.array.district_burdur);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Bursa":
-                districtNames = getResources().getStringArray(R.array.district_bursa);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Çanakkale":
-                districtNames = getResources().getStringArray(R.array.district_canakkale);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Çankırı":
-                districtNames = getResources().getStringArray(R.array.district_cankiri);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Çorum":
-                districtNames = getResources().getStringArray(R.array.district_corum);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Denizli":
-                districtNames = getResources().getStringArray(R.array.district_denizli);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Diyarbakır":
-                districtNames = getResources().getStringArray(R.array.district_diyarbakir);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Edirne":
-                districtNames = getResources().getStringArray(R.array.district_edirne);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Elazığ":
-                districtNames = getResources().getStringArray(R.array.district_elazig);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Erzincan":
-                districtNames = getResources().getStringArray(R.array.district_erzincan);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Erzurum":
-                districtNames = getResources().getStringArray(R.array.district_erzurum);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Eskişehir":
-                districtNames = getResources().getStringArray(R.array.district_eskisehir);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Gaziantep":
-                districtNames = getResources().getStringArray(R.array.district_gaziantep);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Giresun":
-                districtNames = getResources().getStringArray(R.array.district_giresun);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Gümüşhane":
-                districtNames = getResources().getStringArray(R.array.district_gumushane);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Hakkari":
-                districtNames = getResources().getStringArray(R.array.district_hakkari);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Hatay":
-                districtNames = getResources().getStringArray(R.array.district_hatay);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Isparta":
-                districtNames = getResources().getStringArray(R.array.district_isparta);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Mersin":
-                districtNames = getResources().getStringArray(R.array.district_mersin);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Kars":
-                districtNames = getResources().getStringArray(R.array.district_kars);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Kastamonu":
-                districtNames = getResources().getStringArray(R.array.district_kastamonu);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Kayseri":
-                districtNames = getResources().getStringArray(R.array.district_kayseri);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Kırklareli":
-                districtNames = getResources().getStringArray(R.array.district_kirklareli);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Kırşehir":
-                districtNames = getResources().getStringArray(R.array.district_kirsehir);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Kocaeli":
-                districtNames = getResources().getStringArray(R.array.district_kocaeli);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Konya":
-                districtNames = getResources().getStringArray(R.array.district_konya);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Kütahya":
-                districtNames = getResources().getStringArray(R.array.district_kutahya);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Malatya":
-                districtNames = getResources().getStringArray(R.array.district_malatya);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Manisa":
-                districtNames = getResources().getStringArray(R.array.district_manisa);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Kahramanmaraş":
-                districtNames = getResources().getStringArray(R.array.district_kahramanmaras);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Mardin":
-                districtNames = getResources().getStringArray(R.array.district_mardin);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Muğla":
-                districtNames = getResources().getStringArray(R.array.district_mugla);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Muş":
-                districtNames = getResources().getStringArray(R.array.district_mus);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Nevşehir":
-                districtNames = getResources().getStringArray(R.array.district_nevsehir);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Niğde":
-                districtNames = getResources().getStringArray(R.array.district_nigde);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Ordu":
-                districtNames = getResources().getStringArray(R.array.district_ordu);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Rize":
-                districtNames = getResources().getStringArray(R.array.district_rize);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Sakarya":
-                districtNames = getResources().getStringArray(R.array.district_sakarya);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Samsun":
-                districtNames = getResources().getStringArray(R.array.district_samsun);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Siirt":
-                districtNames = getResources().getStringArray(R.array.district_siirt);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Sinop":
-                districtNames = getResources().getStringArray(R.array.district_sinop);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Sivas":
-                districtNames = getResources().getStringArray(R.array.district_sivas);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Tekirdağ":
-                districtNames = getResources().getStringArray(R.array.district_tekirdag);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Tokat":
-                districtNames = getResources().getStringArray(R.array.district_tokat);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Trabzon":
-                districtNames = getResources().getStringArray(R.array.district_trabzon);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Tunceli":
-                districtNames = getResources().getStringArray(R.array.district_tunceli);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Şanlıurfa":
-                districtNames = getResources().getStringArray(R.array.district_sanliurfa);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Uşak":
-                districtNames = getResources().getStringArray(R.array.district_usak);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Van":
-                districtNames = getResources().getStringArray(R.array.district_van);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Yozgat":
-                districtNames = getResources().getStringArray(R.array.district_yozgat);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Zonguldak":
-                districtNames = getResources().getStringArray(R.array.district_zonguldak);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Aksaray":
-                districtNames = getResources().getStringArray(R.array.district_aksaray);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Bayburt":
-                districtNames = getResources().getStringArray(R.array.district_bayburt);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Karaman":
-                districtNames = getResources().getStringArray(R.array.district_karaman);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Kırıkkale":
-                districtNames = getResources().getStringArray(R.array.district_kirikkale);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Batman":
-                districtNames = getResources().getStringArray(R.array.district_batman);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Şırnak":
-                districtNames = getResources().getStringArray(R.array.district_sirnak);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Bartın":
-                districtNames = getResources().getStringArray(R.array.district_bartin);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Ardahan":
-                districtNames = getResources().getStringArray(R.array.district_ardahan);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Iğdır":
-                districtNames = getResources().getStringArray(R.array.district_igdir);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Yalova":
-                districtNames = getResources().getStringArray(R.array.district_yalova);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Karabük":
-                districtNames = getResources().getStringArray(R.array.district_karabuk);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Kilis":
-                districtNames = getResources().getStringArray(R.array.district_kilis);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Osmaniye":
-                districtNames = getResources().getStringArray(R.array.district_osmaniye);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            case "Düzce":
-                districtNames = getResources().getStringArray(R.array.district_duzce);
-                districtAdapter = new ArrayAdapter<>(requireContext(),R.layout.list_item,districtNames);
-                districtCompleteTextView = binding.getRoot().findViewById(R.id.district_complete_text);
-                districtCompleteTextView.setAdapter(districtAdapter);
-                break;
-            default:
-                break;
-        }
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -1592,15 +1169,12 @@ public class AddPostFragment extends Fragment {
             binding.mapView.onResume();
         }
 
-        cityNames = getResources().getStringArray(R.array.city_names);
-        cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
-        cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
-        cityCompleteTextView.setAdapter(cityAdapter);
+        getAllCities(requireView());
 
         if(!binding.cityCompleteText.getText().toString().isEmpty()){
             String city = binding.cityCompleteText.getText().toString();
             binding.districtCompleteText.setAdapter(null);
-            selectDistrict(city);
+            getAllDistricts(requireView(),city);
         }
     }
 
@@ -1727,6 +1301,112 @@ public class AddPostFragment extends Fragment {
         textView.setTextColor(Color.WHITE);
 
         snackbar.show();
+    }
+
+    private LatLng handleManualDistricts(String city, String district) {
+
+        LatLng latLng;
+        if (city.equalsIgnoreCase("Ankara") && district.equalsIgnoreCase("Sincan")) {
+            latLng = new LatLng(39.966751, 32.584229);
+        }else if (city.equalsIgnoreCase("Ankara") && district.equalsIgnoreCase("Bala")){
+            latLng = new LatLng(39.553373, 33.123768);
+        }else if (city.equalsIgnoreCase("Adana") && district.equalsIgnoreCase("Sarıçam")){
+            latLng = new LatLng(37.149987, 35.4903691);
+        }else if (city.equalsIgnoreCase("Adana") && district.equalsIgnoreCase("Seyhan")){
+            latLng = new LatLng(36.9231821, 35.0583745);
+        }else if (city.equalsIgnoreCase("Adana") && district.equalsIgnoreCase("Yüreğir")){
+            latLng = new LatLng(36.8675305, 35.2956341);
+        }else if (city.equalsIgnoreCase("Antalya") && district.equalsIgnoreCase("Kepez")){
+            latLng = new LatLng(36.95276037969528, 30.72425285208392);
+        }else if (city.equalsIgnoreCase("Antalya") && district.equalsIgnoreCase("Konyaaltı")){
+            latLng = new LatLng(36.87259431450681, 30.6323821484396);
+        }else if (city.equalsIgnoreCase("Aydın") && district.equalsIgnoreCase("Efeler")){
+            latLng = new LatLng(37.8553307, 27.7680007);
+        }else if (city.equalsIgnoreCase("Balıkesir") && district.equalsIgnoreCase("Karesi")){
+            latLng = new LatLng(39.65332454003856, 27.890341925257253);
+        }else if (city.equalsIgnoreCase("Balıkesir") && district.equalsIgnoreCase("Altıeylül")){
+            latLng = new LatLng(39.65332454003856, 27.890341925257253);
+        }else if (city.equalsIgnoreCase("Bursa") && district.equalsIgnoreCase("Nilüfer")){
+            latLng = new LatLng(40.19897371132959, 28.961897497051787);
+        }else if (city.equalsIgnoreCase("Bursa") && district.equalsIgnoreCase("Osmangazi")){
+            latLng = new LatLng(40.1630087, 28.964634);
+        }else if (city.equalsIgnoreCase("Denizli") && district.equalsIgnoreCase("Merkezefendi")){
+            latLng = new LatLng(37.8190879, 28.9346472);
+        }else if (city.equalsIgnoreCase("Denizli") && district.equalsIgnoreCase("Pamukkale")){
+            latLng = new LatLng(37.9112505, 29.1092805);
+        }else if (city.equalsIgnoreCase("Diyarbakır") && district.equalsIgnoreCase("Bağlar")){
+            latLng = new LatLng(37.7700903, 40.0644002);
+        }else if (city.equalsIgnoreCase("Diyarbakır") && district.equalsIgnoreCase("Dicle")){
+            latLng = new LatLng(38.3605791, 40.0691968);
+        }else if (city.equalsIgnoreCase("Diyarbakır") && district.equalsIgnoreCase("Kayapınar")){
+            latLng = new LatLng(37.9871761, 39.7164185);
+        }else if (city.equalsIgnoreCase("Diyarbakır") && district.equalsIgnoreCase("Sur")){
+            latLng = new LatLng(38.0398484, 40.2828292);
+        }else if (city.equalsIgnoreCase("Diyarbakır") && district.equalsIgnoreCase("Yenişehir")){
+            latLng = new LatLng(38.0424344, 39.9358972);
+        }else if (city.equalsIgnoreCase("Erzurum") && district.equalsIgnoreCase("Palandöken")){
+            latLng = new LatLng(39.8388885, 41.0255199);
+        }else if (city.equalsIgnoreCase("Erzurum") && district.equalsIgnoreCase("Yakutiye")){
+            latLng = new LatLng(40.0635965, 41.1708436);
+        }else if (city.equalsIgnoreCase("Eskişehir") && district.equalsIgnoreCase("Odunpazarı")){
+            latLng = new LatLng(39.6442025, 30.4760594);
+        }else if (city.equalsIgnoreCase("Eskişehir") && district.equalsIgnoreCase("Tepebaşı")){
+            latLng = new LatLng(39.8223131, 30.411723);
+        }else if (city.equalsIgnoreCase("Gaziantep") && district.equalsIgnoreCase("Şahinbey")){
+            latLng = new LatLng(36.9303511, 37.0954946);
+        }else if (city.equalsIgnoreCase("Gaziantep") && district.equalsIgnoreCase("Şehitkamil")){
+            latLng = new LatLng(37.170228, 37.1761385);
+        }else if (city.equalsIgnoreCase("Mersin") && district.equalsIgnoreCase("Erdemli")){
+            latLng = new LatLng(36.60626042592977, 34.30895373786727);
+        }else if (city.equalsIgnoreCase("Mersin") && district.equalsIgnoreCase("Mezitli")){
+            latLng = new LatLng(36.744212492562255, 34.520372204058816);
+        }else if (city.equalsIgnoreCase("Mersin") && district.equalsIgnoreCase("Toroslar")){
+            latLng = new LatLng(36.834146262063555, 34.60557442632289);
+        }else if (city.equalsIgnoreCase("Kayseri") && district.equalsIgnoreCase("Kocasinan")){
+            latLng = new LatLng(38.8934174, 35.1888344);
+        }else if (city.equalsIgnoreCase("Kayseri") && district.equalsIgnoreCase("Melikgazi")){
+            latLng = new LatLng(38.7019793, 35.4033288);
+        }else if (city.equalsIgnoreCase("Kocaeli") && district.equalsIgnoreCase("Başiskele")){
+            latLng = new LatLng(40.6309694, 29.8987104);
+        }else if (city.equalsIgnoreCase("Konya") && district.equalsIgnoreCase("Karatay")){
+            latLng = new LatLng(37.9578696, 32.6315798);
+        }else if (city.equalsIgnoreCase("Konya") && district.equalsIgnoreCase("Meram")){
+            latLng = new LatLng(37.699902, 32.1710677);
+        }else if (city.equalsIgnoreCase("Konya") && district.equalsIgnoreCase("Selçuklu")){
+            latLng = new LatLng(38.0898126, 32.2011773);
+        }else if (city.equalsIgnoreCase("Malatya") && district.equalsIgnoreCase("Battalgazi")){
+            latLng = new LatLng(38.4138138, 38.347237);
+        }else if (city.equalsIgnoreCase("Manisa") && district.equalsIgnoreCase("Şehzadeler")){
+            latLng = new LatLng(38.617564033396384, 27.442383786940475);
+        }else if (city.equalsIgnoreCase("Manisa") && district.equalsIgnoreCase("Yunusemre")){
+            latLng = new LatLng(38.61925748289873, 27.406333904167436);
+        }else if (city.equalsIgnoreCase("Kahramanmaraş") && district.equalsIgnoreCase("Dulkadiroğlu")){
+            latLng = new LatLng(37.578089138798255, 36.940395831581796);
+        }else if (city.equalsIgnoreCase("Kahramanmaraş") && district.equalsIgnoreCase("Onikişubat")){
+            latLng = new LatLng(37.583614011477636, 36.89981070359613);
+        }else if (city.equalsIgnoreCase("Sakarya") && district.equalsIgnoreCase("Arifiye")){
+            latLng = new LatLng(40.71398339711735, 30.361793459324307);
+        }else if (city.equalsIgnoreCase("Sakarya") && district.equalsIgnoreCase("Erenler")){
+            latLng = new LatLng(40.75120007675775, 30.41439176629662);
+        }else if (city.equalsIgnoreCase("Sakarya") && district.equalsIgnoreCase("Serdivan")){
+            latLng = new LatLng(40.73782201230848, 30.350621904447568);
+        }else if (city.equalsIgnoreCase("Samsun") && district.equalsIgnoreCase("Atakum")){
+            latLng = new LatLng(41.33143333513191, 36.27171692808721);
+        }else if (city.equalsIgnoreCase("Samsun") && district.equalsIgnoreCase("Canik")){
+            latLng = new LatLng(41.26087772801601, 36.36034400106044);
+        }else if (city.equalsIgnoreCase("Samsun") && district.equalsIgnoreCase("İlkadım")){
+            latLng = new LatLng(41.2810500466861, 36.331000409610866);
+        }else if (city.equalsIgnoreCase("Ardahan") && district.equalsIgnoreCase("Hanak")){
+            latLng = new LatLng(41.233576873058084, 42.84802156855797);
+        }else if (city.equalsIgnoreCase("Yalova") && district.equalsIgnoreCase("Çiftlikköy")){
+            latLng = new LatLng(40.66261378791248, 29.315379477973885);
+        }else if (city.equalsIgnoreCase("Balıkesir") && district.equalsIgnoreCase("Balıkesir Merkez")){
+            latLng = new LatLng(39.65332454003856, 27.890341925257253);
+        }else {
+            latLng = null;
+        }
+
+        return latLng;
     }
 
 }

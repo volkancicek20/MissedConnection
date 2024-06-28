@@ -31,11 +31,20 @@ import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Source;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentGoogleMapsBinding;
+
+import java.nio.charset.StandardCharsets;
+import java.text.Collator;
+import java.text.Normalizer;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
 
@@ -48,6 +57,26 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
     private Circle currentCircle;
     private Double mainLat,mainLng;
     private int radius,mainRadius;
+    private static final Map<Character, Character> TURKCE_INGILIZCE_ESLEME = new HashMap<>();
+
+    static {
+        TURKCE_INGILIZCE_ESLEME.put('ç', 'c');
+        TURKCE_INGILIZCE_ESLEME.put('Ç', 'C');
+        TURKCE_INGILIZCE_ESLEME.put('ğ', 'g');
+        TURKCE_INGILIZCE_ESLEME.put('Ğ', 'G');
+        TURKCE_INGILIZCE_ESLEME.put('ı', 'i');
+        TURKCE_INGILIZCE_ESLEME.put('İ', 'I');
+        TURKCE_INGILIZCE_ESLEME.put('ö', 'o');
+        TURKCE_INGILIZCE_ESLEME.put('Ö', 'O');
+        TURKCE_INGILIZCE_ESLEME.put('ş', 's');
+        TURKCE_INGILIZCE_ESLEME.put('Ş', 'S');
+        TURKCE_INGILIZCE_ESLEME.put('ü', 'u');
+        TURKCE_INGILIZCE_ESLEME.put('Ü', 'U');
+        for (char c = 'a'; c <= 'z'; c++) {
+            TURKCE_INGILIZCE_ESLEME.put(c, c);
+            TURKCE_INGILIZCE_ESLEME.put(Character.toUpperCase(c), Character.toUpperCase(c));
+        }
+    }
 
     public GoogleMapsFragment() {
         // Required empty public constructor
@@ -169,11 +198,12 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
                     Geocoder geocoder = new Geocoder(requireContext(), Locale.getDefault());
                     List<Address> addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
                     if (addresses != null && addresses.size() > 0) {
+
                         String cityFind = addresses.get(0).getAdminArea();
                         String districtFind = addresses.get(0).getSubAdminArea();
-                        System.out.println("city: "+ cityFind);
-                        System.out.println("district: "+ districtFind);
-                        if(city.equals(cityFind) && district.equals(districtFind)){
+
+
+                        if(areStringsEqual(city, cityFind) && areStringsEqual(district, districtFind)){
                             radius = 100;
                             customLatLng = new LatLng(latLng.latitude,latLng.longitude);
                             binding.slider.setValue(100);
@@ -211,7 +241,8 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
                             circleOptions.strokeWidth(1);
                             currentCircle = mMap.addCircle(circleOptions);
                         }else {
-                            Toast.makeText(requireContext(),city+","+district+getString(R.string.alanin_disina_cikamazsiniz),Toast.LENGTH_SHORT).show();
+                            showSnackbar(requireView(),city+","+district+getString(R.string.alanin_disina_cikamazsiniz) + getString(R.string.se_ti_iniz_konum)+cityFind+","+districtFind);
+                           // Toast.makeText(requireContext(),city+","+district+getString(R.string.alanin_disina_cikamazsiniz),Toast.LENGTH_SHORT).show();
                         }
 
                     } else {
@@ -239,24 +270,60 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
+    public static boolean areStringsEqual(String str1, String str2) {
+        if (str1 == null || str2 == null) {
+            return Objects.equals(str1, str2); // İkisi de null ise eşit kabul et
+        }
+
+        // Normalleştirme (NFD) ve küçük harfe çevirme
+        str1 = normalizeAndRemoveDiacritics(str1).toLowerCase(Locale.ROOT);
+        str2 = normalizeAndRemoveDiacritics(str2).toLowerCase(Locale.ROOT);
+
+        // Karakterleri eşleme tablosuna göre dönüştürme
+        StringBuilder sb1 = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
+        for (int i = 0; i < str1.length(); i++) {
+            sb1.append(TURKCE_INGILIZCE_ESLEME.getOrDefault(str1.charAt(i), str1.charAt(i)));
+        }
+        for (int i = 0; i < str2.length(); i++) {
+            sb2.append(TURKCE_INGILIZCE_ESLEME.getOrDefault(str2.charAt(i), str2.charAt(i)));
+        }
+
+        // Dönüştürülmüş metinleri karşılaştırma
+        return sb1.toString().equals(sb2.toString());
+    }
+
+    public static String normalizeAndRemoveDiacritics(String str) {
+        // Normalize to NFD (Normalization Form D)
+        String normalized = Normalizer.normalize(str, Normalizer.Form.NFD);
+        // Remove diacritical marks
+        return normalized.replaceAll("\\p{M}", "");
+    }
+
     private void loadCoordinate(){
 
-        Geocoder geocoder = new Geocoder(requireContext());
-        try {
-            List<Address> addressList = geocoder.getFromLocationName(city + ", " + district, 1);
-            if (addressList != null && addressList.size() > 0) {
-                double latitude = addressList.get(0).getLatitude();
-                double longitude = addressList.get(0).getLongitude();
+        LatLng latLng = handleManualDistricts(city,district);
 
-                LatLng location = new LatLng(latitude, longitude);
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+        if(latLng != null){
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
+        }else {
+            Geocoder geocoder = new Geocoder(requireContext());
+            try {
+                List<Address> addressList = geocoder.getFromLocationName(city + ", " + district, 1);
+                if (addressList != null && addressList.size() > 0) {
+                    double latitude = addressList.get(0).getLatitude();
+                    double longitude = addressList.get(0).getLongitude();
 
-            } else {
+                    LatLng location = new LatLng(latitude, longitude);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+
+                } else {
 //                System.out.println("No location found for the given address.");
-            }
-        } catch (Exception e) {
+                }
+            } catch (Exception e) {
 //            System.out.println("exception: "+e.getLocalizedMessage());
-            e.printStackTrace();
+                e.printStackTrace();
+            }
         }
 
     }
@@ -311,6 +378,112 @@ public class GoogleMapsFragment extends Fragment implements OnMapReadyCallback {
         textView.setTextColor(Color.WHITE);
 
         snackbar.show();
+    }
+
+    private LatLng handleManualDistricts(String city, String district) {
+
+        LatLng latLng;
+        if (city.equalsIgnoreCase("Ankara") && district.equalsIgnoreCase("Sincan")) {
+            latLng = new LatLng(39.966751, 32.584229);
+        }else if (city.equalsIgnoreCase("Ankara") && district.equalsIgnoreCase("Bala")){
+            latLng = new LatLng(39.553373, 33.123768);
+        }else if (city.equalsIgnoreCase("Adana") && district.equalsIgnoreCase("Sarıçam")){
+            latLng = new LatLng(37.149987, 35.4903691);
+        }else if (city.equalsIgnoreCase("Adana") && district.equalsIgnoreCase("Seyhan")){
+            latLng = new LatLng(36.9231821, 35.0583745);
+        }else if (city.equalsIgnoreCase("Adana") && district.equalsIgnoreCase("Yüreğir")){
+            latLng = new LatLng(36.8675305, 35.2956341);
+        }else if (city.equalsIgnoreCase("Antalya") && district.equalsIgnoreCase("Kepez")){
+            latLng = new LatLng(36.95276037969528, 30.72425285208392);
+        }else if (city.equalsIgnoreCase("Antalya") && district.equalsIgnoreCase("Konyaaltı")){
+            latLng = new LatLng(36.87259431450681, 30.6323821484396);
+        }else if (city.equalsIgnoreCase("Aydın") && district.equalsIgnoreCase("Efeler")){
+            latLng = new LatLng(37.8553307, 27.7680007);
+        }else if (city.equalsIgnoreCase("Balıkesir") && district.equalsIgnoreCase("Karesi")){
+            latLng = new LatLng(39.65332454003856, 27.890341925257253);
+        }else if (city.equalsIgnoreCase("Balıkesir") && district.equalsIgnoreCase("Altıeylül")){
+            latLng = new LatLng(39.65332454003856, 27.890341925257253);
+        }else if (city.equalsIgnoreCase("Bursa") && district.equalsIgnoreCase("Nilüfer")){
+            latLng = new LatLng(40.19897371132959, 28.961897497051787);
+        }else if (city.equalsIgnoreCase("Bursa") && district.equalsIgnoreCase("Osmangazi")){
+            latLng = new LatLng(40.1630087, 28.964634);
+        }else if (city.equalsIgnoreCase("Denizli") && district.equalsIgnoreCase("Merkezefendi")){
+            latLng = new LatLng(37.8190879, 28.9346472);
+        }else if (city.equalsIgnoreCase("Denizli") && district.equalsIgnoreCase("Pamukkale")){
+            latLng = new LatLng(37.9112505, 29.1092805);
+        }else if (city.equalsIgnoreCase("Diyarbakır") && district.equalsIgnoreCase("Bağlar")){
+            latLng = new LatLng(37.7700903, 40.0644002);
+        }else if (city.equalsIgnoreCase("Diyarbakır") && district.equalsIgnoreCase("Dicle")){
+            latLng = new LatLng(38.3605791, 40.0691968);
+        }else if (city.equalsIgnoreCase("Diyarbakır") && district.equalsIgnoreCase("Kayapınar")){
+            latLng = new LatLng(37.9871761, 39.7164185);
+        }else if (city.equalsIgnoreCase("Diyarbakır") && district.equalsIgnoreCase("Sur")){
+            latLng = new LatLng(38.0398484, 40.2828292);
+        }else if (city.equalsIgnoreCase("Diyarbakır") && district.equalsIgnoreCase("Yenişehir")){
+            latLng = new LatLng(38.0424344, 39.9358972);
+        }else if (city.equalsIgnoreCase("Erzurum") && district.equalsIgnoreCase("Palandöken")){
+            latLng = new LatLng(39.8388885, 41.0255199);
+        }else if (city.equalsIgnoreCase("Erzurum") && district.equalsIgnoreCase("Yakutiye")){
+            latLng = new LatLng(40.0635965, 41.1708436);
+        }else if (city.equalsIgnoreCase("Eskişehir") && district.equalsIgnoreCase("Odunpazarı")){
+            latLng = new LatLng(39.6442025, 30.4760594);
+        }else if (city.equalsIgnoreCase("Eskişehir") && district.equalsIgnoreCase("Tepebaşı")){
+            latLng = new LatLng(39.8223131, 30.411723);
+        }else if (city.equalsIgnoreCase("Gaziantep") && district.equalsIgnoreCase("Şahinbey")){
+            latLng = new LatLng(36.9303511, 37.0954946);
+        }else if (city.equalsIgnoreCase("Gaziantep") && district.equalsIgnoreCase("Şehitkamil")){
+            latLng = new LatLng(37.170228, 37.1761385);
+        }else if (city.equalsIgnoreCase("Mersin") && district.equalsIgnoreCase("Erdemli")){
+            latLng = new LatLng(36.60626042592977, 34.30895373786727);
+        }else if (city.equalsIgnoreCase("Mersin") && district.equalsIgnoreCase("Mezitli")){
+            latLng = new LatLng(36.744212492562255, 34.520372204058816);
+        }else if (city.equalsIgnoreCase("Mersin") && district.equalsIgnoreCase("Toroslar")){
+            latLng = new LatLng(36.834146262063555, 34.60557442632289);
+        }else if (city.equalsIgnoreCase("Kayseri") && district.equalsIgnoreCase("Kocasinan")){
+            latLng = new LatLng(38.8934174, 35.1888344);
+        }else if (city.equalsIgnoreCase("Kayseri") && district.equalsIgnoreCase("Melikgazi")){
+            latLng = new LatLng(38.7019793, 35.4033288);
+        }else if (city.equalsIgnoreCase("Kocaeli") && district.equalsIgnoreCase("Başiskele")){
+            latLng = new LatLng(40.6309694, 29.8987104);
+        }else if (city.equalsIgnoreCase("Konya") && district.equalsIgnoreCase("Karatay")){
+            latLng = new LatLng(37.9578696, 32.6315798);
+        }else if (city.equalsIgnoreCase("Konya") && district.equalsIgnoreCase("Meram")){
+            latLng = new LatLng(37.699902, 32.1710677);
+        }else if (city.equalsIgnoreCase("Konya") && district.equalsIgnoreCase("Selçuklu")){
+            latLng = new LatLng(38.0898126, 32.2011773);
+        }else if (city.equalsIgnoreCase("Malatya") && district.equalsIgnoreCase("Battalgazi")){
+            latLng = new LatLng(38.4138138, 38.347237);
+        }else if (city.equalsIgnoreCase("Manisa") && district.equalsIgnoreCase("Şehzadeler")){
+            latLng = new LatLng(38.617564033396384, 27.442383786940475);
+        }else if (city.equalsIgnoreCase("Manisa") && district.equalsIgnoreCase("Yunusemre")){
+            latLng = new LatLng(38.61925748289873, 27.406333904167436);
+        }else if (city.equalsIgnoreCase("Kahramanmaraş") && district.equalsIgnoreCase("Dulkadiroğlu")){
+            latLng = new LatLng(37.578089138798255, 36.940395831581796);
+        }else if (city.equalsIgnoreCase("Kahramanmaraş") && district.equalsIgnoreCase("Onikişubat")){
+            latLng = new LatLng(37.583614011477636, 36.89981070359613);
+        }else if (city.equalsIgnoreCase("Sakarya") && district.equalsIgnoreCase("Arifiye")){
+            latLng = new LatLng(40.71398339711735, 30.361793459324307);
+        }else if (city.equalsIgnoreCase("Sakarya") && district.equalsIgnoreCase("Erenler")){
+            latLng = new LatLng(40.75120007675775, 30.41439176629662);
+        }else if (city.equalsIgnoreCase("Sakarya") && district.equalsIgnoreCase("Serdivan")){
+            latLng = new LatLng(40.73782201230848, 30.350621904447568);
+        }else if (city.equalsIgnoreCase("Samsun") && district.equalsIgnoreCase("Atakum")){
+            latLng = new LatLng(41.33143333513191, 36.27171692808721);
+        }else if (city.equalsIgnoreCase("Samsun") && district.equalsIgnoreCase("Canik")){
+            latLng = new LatLng(41.26087772801601, 36.36034400106044);
+        }else if (city.equalsIgnoreCase("Samsun") && district.equalsIgnoreCase("İlkadım")){
+            latLng = new LatLng(41.2810500466861, 36.331000409610866);
+        }else if (city.equalsIgnoreCase("Ardahan") && district.equalsIgnoreCase("Hanak")){
+            latLng = new LatLng(41.233576873058084, 42.84802156855797);
+        }else if (city.equalsIgnoreCase("Yalova") && district.equalsIgnoreCase("Çiftlikköy")){
+            latLng = new LatLng(40.66261378791248, 29.315379477973885);
+        }else if (city.equalsIgnoreCase("Balıkesir") && district.equalsIgnoreCase("Balıkesir Merkez")){
+            latLng = new LatLng(39.65332454003856, 27.890341925257253);
+        }else {
+            latLng = null;
+        }
+
+        return latLng;
     }
 
 }

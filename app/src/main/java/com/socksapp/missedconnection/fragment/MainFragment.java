@@ -23,6 +23,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -51,6 +52,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.socksapp.missedconnection.FCM.FCMNotificationSender;
 import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
@@ -58,6 +61,9 @@ import com.socksapp.missedconnection.adapter.PostAdapter;
 import com.socksapp.missedconnection.databinding.FragmentMainBinding;
 import com.socksapp.missedconnection.model.FindPost;
 import com.socksapp.missedconnection.myclass.TimedDataManager;
+import com.socksapp.missedconnection.myclass.Utils;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -200,6 +206,8 @@ public class MainFragment extends Fragment {
             }
         });
 
+//        getCityDistrict(view);
+
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -208,6 +216,44 @@ public class MainFragment extends Fragment {
         });
 
     }
+
+//    private void getCityDistrict(View view){
+//        Geocoder geocoder = new Geocoder(view.getContext(), Locale.getDefault());
+//        String ilAdi = "İstanbul"; // Bulmak istediğiniz ilin adı
+//        List<Address> addresses = null;
+//        try {
+//            addresses = geocoder.getFromLocationName(ilAdi, 1); // İl adına göre konum bilgisi al
+//        } catch (Exception e) {
+//            System.out.println("ilk hata: "+e.getLocalizedMessage());
+//            e.printStackTrace();
+//        }
+//
+//        if (addresses != null && !addresses.isEmpty()) {
+//            Address address = addresses.get(0);
+//            double latitude = address.getLatitude();
+//            double longitude = address.getLongitude();
+//
+//            List<Address> ilceAddresses = null;
+//            try {
+//                ilceAddresses = geocoder.getFromLocation(latitude, longitude, 5); // İlçeleri al
+//            } catch (Exception e) {
+//                System.out.println("ikinci hata: "+e.getLocalizedMessage());
+//                e.printStackTrace();
+//            }
+//
+//            if (ilceAddresses != null) {
+//                for (Address ilceAddress : ilceAddresses) {
+//                    String ilceAdi = ilceAddress.getSubAdminArea();
+//                    if (ilceAdi != null) {
+//                        System.out.println("İlçe: " + ilceAdi);
+//                    }
+//                }
+//            }
+//        }else {
+//            System.out.println("null : ");
+//        }
+//    }
+
 
     private void checkLocationPermission(){
         if(ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
