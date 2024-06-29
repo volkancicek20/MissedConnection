@@ -226,7 +226,7 @@
 
     <!-- recycler_empty_message -->
     <string name="gelen_mesaj_yok">Gelen mesaj yok</string>
-    <string name="gonderilerinizi_daha_iyi_filtre">Gönderilerinizi daha iyi filtreleyerek paylaşırsanız size ulaşabilme fırsatı bi o kadar artacaktır.</string>
+    <string name="gonderilerinizi_daha_iyi_filtre">Gönderilerinizi daha iyi filtreleyerek paylaşırsanız size ulaşabilme fırsatları bi o kadar artacaktır.</string>
 
     <!-- selection_language -->
     <string name="turkce">Türkçe</string>

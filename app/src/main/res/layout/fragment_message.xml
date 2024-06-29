@@ -43,7 +43,6 @@
         android:clipToPadding="false"
         android:orientation="vertical"
         android:overScrollMode="never"
-        android:padding="10dp"
         android:scrollbars="vertical"
         android:scrollbarThumbVertical="@drawable/scrollbar_thumb_chat"
         android:scrollbarTrackVertical="@drawable/scrollbar_track_chat"

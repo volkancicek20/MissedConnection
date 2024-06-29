@@ -225,7 +225,7 @@
 
     <!-- recycler_empty_message -->
     <string name="gelen_mesaj_yok">No messages</string>
-    <string name="gonderilerinizi_daha_iyi_filtre">If you filter your posts better and share them, the opportunity to reach you will increase.</string>
+    <string name="gonderilerinizi_daha_iyi_filtre">The better you filter your posts, the more opportunities they will have to reach you.</string>
 
     <!-- selection_language -->
     <string name="turkce">Turkish</string>

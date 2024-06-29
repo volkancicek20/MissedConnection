@@ -145,7 +145,41 @@ public class AddPostFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.mapView.onCreate(savedInstanceState);
+        binding.mapView.post(() -> {
+            binding.mapView.onCreate(savedInstanceState);
+            if(lat == 0.0 && lng == 0.0 && rad == 0.0){
+                binding.mapView.getMapAsync(googleMap -> {
+
+                    disableMapInteractions(googleMap);
+
+                    googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map));
+
+                    LatLng location = new LatLng(41.008240, 28.978359);
+                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+
+                    googleMap.setOnMapClickListener(latLng -> {
+                        String city = binding.cityCompleteText.getText().toString();
+                        String district = binding.districtCompleteText.getText().toString();
+                        if(!city.isEmpty() && !district.isEmpty()){
+                            Bundle args = new Bundle();
+                            args.putString("fragment_type", "add_post");
+                            args.putString("fragment_city", city);
+                            args.putString("fragment_district", district);
+                            GoogleMapsFragment myFragment = new GoogleMapsFragment();
+                            myFragment.setArguments(args);
+                            FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                            fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
+                            fragmentTransaction.addToBackStack(null);
+                            fragmentTransaction.commit();
+                        }else {
+                            showSnackbar(view,getString(R.string.l_ve_il_eyi_girmeniz_gerekmektedir));
+                        }
+                    });
+                });
+            }else {
+                setMarked(view);
+            }
+        });
 
         mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
@@ -153,10 +187,6 @@ public class AddPostFragment extends Fragment {
         mainActivity.drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
 
         getAllCities(view);
-//        cityNames = getResources().getStringArray(R.array.city_names);
-//        cityAdapter = new ArrayAdapter<>(requireContext(), R.layout.list_item,cityNames);
-//        cityCompleteTextView = binding.getRoot().findViewById(R.id.city_complete_text);
-//        cityCompleteTextView.setAdapter(cityAdapter);
 
         menu = mainActivity.navigationView.getMenu();
         menuItem = menu.findItem(R.id.nav_drawer_home);
@@ -184,7 +214,6 @@ public class AddPostFragment extends Fragment {
             binding.districtCompleteText.setText("");
             binding.districtCompleteText.setAdapter(null);
             getAllDistricts(view,selectedCity);
-//            selectDistrict(selectedCity);
             lat = 0.0;
             lng = 0.0;
             rad = 0.0;
@@ -259,42 +288,6 @@ public class AddPostFragment extends Fragment {
             }
 
             return true;
-        });
-
-        binding.mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull GoogleMap googleMap) {
-
-                disableMapInteractions(googleMap);
-
-                googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map));
-
-                LatLng location = new LatLng(41.008240, 28.978359);
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
-//                googleMap.addMarker(new MarkerOptions().position(location).title("İstanbul"));
-
-                googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                    @Override
-                    public void onMapClick(@NonNull LatLng latLng) {
-                        String city = binding.cityCompleteText.getText().toString();
-                        String district = binding.districtCompleteText.getText().toString();
-                        if(!city.isEmpty() && !district.isEmpty()){
-                            Bundle args = new Bundle();
-                            args.putString("fragment_type", "add_post");
-                            args.putString("fragment_city", city);
-                            args.putString("fragment_district", district);
-                            GoogleMapsFragment myFragment = new GoogleMapsFragment();
-                            myFragment.setArguments(args);
-                            FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                            fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
-                            fragmentTransaction.addToBackStack(null);
-                            fragmentTransaction.commit();
-                        }else {
-                            showSnackbar(view,getString(R.string.l_ve_il_eyi_girmeniz_gerekmektedir));
-                        }
-                    }
-                });
-            }
         });
 
         binding.addPost.setOnClickListener(v ->{
@@ -379,10 +372,6 @@ public class AddPostFragment extends Fragment {
         });
 
         binding.markedMapView.setText(address);
-
-        if(lat != 0.0 && lng != 0.0 && rad != 0.0){
-            setMarked();
-        }
 
         binding.dateRangeInputLayout.setEndIconOnClickListener(new View.OnClickListener() {
             @Override
@@ -888,28 +877,38 @@ public class AddPostFragment extends Fragment {
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
-    private void setMarked(){
-        binding.mapView.getMapAsync(new OnMapReadyCallback() {
-            @Override
-            public void onMapReady(@NonNull GoogleMap googleMap) {
+    private void setMarked(View view){
+        binding.mapView.getMapAsync(googleMap -> {
 
-                disableMapInteractions(googleMap);
+            disableMapInteractions(googleMap);
 
-                googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map));
+            googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map));
 
-//                LatLng location = new LatLng(lat, lng);
-//                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
-//                googleMap.addMarker(new MarkerOptions().position(location).title(address));
+            LatLng location = new LatLng(lat, lng);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16));
+            googleMap.addMarker(new MarkerOptions()
+                .position(location)
+                .title(address)
+            );
 
-                LatLng location = new LatLng(lat, lng);
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16));
-//                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.loca);
-//                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, 50, 50, false); // 50x50 boyutunda ikon
-                googleMap.addMarker(new MarkerOptions()
-                    .position(location)
-                    .title(address)
-                );
-            }
+            googleMap.setOnMapClickListener(latLng -> {
+                String city = binding.cityCompleteText.getText().toString();
+                String district = binding.districtCompleteText.getText().toString();
+                if(!city.isEmpty() && !district.isEmpty()){
+                    Bundle args = new Bundle();
+                    args.putString("fragment_type", "add_post");
+                    args.putString("fragment_city", city);
+                    args.putString("fragment_district", district);
+                    GoogleMapsFragment myFragment = new GoogleMapsFragment();
+                    myFragment.setArguments(args);
+                    FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }else {
+                    showSnackbar(view,getString(R.string.l_ve_il_eyi_girmeniz_gerekmektedir));
+                }
+            });
         });
     }
 
@@ -1160,6 +1159,22 @@ public class AddPostFragment extends Fragment {
         }
 
         return false;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onStart();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (binding != null && binding.mapView != null) {
+            binding.mapView.onStop();
+        }
     }
 
     @Override
