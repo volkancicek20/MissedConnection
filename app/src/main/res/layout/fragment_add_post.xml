@@ -238,7 +238,6 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginBottom="16dp" />
 
-
                     </LinearLayout>
 
 
@@ -247,7 +246,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_margin="16dp"
-                        android:background="@drawable/bg_shapeable_imageview"
                         android:scaleType="fitCenter"
                         app:layout_constraintBottom_toTopOf="@id/upload_image"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -260,6 +258,7 @@
                         android:layout_height="30dp"
                         android:layout_marginHorizontal="16dp"
                         android:layout_marginBottom="16dp"
+                        android:foreground="@drawable/click_button_effect"
                         android:background="@drawable/upload_button_background"
                         android:text="@string/resim_yukle"
                         android:textSize="14sp"
@@ -594,6 +593,7 @@
                 android:id="@+id/add_post"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:foreground="@drawable/click_button_effect"
                 android:background="@drawable/edit_button_date_background"
                 android:text="@string/ekle"
                 android:textSize="14sp"

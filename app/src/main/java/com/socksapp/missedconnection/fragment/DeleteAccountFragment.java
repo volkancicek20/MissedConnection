@@ -1,6 +1,7 @@
 package com.socksapp.missedconnection.fragment;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,7 +16,10 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -142,49 +146,49 @@ public class DeleteAccountFragment extends Fragment {
     }
 
     private void deleteUserAccount(View view,String explain) {
-
         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-        builder.setTitle(getString(R.string.hesap_silme_onayi));
-        builder.setMessage(getString(R.string.silme_onayi));
-        builder.setPositiveButton(getString(R.string.evet), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                WriteBatch deleteBatch = firestore.batch();
+        View dialogView = getLayoutInflater().inflate(R.layout.custom_dialog_delete_account, null);
+        builder.setView(dialogView);
 
-                Map<String, Object> data = new HashMap<>();
-                data.put("explain", explain);
-                DocumentReference userDeleteRef = firestore.collection("userDelete").document(myMail);
-                deleteBatch.set(userDeleteRef, data);
+        Button cancelButton = dialogView.findViewById(R.id.cancelButton);
+        Button deleteButton = dialogView.findViewById(R.id.deleteButton);
 
-                deleteBatch.commit().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        showSnackbar(view,getString(R.string.hesab_n_z_1_hafta_i_inde_silinecektir));
-                        auth.signOut();
-                        Intent intent = new Intent(requireActivity(), LoginActivity.class);
-                        startActivity(intent);
-                        requireActivity().finish();
-                    } else {
-                        showSnackbar(view,getString(R.string.hesap_silme_i_lemi_ba_ar_s_z_l_tfen_tekrar_deneyiniz));
-                    }
-                });
-            }
-        });
-
-        builder.setNegativeButton(getString(R.string.iptal), (dialog, which) -> dialog.dismiss());
         AlertDialog dialog = builder.create();
         dialog.show();
 
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
 
-//        user.delete().addOnCompleteListener(task -> {
-//            if(task.isSuccessful()){
-//                Toast.makeText(getContext(), "Hesap başarıyla silindi.", Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(requireActivity(), LoginActivity.class);
-//                startActivity(intent);
-//                requireActivity().finish();
-//            }
-//        }).addOnFailureListener(e -> {
-//
-//        });
+        deleteButton.setOnClickListener(v -> {
+            ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+            progressDialog.setMessage(getString(R.string.please_wait));
+            progressDialog.show();
+
+            WriteBatch deleteBatch = firestore.batch();
+
+            Map<String, Object> data = new HashMap<>();
+            data.put("explain", explain);
+            DocumentReference userDeleteRef = firestore.collection("userDelete").document(myMail);
+            deleteBatch.set(userDeleteRef, data);
+
+            deleteBatch.commit().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    progressDialog.dismiss();
+                    showSnackbar(view,getString(R.string.hesab_n_z_1_hafta_i_inde_silinecektir));
+                    auth.signOut();
+                    Intent intent = new Intent(requireActivity(), LoginActivity.class);
+                    startActivity(intent);
+                    requireActivity().finish();
+                } else {
+                    progressDialog.dismiss();
+                    showSnackbar(view,getString(R.string.hesap_silme_i_lemi_ba_ar_s_z_l_tfen_tekrar_deneyiniz));
+                }
+            }).addOnFailureListener(e -> {
+                progressDialog.dismiss();
+                showSnackbar(view,getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz));
+            });
+
+            dialog.dismiss();
+        });
     }
 
     @Override

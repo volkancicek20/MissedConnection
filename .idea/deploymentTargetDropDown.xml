@@ -15,8 +15,17 @@
               </deviceKey>
             </Target>
           </runningDeviceTargetSelectedWithDropDown>
-          <timeTargetWasSelectedWithDropDown value="2024-06-29T15:13:14.300033100Z" />
+          <timeTargetWasSelectedWithDropDown value="2024-06-30T18:31:09.317463500Z" />
           <runningDeviceTargetsSelectedWithDialog>
+            <Target>
+              <type value="RUNNING_DEVICE_TARGET" />
+              <deviceKey>
+                <Key>
+                  <type value="SERIAL_NUMBER" />
+                  <value value="UOCILRVC55CQPJAI" />
+                </Key>
+              </deviceKey>
+            </Target>
             <Target>
               <type value="RUNNING_DEVICE_TARGET" />
               <deviceKey>
@@ -28,15 +37,6 @@
             </Target>
           </runningDeviceTargetsSelectedWithDialog>
           <targetsSelectedWithDialog>
-            <Target>
-              <type value="QUICK_BOOT_TARGET" />
-              <deviceKey>
-                <Key>
-                  <type value="VIRTUAL_DEVICE_PATH" />
-                  <value value="C:\Users\cicek\.android\avd\Pixel_4_API_27.avd" />
-                </Key>
-              </deviceKey>
-            </Target>
             <Target>
               <type value="QUICK_BOOT_TARGET" />
               <deviceKey>

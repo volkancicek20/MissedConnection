@@ -11,35 +11,26 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
-
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-import com.google.android.material.imageview.ShapeableImageView;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.R;
-import com.socksapp.missedconnection.databinding.RecyclerEmptyPostBinding;
-import com.socksapp.missedconnection.databinding.RecyclerPostBinding;
 import com.socksapp.missedconnection.databinding.RecyclerViewEmptyPostNotificationBinding;
 import com.socksapp.missedconnection.databinding.RecyclerViewNotificationBinding;
 import com.socksapp.missedconnection.fragment.PostsActivityFragment;
-import com.socksapp.missedconnection.model.FindPost;
 import com.socksapp.missedconnection.model.PostNotification;
 import com.socksapp.missedconnection.myclass.SharedPreferencesGetLanguage;
 import com.socksapp.missedconnection.myclass.SharedPreferencesHelper;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Locale;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class PostNotificationAdapter extends RecyclerView.Adapter {
@@ -195,15 +186,11 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
         }
 
         if(!galleryUrl.isEmpty()){
-            int screenWidth = getScreenWidth(context);
 
             Glide.with(context)
                 .load(galleryUrl)
                 .apply(new RequestOptions()
-                .error(R.drawable.icon_loading)
-                .fitCenter()
-                .centerCrop())
-                .override(screenWidth, Target.SIZE_ORIGINAL)
+                .error(R.drawable.icon_loading))
                 .into(holder.recyclerViewNotificationBinding.galleryImage);
         }
 
@@ -252,22 +239,6 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
             }
         }
 
-//        if(secondsElapsed < 0){
-//            elapsedTime = context.getString(R.string.azonce);
-//        } else if (secondsElapsed >= 31536000) {
-//            elapsedTime = "• " + (secondsElapsed / 31536000) + context.getString(R.string.yil);
-//        } else if (secondsElapsed >= 2592000) {
-//            elapsedTime = "• " + (secondsElapsed / 2592000) + context.getString(R.string.ay);
-//        } else if (secondsElapsed >= 86400) {
-//            elapsedTime = "• " + (secondsElapsed / 86400) + context.getString(R.string.g);
-//        } else if (secondsElapsed >= 3600) {
-//            elapsedTime = "• " + (secondsElapsed / 3600) + context.getString(R.string.sa);
-//        } else if (secondsElapsed >= 60) {
-//            elapsedTime = "• " + (secondsElapsed / 60) + context.getString(R.string.d);
-//        } else {
-//            elapsedTime = "• " + secondsElapsed + context.getString(R.string.s);
-//        }
-
         holder.recyclerViewNotificationBinding.timestampTime.setText(elapsedTime);
 
 
@@ -313,22 +284,6 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
                 elapsedTime2 = "• " + secondsElapsed2 + " seconds";
             }
         }
-
-//        if(secondsElapsed2 < 0){
-//            elapsedTime2 = context.getString(R.string.azonce);
-//        } else if (secondsElapsed2 >= 31536000) {
-//            elapsedTime2 = "• " + (secondsElapsed2 / 31536000) + context.getString(R.string.yil);
-//        } else if (secondsElapsed2 >= 2592000) {
-//            elapsedTime2 = "• " + (secondsElapsed2 / 2592000) + context.getString(R.string.ay);
-//        } else if (secondsElapsed2 >= 86400) {
-//            elapsedTime2 = "• " + (secondsElapsed2 / 86400) + context.getString(R.string.g);
-//        } else if (secondsElapsed2 >= 3600) {
-//            elapsedTime2 = "• " + (secondsElapsed2 / 3600) + context.getString(R.string.sa);
-//        } else if (secondsElapsed2 >= 60) {
-//            elapsedTime2 = "• " + (secondsElapsed2 / 60) + context.getString(R.string.d);
-//        } else {
-//            elapsedTime2 = "• " + secondsElapsed2 + context.getString(R.string.s);
-//        }
 
         holder.recyclerViewNotificationBinding.recyclerTimestampTime.setText(elapsedTime2);
     }
@@ -393,17 +348,12 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
             public void onAnimationRepeat(Animation animation) {}
         });
 
-        ShapeableImageView imageView = popupView.findViewById(R.id.show_image);
-
-        int screenWidth = getScreenWidth(context);
+        PhotoView imageView = popupView.findViewById(R.id.show_image);
 
         Glide.with(context)
             .load(galleryUrl)
             .apply(new RequestOptions()
-            .error(R.drawable.icon_loading)
-            .fitCenter()
-            .centerCrop())
-            .override(screenWidth, Target.SIZE_ORIGINAL)
+            .error(R.drawable.icon_loading))
             .into(imageView);
 
         ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
@@ -414,7 +364,4 @@ public class PostNotificationAdapter extends RecyclerView.Adapter {
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
-    private int getScreenWidth(Context context) {
-        return context.getResources().getDisplayMetrics().widthPixels;
-    }
 }

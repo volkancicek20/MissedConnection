@@ -153,6 +153,7 @@
                 android:layout_height="50dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:foreground="@drawable/click_button_effect"
                 android:backgroundTint="@color/blue2"
                 android:text="@string/kayit_ol"
                 android:textColor="@color/white"

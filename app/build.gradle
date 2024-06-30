@@ -37,6 +37,8 @@ android {
 
 dependencies {
 
+    implementation 'com.android.billingclient:billing:7.0.0'
+
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
@@ -85,6 +87,10 @@ dependencies {
 
     //blur
     implementation 'com.github.Dimezis:BlurView:version-2.0.3'
+
+    //enlarge image
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+
 
 
 }

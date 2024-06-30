@@ -11,14 +11,12 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
-
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.bumptech.glide.request.target.Target;
-import com.google.android.material.imageview.ShapeableImageView;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,7 +29,6 @@ import com.socksapp.missedconnection.databinding.RecyclerSavedRemovedPostBinding
 import com.socksapp.missedconnection.fragment.SavedPostFragment;
 import com.socksapp.missedconnection.model.FindPost;
 import com.socksapp.missedconnection.myclass.SharedPreferencesGetLanguage;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -116,10 +113,10 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
                 mail = arrayList.get(position).mail;
                 city = arrayList.get(position).city;
                 district = arrayList.get(position).district;
-//                date1 = arrayList.get(position).date1;
-//                date2 = arrayList.get(position).date2;
-//                time1 = arrayList.get(position).time1;
-//                time2 = arrayList.get(position).time2;
+                date1 = arrayList.get(position).date1;
+                date2 = arrayList.get(position).date2;
+                time1 = arrayList.get(position).time1;
+                time2 = arrayList.get(position).time2;
                 explain = arrayList.get(position).explain;
                 lat = arrayList.get(position).lat;
                 lng = arrayList.get(position).lng;
@@ -222,15 +219,11 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         }
 
         if(!galleryUrl.isEmpty()){
-            int screenWidth = getScreenWidth(context);
 
             Glide.with(context)
                 .load(galleryUrl)
                 .apply(new RequestOptions()
-                .error(R.drawable.icon_loading)
-                .fitCenter()
-                .centerCrop())
-                .override(screenWidth, Target.SIZE_ORIGINAL)
+                .error(R.drawable.icon_loading))
                 .into(holder.recyclerSavedPostBinding.galleryImage);
         }
 
@@ -286,22 +279,6 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
                 elapsedTime = "• " + secondsElapsed + " seconds";
             }
         }
-
-//        if(secondsElapsed < 0){
-//            elapsedTime = context.getString(R.string.azonce);
-//        } else if (secondsElapsed >= 31536000) {
-//            elapsedTime = "• " + (secondsElapsed / 31536000) + context.getString(R.string.yil);
-//        } else if (secondsElapsed >= 2592000) {
-//            elapsedTime = "• " + (secondsElapsed / 2592000) + context.getString(R.string.ay);
-//        } else if (secondsElapsed >= 86400) {
-//            elapsedTime = "• " + (secondsElapsed / 86400) + context.getString(R.string.g);
-//        } else if (secondsElapsed >= 3600) {
-//            elapsedTime = "• " + (secondsElapsed / 3600) + context.getString(R.string.sa);
-//        } else if (secondsElapsed >= 60) {
-//            elapsedTime = "• " + (secondsElapsed / 60) + context.getString(R.string.d);
-//        } else {
-//            elapsedTime = "• " + secondsElapsed + context.getString(R.string.s);
-//        }
 
         holder.recyclerSavedPostBinding.timestampTime.setText(elapsedTime);
 
@@ -367,17 +344,12 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
             public void onAnimationRepeat(Animation animation) {}
         });
 
-        ShapeableImageView imageView = popupView.findViewById(R.id.show_image);
-
-        int screenWidth = getScreenWidth(context);
+        PhotoView imageView = popupView.findViewById(R.id.show_image);
 
         Glide.with(context)
             .load(galleryUrl)
             .apply(new RequestOptions()
-            .error(R.drawable.icon_loading)
-            .fitCenter()
-            .centerCrop())
-            .override(screenWidth, Target.SIZE_ORIGINAL)
+            .error(R.drawable.icon_loading))
             .into(imageView);
 
         ConstraintLayout constraintLayout = popupView.findViewById(R.id.base_constraint_image);
@@ -388,7 +360,4 @@ public class SavedPostAdapter extends RecyclerView.Adapter {
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
     }
 
-    private int getScreenWidth(Context context) {
-        return context.getResources().getDisplayMetrics().widthPixels;
-    }
 }

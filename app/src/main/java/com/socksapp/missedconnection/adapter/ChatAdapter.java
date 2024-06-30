@@ -4,14 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.socksapp.missedconnection.databinding.RecycleViewChatTextMeBinding;
 import com.socksapp.missedconnection.databinding.RecycleViewChatTextYouBinding;
 import com.socksapp.missedconnection.databinding.RecyclerViewChatBlock1Binding;
@@ -20,16 +14,11 @@ import com.socksapp.missedconnection.databinding.RecyclerViewDateTitleBinding;
 import com.socksapp.missedconnection.fragment.ChatFragment;
 import com.socksapp.missedconnection.model.ChatMessage;
 import com.socksapp.missedconnection.myclass.SharedPreferencesGetLanguage;
-
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 
 public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 

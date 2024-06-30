@@ -1081,10 +1081,6 @@ public class AddPostFragment extends Fragment {
 
     }
 
-    private int getScreenWidth(Context context) {
-        return context.getResources().getDisplayMetrics().widthPixels;
-    }
-
     public void refreshFragment() {
         AddPostFragment fragment = new AddPostFragment();
         FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
@@ -1263,18 +1259,11 @@ public class AddPostFragment extends Fragment {
                     if(intentForResult != null){
                         imageData = intentForResult.getData();
 
-                        int screenWidth = getScreenWidth(view.getContext());
-
                         binding.uploadImage.setVisibility(View.GONE);
                         binding.galleryImage.setAdjustViewBounds(true);
 
                         Glide.with(view.getContext())
                             .load(imageData)
-                            .apply(new RequestOptions()
-                            .error(R.drawable.icon_loading)
-                            .fitCenter()
-                            .centerCrop())
-                            .override(screenWidth, Target.SIZE_ORIGINAL)
                             .into(binding.galleryImage);
 
                     }

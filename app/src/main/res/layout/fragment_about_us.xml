@@ -42,6 +42,7 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:fontFamily="@font/roboto_regular"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/logo" />
@@ -56,6 +57,7 @@
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="normal"
+                android:fontFamily="@font/roboto_regular"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/title_text" />
@@ -69,6 +71,7 @@
                 android:textColor="@color/gray"
                 android:textSize="12sp"
                 android:textStyle="normal"
+                android:fontFamily="@font/roboto_regular"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/goal_explain" />
 
@@ -81,6 +84,7 @@
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="normal"
+                android:fontFamily="@font/roboto_regular"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/app_details" />
 
@@ -120,7 +124,8 @@
                         android:text="@string/contact_us"
                         android:textColor="@color/white"
                         android:textSize="14sp"
-                        android:textStyle="normal" />
+                        android:textStyle="normal"
+                        android:fontFamily="@font/roboto_regular"/>
 
                 </LinearLayout>
 
@@ -150,7 +155,8 @@
                         android:text="@string/rate_us_on_the_play_store"
                         android:textColor="@color/white"
                         android:textSize="14sp"
-                        android:textStyle="normal" />
+                        android:textStyle="normal"
+                        android:fontFamily="@font/roboto_regular"/>
 
                 </LinearLayout>
 
@@ -180,7 +186,8 @@
                         android:text="@string/follow_us_on_instagram"
                         android:textColor="@color/white"
                         android:textSize="14sp"
-                        android:textStyle="normal" />
+                        android:textStyle="normal"
+                        android:fontFamily="@font/roboto_regular"/>
 
                 </LinearLayout>
 
@@ -195,6 +202,7 @@
                 android:textColor="@color/white"
                 android:textSize="14sp"
                 android:textStyle="normal"
+                android:fontFamily="@font/roboto_regular"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/linksLinear" />

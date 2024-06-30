@@ -64,6 +64,7 @@ public class AccountSettingFragment extends Fragment {
         binding.deleteAccountLinearLayout.setOnClickListener(v -> goToDeleteAccountFragment());
         binding.changePasswordLinearLayout.setOnClickListener(v -> goToChangePasswordFragment());
         binding.postActivityLinearLayout.setOnClickListener(v -> goToPostActivityFragment());
+        binding.vipLinearLayout.setOnClickListener(v -> goToUpgradeAccountFragment());
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -73,6 +74,14 @@ public class AccountSettingFragment extends Fragment {
                 requireActivity().getSupportFragmentManager().popBackStack();
             }
         });
+    }
+
+    private void goToUpgradeAccountFragment(){
+        UpgradeAccountFragment fragment = new UpgradeAccountFragment();
+        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     private void goToChangePasswordFragment(){

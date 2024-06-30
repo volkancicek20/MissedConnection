@@ -35,6 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="7dp"
         android:layout_marginTop="8dp"
+        android:foreground="@drawable/click_button_effect"
         android:background="@drawable/bg_sender"
         android:maxWidth="310dp"
         android:minHeight="30dp"

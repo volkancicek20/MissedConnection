@@ -103,6 +103,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="50dp"
+        android:foreground="@drawable/click_button_effect"
         android:background="@drawable/bg_profile_button"
         android:text="@string/kaydet"
         android:textColor="@color/white"

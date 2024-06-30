@@ -20,10 +20,11 @@
     <string name="sil">Delete</string>
 
     <!-- fragment_account_setting -->
-    <string name="sifremi_degistir">Change my password</string>
+    <string name="sifremi_degistir">Change account password</string>
     <string name="hesap_hareketligi">Account activity</string>
     <string name="gonderi_hareketleri">Posts activity</string>
     <string name="hesabi_sil">Delete account</string>
+    <string name="hesab_y_kselt">Upgrade account</string>
 
     <!-- fragment_add_post -->
     <string name="il">City</string>
@@ -79,11 +80,14 @@
     <!-- fragment_delete -->
     <string name="hesab_n_z_neden_silmek_istiyorsunuz">Why do you want to delete your account?</string>
     <string name="hesabi_s_l">DELETE ACCOUNT</string>
+    <string name="delete_account">Delete Account</string>
 
     <!-- fragment_change_password -->
     <string name="yeni_sifre">New Password</string>
     <string name="yeni_sifre_tekrar">new password again</string>
     <string name="sifreyi_degistir_büyük_harf">CHANGE PASSWORD</string>
+    <string name="hesap_ifresini_de_i_tir">Change Account Password</string>
+
 
     <!-- recycler_empty_my_post -->
     <string name="henuz_gonderi_paylasmadiniz">You haven\'t posted yet</string>
@@ -148,6 +152,8 @@
     <string name="sifreniz_g_ncellendi_tekrar_giri_yap_n_z">Your password has been updated. Log in again.</string>
     <string name="bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz">Something went wrong. Please try again later.</string>
     <string name="sifrenizi_yanl_girdiniz">You entered your password incorrectly</string>
+    <string name="please_wait">Please wait..</string>
+
 
     <!-- DeleteAccountFragment -->
     <string name="sifrenizi_giriniz">Enter your password</string>

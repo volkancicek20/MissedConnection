@@ -94,7 +94,8 @@
                 android:text="@string/konum"
                 android:textColor="@color/white"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:fontFamily="@font/roboto_regular"/>
 
         </LinearLayout>
 
@@ -127,7 +128,8 @@
                 android:text="@string/dil_tercihi"
                 android:textColor="@color/white"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:fontFamily="@font/roboto_regular"/>
 
         </LinearLayout>
 
@@ -160,7 +162,8 @@
                 android:text="@string/hakkimizda"
                 android:textColor="@color/white"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:fontFamily="@font/roboto_regular"/>
 
         </LinearLayout>
 

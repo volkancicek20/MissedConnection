@@ -20,8 +20,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -34,7 +32,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -67,7 +64,6 @@ public class ChatFragment extends Fragment {
     private String myUserName,myImageUrl,myMail,anotherMail,anotherName;
     private String conversionId = null;
     private List<ChatMessage> chatMessages;
-    private ListenerRegistration collectionListener;
     private MainActivity mainActivity;
     private DocumentSnapshot lastVisibleMessage;
     private final int pageSize = 15;
@@ -238,15 +234,15 @@ public class ChatFragment extends Fragment {
             Map<String,Object> data = new HashMap<>();
 
             firebaseFirestore.collection("blocks")
-                    .document(myMail)
-                    .collection(myMail)
-                    .document(anotherMail)
-                    .set(data).addOnSuccessListener(unused -> {
-                        dialog.dismiss();
-                        refreshFragment();
-                    }).addOnFailureListener(e -> {
+                .document(myMail)
+                .collection(myMail)
+                .document(anotherMail)
+                .set(data).addOnSuccessListener(unused -> {
+                    dialog.dismiss();
+                    refreshFragment();
+                }).addOnFailureListener(e -> {
 
-                    });
+                });
         });
     }
 
@@ -527,18 +523,17 @@ public class ChatFragment extends Fragment {
     }
 
     private void listenMessages() {
-
         Task<DocumentSnapshot> task1 = firebaseFirestore.collection("blocks")
-            .document(myMail)
-            .collection(myMail)
-            .document(anotherMail)
-            .get();
+                .document(myMail)
+                .collection(myMail)
+                .document(anotherMail)
+                .get();
 
         Task<DocumentSnapshot> task2 = firebaseFirestore.collection("blocks")
-            .document(anotherMail)
-            .collection(anotherMail)
-            .document(myMail)
-            .get();
+                .document(anotherMail)
+                .collection(anotherMail)
+                .document(myMail)
+                .get();
 
         Tasks.whenAllSuccess(task1, task2).addOnSuccessListener(results -> {
             DocumentSnapshot documentSnapshot1 = (DocumentSnapshot) results.get(0);
@@ -552,10 +547,10 @@ public class ChatFragment extends Fragment {
                             String id = (String) data.get(anotherMail);
                             if(id != null && !id.isEmpty()){
                                 firebaseFirestore.collection("chats")
-                                    .document(id).collection(id)
-                                    .orderBy("date", Query.Direction.DESCENDING)
-                                    .limit(pageSize)
-                                    .addSnapshotListener(eventListener);
+                                        .document(id).collection(id)
+                                        .orderBy("date", Query.Direction.DESCENDING)
+                                        .limit(pageSize)
+                                        .addSnapshotListener(eventListener);
                             }
                         }
                     }
@@ -586,7 +581,6 @@ public class ChatFragment extends Fragment {
         }).addOnFailureListener(e -> {
 
         });
-
     }
 
     private final EventListener<QuerySnapshot> eventListener = (value, error) -> {

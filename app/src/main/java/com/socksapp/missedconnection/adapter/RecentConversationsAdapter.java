@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.PopupWindow;
-
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,7 +23,6 @@ import com.socksapp.missedconnection.model.ChatMessage;
 import com.socksapp.missedconnection.myclass.User;
 import com.socksapp.missedconnection.myinterface.ConversionListener;
 import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RecentConversationsAdapter extends RecyclerView.Adapter {

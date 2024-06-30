@@ -1,5 +1,6 @@
 package com.socksapp.missedconnection.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,6 +15,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -154,21 +157,30 @@ public class ChangePasswordFragment extends Fragment {
     }
 
     private void updatePassword(View view,String password, String newPassword){
+        ProgressDialog progressDialog = new ProgressDialog(view.getContext());
+        progressDialog.setMessage(getString(R.string.please_wait));
+        progressDialog.show();
         AuthCredential credential = EmailAuthProvider.getCredential(myMail, password);
         user.reauthenticate(credential).addOnCompleteListener(authTask -> {
             if (authTask.isSuccessful()) {
                 user.updatePassword(newPassword).addOnSuccessListener(unused -> {
+                    progressDialog.dismiss();
                     showSnackbar(view,getString(R.string.sifreniz_g_ncellendi_tekrar_giri_yap_n_z));
                     auth.signOut();
                     Intent intent = new Intent(requireActivity(), LoginActivity.class);
                     startActivity(intent);
                     requireActivity().finish();
                 }).addOnFailureListener(e -> {
+                    progressDialog.dismiss();
                     showSnackbar(view,getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz));
                 });
             } else {
+                progressDialog.dismiss();
                 binding.oldPasswordInputLayout.setError(getString(R.string.sifrenizi_yanl_girdiniz));
             }
+        }).addOnFailureListener(e -> {
+            progressDialog.dismiss();
+            showSnackbar(view,getString(R.string.bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz));
         });
     }
 

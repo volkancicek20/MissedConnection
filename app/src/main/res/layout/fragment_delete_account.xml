@@ -18,6 +18,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:text="@string/delete_account"
+        android:textColor="@color/white"
+        android:textStyle="normal"
+        android:textSize="20sp"
+        android:fontFamily="@font/roboto_regular"
+        app:layout_constraintBottom_toTopOf="@id/old_password_input_layout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/old_password_input_layout"
@@ -33,6 +45,8 @@
         app:hintAnimationEnabled="false"
         app:hintEnabled="false"
         app:hintTextColor="@color/text_input_title_change"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleTint="@color/gray"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/explain_input_layout"
@@ -59,7 +73,7 @@
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:layout_marginStart="15dp"
-        android:layout_marginBottom="100dp"
+        android:layout_marginBottom="50dp"
         android:layout_marginEnd="15dp"
         app:boxStrokeColor="@color/text_input_stroke_change"
         app:boxStrokeWidth="1dp"
@@ -94,6 +108,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginBottom="50dp"
+        android:foreground="@drawable/click_button_effect"
         android:background="@drawable/bg_profile_button"
         android:text="@string/hesabi_s_l"
         android:textColor="@color/white"

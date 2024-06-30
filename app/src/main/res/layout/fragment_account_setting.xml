@@ -43,38 +43,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/profile_image">
 
-<!--        <LinearLayout-->
-<!--            android:id="@+id/editProfileLinearLayout"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:clickable="true"-->
-<!--            android:focusable="true"-->
-<!--            android:foreground="@drawable/profile_linear_layout_effect"-->
-<!--            android:background="@drawable/linear_layout_profile"-->
-<!--            android:padding="10dp"-->
-<!--            android:layout_marginTop="10dp"-->
-<!--            android:layout_marginBottom="10dp"-->
-<!--            android:orientation="horizontal"-->
-<!--            android:layout_gravity="center">-->
-
-<!--            <ImageView-->
-<!--                android:layout_width="32dp"-->
-<!--                android:layout_height="32dp"-->
-<!--                android:background="@drawable/person_default_96"-->
-<!--                android:layout_gravity="center"/>-->
-
-<!--            <TextView-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginStart="10dp"-->
-<!--                android:text="Profili Düzenle"-->
-<!--                android:textColor="@color/white"-->
-<!--                android:textSize="16sp"-->
-<!--                android:textStyle="bold"-->
-<!--                android:layout_gravity="center"-->
-<!--                android:gravity="center"/>-->
-
-<!--        </LinearLayout>-->
         <LinearLayout
             android:id="@+id/changePasswordLinearLayout"
             android:layout_width="match_parent"
@@ -104,6 +72,7 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:fontFamily="@font/roboto_regular"
                 android:layout_gravity="center"
                 android:gravity="center"/>
 
@@ -137,6 +106,41 @@
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:fontFamily="@font/roboto_regular"
+                android:layout_gravity="center"
+                android:gravity="center"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/vipLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="@drawable/profile_linear_layout_effect"
+            android:background="@drawable/linear_layout_profile"
+            android:padding="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:orientation="horizontal"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/icon_logo_v2"
+                android:layout_gravity="center"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:text="@string/hesab_y_kselt"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/roboto_regular"
                 android:layout_gravity="center"
                 android:gravity="center"/>
 
@@ -170,6 +174,7 @@
                 android:textColor="@color/red"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:fontFamily="@font/roboto_regular"
                 android:layout_gravity="center"
                 android:gravity="center"/>
 

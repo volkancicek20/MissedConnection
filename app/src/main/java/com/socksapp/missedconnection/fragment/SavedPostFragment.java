@@ -32,6 +32,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -356,48 +358,6 @@ public class SavedPostFragment extends Fragment {
         return future;
     }
 
-//    private FindPost createPostFromDocument(DocumentSnapshot documentSnapshot) {
-//        String imageUrl = documentSnapshot.getString("imageUrl");
-//        String galleryUrl = documentSnapshot.getString("galleryUrl");
-//        String name = documentSnapshot.getString("name");
-//        String city = documentSnapshot.getString("city");
-//        String district = documentSnapshot.getString("district");
-//        Long time1 = documentSnapshot.getLong("time1");
-//        Long time2 = documentSnapshot.getLong("time2");
-//        Long date1 = documentSnapshot.getLong("date1");
-//        Long date2 = documentSnapshot.getLong("date2");
-//        String place = documentSnapshot.getString("place");
-//        String explain = documentSnapshot.getString("explain");
-//        Double lat = documentSnapshot.getDouble("lat");
-//        Double lng = documentSnapshot.getDouble("lng");
-//        Long x = documentSnapshot.getLong("radius");
-//        double radius = (x != null) ? x : 0;
-//        Timestamp timestamp = documentSnapshot.getTimestamp("timestamp");
-//        DocumentReference documentReference = documentSnapshot.getReference();
-//
-//        FindPost post = new FindPost();
-//        post.viewType = 1;
-//        post.imageUrl = imageUrl;
-//        post.galleryUrl = galleryUrl;
-//        post.name = name;
-//        post.mail = documentSnapshot.getString("mail");
-//        post.city = city;
-//        post.district = district;
-//        post.time1 = (time1 != null) ? time1 : 0;
-//        post.time2 = (time2 != null) ? time2 : 0;
-//        post.date1 = (date1 != null) ? date1 : 0;
-//        post.date2 = (date2 != null) ? date2 : 0;
-//        post.place = place;
-//        post.explain = explain;
-//        post.timestamp = timestamp;
-//        post.lat = lat;
-//        post.lng = lng;
-//        post.radius = radius;
-//        post.documentReference = documentReference;
-//
-//        return post;
-//    }
-
     private void addEmptyPostView() {
         FindPost post = new FindPost();
         post.viewType = 2;
@@ -432,17 +392,21 @@ public class SavedPostFragment extends Fragment {
     }
 
     public void dialogShow(View view, String mail, String name, Double lat, Double lng, double radius, String ref,int position){
-        final Dialog dialog = new Dialog(view.getContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.bottom_sheet_layout);
+        BottomSheetDialog dialog = new BottomSheetDialog(view.getContext(),R.style.BottomSheetDialog);
+        View bottomSheetView = LayoutInflater.from(view.getContext()).inflate(R.layout.bottom_sheet_layout, null);
+        dialog.setContentView(bottomSheetView);
 
-        LinearLayout map = dialog.findViewById(R.id.layoutMap);
-        LinearLayout save = dialog.findViewById(R.id.layoutSave);
-        LinearLayout message = dialog.findViewById(R.id.layoutMessage);
-        LinearLayout report = dialog.findViewById(R.id.layoutReport);
-        LinearLayout layoutLine = dialog.findViewById(R.id.layoutLine);
+//        final Dialog dialog = new Dialog(view.getContext());
+//        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        dialog.setContentView(R.layout.bottom_sheet_layout);
 
-        TextView saveText = dialog.findViewById(R.id.save_bottom_sheet_text);
+        LinearLayout map = bottomSheetView.findViewById(R.id.layoutMap);
+        LinearLayout save = bottomSheetView.findViewById(R.id.layoutSave);
+        LinearLayout message = bottomSheetView.findViewById(R.id.layoutMessage);
+        LinearLayout report = bottomSheetView.findViewById(R.id.layoutReport);
+        LinearLayout layoutLine = bottomSheetView.findViewById(R.id.layoutLine);
+
+        TextView saveText = bottomSheetView.findViewById(R.id.save_bottom_sheet_text);
         saveText.setText(getString(R.string.kaydedilenlerden_kald_r));
 
         if(userMail.equals(mail)){
@@ -547,13 +511,20 @@ public class SavedPostFragment extends Fragment {
             dlg.show();
         });
 
-        if(dialog.getWindow() != null){
-            dialog.show();
-            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
-            dialog.getWindow().setGravity(Gravity.BOTTOM);
-        }
+        // (Opsiyonel) BottomSheetDialog'un davranışını özelleştirme
+        BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from((View) bottomSheetView.getParent());
+        bottomSheetBehavior.setPeekHeight(300); // Başlangıç yüksekliği (piksel cinsinden)
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // Başlangıç durumu
+
+        dialog.show(); // Dialog'u göster
+
+//        if(dialog.getWindow() != null){
+//            dialog.show();
+//            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+//            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+//            dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+//            dialog.getWindow().setGravity(Gravity.BOTTOM);
+//        }
     }
 
 

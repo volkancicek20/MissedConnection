@@ -21,10 +21,11 @@
     <string name="sil">Sil</string>
 
     <!-- fragment_account_setting -->
-    <string name="sifremi_degistir">Şifremi değiştir</string>
+    <string name="sifremi_degistir">Hesap şifresini değiştir</string>
     <string name="hesap_hareketligi">Hesap hareketleri</string>
     <string name="gonderi_hareketleri">Gönderi hareketleri</string>
     <string name="hesabi_sil">Hesabı sil</string>
+    <string name="hesab_y_kselt">Hesabı yükselt</string>
 
     <!-- fragment_add_post -->
     <string name="il">İl</string>
@@ -80,11 +81,13 @@
     <!-- fragment_delete -->
     <string name="hesab_n_z_neden_silmek_istiyorsunuz">Hesabınızı neden silmek istiyorsunuz?</string>
     <string name="hesabi_s_l">HESABI SİL</string>
+    <string name="delete_account">Hesabı Sil</string>
 
     <!-- fragment_change_password -->
     <string name="yeni_sifre">Yeni sifre</string>
     <string name="yeni_sifre_tekrar">Yeni sifre tekrar</string>
     <string name="sifreyi_degistir_büyük_harf">ŞİFREYİ DEĞİŞTİR</string>
+    <string name="hesap_ifresini_de_i_tir">Hesap Şifresini Değiştir</string>
 
     <!-- recycler_empty_my_post -->
     <string name="henuz_gonderi_paylasmadiniz">Henüz gönderi paylaşmadınız</string>
@@ -149,6 +152,7 @@
     <string name="sifreniz_g_ncellendi_tekrar_giri_yap_n_z">Şifreniz güncellendi. Tekrar giriş yapınız.</string>
     <string name="bir_hata_olu_tu_l_tfen_daha_sonra_tekrar_deneyiniz">Bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.</string>
     <string name="sifrenizi_yanl_girdiniz">Şifrenizi yanlış girdiniz</string>
+    <string name="please_wait">Lütfen bekleyiniz..</string>
 
     <!-- DeleteAccountFragment -->
     <string name="sifrenizi_giriniz">Şifrenizi giriniz</string>

@@ -7,7 +7,6 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentTransaction;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -44,8 +43,6 @@ import com.socksapp.missedconnection.fragment.PostsActivityFragment;
 import com.socksapp.missedconnection.fragment.ProfileFragment;
 import com.socksapp.missedconnection.fragment.SavedPostFragment;
 import com.socksapp.missedconnection.fragment.SettingsFragment;
-import com.socksapp.missedconnection.myclass.ChatIdDataAccess;
-import com.socksapp.missedconnection.myclass.RefDataAccess;
 import com.socksapp.missedconnection.myclass.SharedPreferencesHelper;
 import java.util.Locale;
 
@@ -67,8 +64,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageView headerImage;
     private TextView headerName;
     public View headerView,includedLayout;
-    public RefDataAccess refDataAccess;
-    public ChatIdDataAccess chatIdDataAccess;
     private SharedPreferencesHelper sharedPreferencesHelper;
 
     @Override
@@ -82,24 +77,24 @@ public class MainActivity extends AppCompatActivity {
 
         if (getIntent().getExtras() != null) {
             String senderId = getIntent().getExtras().getString("senderId");
-
-            if(senderId != null && senderId.isEmpty()){
-                PostsActivityFragment fragment = new PostsActivityFragment();
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
-            }else {
-                Bundle args = new Bundle();
-                args.putString("anotherMail", senderId);
-                ChatFragment fragment = new ChatFragment();
-                fragment.setArguments(args);
-                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-                fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
-                fragmentTransaction.addToBackStack(null);
-                fragmentTransaction.commit();
+            if(senderId != null){
+                if(senderId.isEmpty()){
+                    PostsActivityFragment fragment = new PostsActivityFragment();
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }else {
+                    Bundle args = new Bundle();
+                    args.putString("anotherMail", senderId);
+                    ChatFragment fragment = new ChatFragment();
+                    fragment.setArguments(args);
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
+                }
             }
-
         }
 
         sharedPreferencesHelper = new SharedPreferencesHelper(this);
@@ -113,12 +108,6 @@ public class MainActivity extends AppCompatActivity {
         includedLayout = findViewById(R.id.content);
 
         bottomNavigationView.setItemIconTintList(null);
-
-        refDataAccess = new RefDataAccess(this);
-        refDataAccess.open();
-
-        chatIdDataAccess = new ChatIdDataAccess(this);
-        chatIdDataAccess.open();
 
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
@@ -303,16 +292,12 @@ public class MainActivity extends AppCompatActivity {
             clearShared(editor1);
             SharedPreferences.Editor editor2 = userDone.edit();
             clearShared(editor2);
-            SharedPreferences.Editor editor3 = language.edit();
-            clearShared(editor3);
             SharedPreferences.Editor editor4 = myLocationCity.edit();
             clearShared(editor4);
             SharedPreferences.Editor editor5 = myLocationDistrict.edit();
             clearShared(editor5);
             sharedPreferencesHelper.clear();
 
-            refDataAccess.deleteAllData();
-            chatIdDataAccess.deleteAllData();
             logout();
             drawerLayout.closeDrawers();
         });
@@ -407,7 +392,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        refDataAccess.close();
-        chatIdDataAccess.close();
     }
 }

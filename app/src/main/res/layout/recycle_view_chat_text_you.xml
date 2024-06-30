@@ -41,6 +41,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:maxWidth="310dp"
         android:minHeight="30dp"
+        android:foreground="@drawable/click_button_effect"
         android:background="@drawable/bg_receiver">
 
         <androidx.constraintlayout.widget.Guideline

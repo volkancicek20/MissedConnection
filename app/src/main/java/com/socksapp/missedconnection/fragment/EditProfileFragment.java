@@ -308,26 +308,10 @@ public class EditProfileFragment extends Fragment {
                     Intent intentForResult = result.getData();
                     if(intentForResult != null){
                         imageData = intentForResult.getData();
-                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-                            try {
-                                ImageDecoder.Source source = ImageDecoder.createSource(view.getContext().getContentResolver(),imageData);
-                                selectedBitmap = ImageDecoder.decodeBitmap(source);
-                                binding.profileImage.setImageBitmap(selectedBitmap);
-                            }catch (Exception e){
-                                e.printStackTrace();
-                            }
-                        }else {
-                            try {
-                                InputStream inputStream = view.getContext().getContentResolver().openInputStream(imageData);
-                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                                binding.profileImage.setImageBitmap(bitmap);
-                                if (inputStream != null) {
-                                    inputStream.close();
-                                }
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
+
+                        Glide.with(view.getContext())
+                            .load(imageData)
+                            .into(binding.profileImage);
 
                     }
                 }
