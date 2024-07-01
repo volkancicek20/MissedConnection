@@ -144,6 +144,7 @@
     <string name="error_post">There was an error sharing the post. Try again after checking your internet connection.</string>
     <string name="_2_se_ti_iniz_saat_1_se_ti_iniz_saatten_k_k_olamaz">Your 2nd selected time cannot be before your 1st selected time</string>
     <string name="_2_se_ti_iniz_tarih_1_se_ti_iniz_tarihten_k_k_olamaz">Your 2nd selected date cannot be before your 1st selected date</string>
+    <string name="maksimum_10_sat_r_girebilirsiniz">You can enter a maximum of 15 lines</string>
 
     <!-- ChangePasswordFragment -->
     <string name="gecersiz_sifre">Invalid password</string>
@@ -193,6 +194,7 @@
     <string name="gecersiz_kullanici">Invalid user. Please check your e-mail address.</string>
     <string name="gecersiz_kimlik">Invalid credentials. Please make sure you have entered your e-mail address correctly.</string>
     <string name="unexpected">An unknown error occurred. Please try again.</string>
+    <string name="nternet_ba_lant_s_bulunamad">No internet connection</string>
 
     <!-- MainFragment -->
     <string name="kaydedildi">Saved</string>
@@ -261,6 +263,7 @@
     <string name="contact_us">Contact us</string>
     <string name="rate_us_on_the_play_store">Rate us on the Play Store</string>
     <string name="follow_us_on_instagram">Follow us on Instagram</string>
+    <string name="no_email_client_found">No email client found</string>
 
     <!-- custom_dialog_message_delete -->
     <string name="info_message_delete">If you delete the message, the entire chat will be irreversibly deleted.</string>

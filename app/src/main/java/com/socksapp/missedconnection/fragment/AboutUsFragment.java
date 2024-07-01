@@ -78,13 +78,11 @@ public class AboutUsFragment extends Fragment {
     }
 
     private void ratePlayStore(View view){
-        Intent rateIntent = new Intent(Intent.ACTION_VIEW);
-        rateIntent.setData(Uri.parse("market://details?id=" + requireActivity().getPackageName()));
+        final String appPackageName = view.getContext().getPackageName();
         try {
-            startActivity(rateIntent);
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
         } catch (Exception e) {
-            rateIntent.setData(Uri.parse("https://play.google.com/store/apps/details?id=" + requireActivity().getPackageName()));
-            startActivity(rateIntent);
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
         }
     }
 
@@ -97,7 +95,7 @@ public class AboutUsFragment extends Fragment {
         if (emailIntent.resolveActivity(requireActivity().getPackageManager()) != null) {
             startActivity(emailIntent);
         } else {
-            Toast.makeText(view.getContext(), "No email client found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(view.getContext(), getString(R.string.no_email_client_found), Toast.LENGTH_SHORT).show();
         }
     }
 

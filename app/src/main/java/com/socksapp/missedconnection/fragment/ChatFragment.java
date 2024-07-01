@@ -70,6 +70,7 @@ public class ChatFragment extends Fragment {
     private boolean checkLastMessage;
     private boolean checkDateTitle;
     private boolean isScrollable;
+    private int checkCountMessages;
     public ChatFragment() {
         // Required empty public constructor
     }
@@ -116,6 +117,7 @@ public class ChatFragment extends Fragment {
         lastVisibleMessage = null;
         checkLastMessage = true;
         checkDateTitle = true;
+        checkCountMessages = 0;
 
         listenMessages();
 
@@ -606,8 +608,9 @@ public class ChatFragment extends Fragment {
                 }
             }
             Collections.sort(chatMessages, (obj1, obj2) -> obj1.dateObject.compareTo(obj2.dateObject));
+            checkCountMessages = chatMessages.size();
             if(count == 0){
-                if(!isScrollable){
+                if(!isScrollable && chatMessages.size() < 15){
                     isScrollable = true;
                     ChatMessage chatMessage = new ChatMessage();
                     chatMessage.dateObject = lastVisibleMessage.getDate("date");
@@ -669,7 +672,7 @@ public class ChatFragment extends Fragment {
                                         lastVisibleMessage = queryDocumentSnapshots.getDocuments()
                                                 .get(queryDocumentSnapshots.size() - 1);
                                     }else {
-                                        if(checkDateTitle){
+                                        if(checkDateTitle && checkCountMessages >= 15){
                                             checkDateTitle = false;
                                             ChatMessage chatMessage = new ChatMessage();
                                             chatMessage.dateObject = lastVisibleMessage.getDate("date");

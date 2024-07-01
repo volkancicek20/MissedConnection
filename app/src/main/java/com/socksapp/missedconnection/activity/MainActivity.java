@@ -7,23 +7,32 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentContainerView;
 import androidx.fragment.app.FragmentTransaction;
+
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.socksapp.missedconnection.R;
@@ -229,6 +238,8 @@ public class MainActivity extends AppCompatActivity {
 
         getFCMToken();
 
+        getUpdateListener();
+
     }
 
     private void getFCMToken(){
@@ -375,6 +386,58 @@ public class MainActivity extends AppCompatActivity {
                     .error(R.drawable.person_active_96)
                     .centerCrop())
                     .into(headerImage);
+            }
+        }
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private void getUpdateListener(){
+        SharedPreferences sharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE);
+        long lastShownTime = sharedPreferences.getLong("last_update_shown_time", 0);
+
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastShownTime >= 24 * 60 * 60 * 1000) {
+            PackageManager packageManager = getPackageManager();
+            try {
+                PackageInfo packageInfo = packageManager.getPackageInfo(getPackageName(), 0);
+
+                firestore.collection("version")
+                    .document("missedconnection")
+                    .get().addOnSuccessListener(documentSnapshot -> {
+                        if(documentSnapshot.exists()){
+                            String versionName = documentSnapshot.getString("version");
+                            String versionBase = packageInfo.versionName;
+
+                            if(versionName != null){
+                                versionName = versionName.replace(".","");
+                                versionBase = versionBase.replace(".","");
+
+                                int vN = Integer.parseInt(versionName);
+                                int vB = Integer.parseInt(versionBase);
+
+                                if(vN > vB){
+                                    BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+                                    View bottomSheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_layout_play_store, null);
+                                    bottomSheetDialog.setContentView(bottomSheetView);
+
+                                    WebView webViewPlayStore = bottomSheetView.findViewById(R.id.webViewPlayStore);
+                                    webViewPlayStore.getSettings().setJavaScriptEnabled(true);
+                                    webViewPlayStore.loadUrl("https://play.google.com/store/apps/details?id=" + "com.cicekvolkan.missedconnections");
+
+                                    bottomSheetDialog.show();
+
+                                    sharedPreferences.edit().putLong("last_update_shown_time", currentTime).apply();
+                                }
+
+                            }
+
+                        }
+                    }).addOnFailureListener(e -> {
+
+                    });
+
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
             }
         }
     }

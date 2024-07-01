@@ -2,6 +2,7 @@ package com.socksapp.missedconnection.fragment;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
@@ -11,8 +12,11 @@ import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -64,7 +68,7 @@ public class AccountSettingFragment extends Fragment {
         binding.deleteAccountLinearLayout.setOnClickListener(v -> goToDeleteAccountFragment());
         binding.changePasswordLinearLayout.setOnClickListener(v -> goToChangePasswordFragment());
         binding.postActivityLinearLayout.setOnClickListener(v -> goToPostActivityFragment());
-        binding.vipLinearLayout.setOnClickListener(v -> goToUpgradeAccountFragment());
+//        binding.vipLinearLayout.setOnClickListener(v -> goToUpgradeAccountFragment(view));
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -76,12 +80,15 @@ public class AccountSettingFragment extends Fragment {
         });
     }
 
-    private void goToUpgradeAccountFragment(){
-        UpgradeAccountFragment fragment = new UpgradeAccountFragment();
-        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+    private void goToUpgradeAccountFragment(View view){
+
+//        showSnackbar(view,"Yakında");
+
+//        UpgradeAccountFragment fragment = new UpgradeAccountFragment();
+//        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+//        fragmentTransaction.replace(R.id.fragmentContainerView2,fragment);
+//        fragmentTransaction.addToBackStack(null);
+//        fragmentTransaction.commit();
     }
 
     private void goToChangePasswordFragment(){
@@ -125,6 +132,18 @@ public class AccountSettingFragment extends Fragment {
         }else {
             binding.profileImage.setImageResource(R.drawable.person_active_96);
         }
+    }
+
+    private void showSnackbar(View view, String message) {
+        Snackbar snackbar = Snackbar.make(view, message, Snackbar.LENGTH_LONG);
+
+        snackbar.setBackgroundTint(Color.rgb(48, 44, 44));
+
+        View snackbarView = snackbar.getView();
+        TextView textView = snackbarView.findViewById(com.google.android.material.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+
+        snackbar.show();
     }
 
     @Override

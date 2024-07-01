@@ -137,6 +137,7 @@
         android:textColorHint="@color/gray"
         android:textColor="@color/white"
         android:fontFamily="@font/roboto_regular"
+        android:maxLength="500"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/layoutSend"
         app:layout_constraintStart_toStartOf="parent"/>

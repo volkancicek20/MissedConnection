@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
@@ -189,7 +190,17 @@ public class LoginFragment extends Fragment {
                 }
             }).addOnFailureListener(e -> {
                 progressDialog.dismiss();
-                showSnackbar(view,getString(R.string.unexpected));
+                String errorMessage;
+
+                if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                    errorMessage = getString(R.string.gecersiz_e_posta_veya_sifre);
+                } else if (e instanceof FirebaseNetworkException) {
+                    errorMessage = getString(R.string.nternet_ba_lant_s_bulunamad);
+                } else {
+                    errorMessage = getString(R.string.unexpected);
+                }
+
+                showSnackbar(view,errorMessage);
             });
     }
 
@@ -199,7 +210,6 @@ public class LoginFragment extends Fragment {
                 if (task.isSuccessful()) {
                     showSnackbar(view,getString(R.string.sifre_sifirlama_baglantisi_gonderildi));
                 } else {
-
                     Exception exception = task.getException();
                     String errorMessage;
                     if (exception instanceof FirebaseAuthInvalidUserException) {

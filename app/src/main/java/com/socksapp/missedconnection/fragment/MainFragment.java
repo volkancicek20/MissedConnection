@@ -13,6 +13,9 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -70,6 +73,7 @@ import com.socksapp.missedconnection.myclass.Utils;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -92,7 +96,6 @@ public class MainFragment extends Fragment {
     private Handler handler;
     private TimedDataManager timedDataManager;
     private FusedLocationProviderClient fusedLocationClient;
-    private static final int LOCATION_REQUEST_CODE = 100;
     public double checkRadius = 0,checkLat = 0,checkLng = 0;
     private DocumentSnapshot lastVisiblePost;
     private final int pageSize = 10;
@@ -191,7 +194,7 @@ public class MainFragment extends Fragment {
 
             getData(city,district,date1,date2,time1,time2,radius,latitude,longitude);
         }else {
-            checkLocationPermission();
+            requestForPermission();
         }
 
         binding.recyclerViewMain.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -218,15 +221,6 @@ public class MainFragment extends Fragment {
             }
         });
 
-    }
-
-    private void checkLocationPermission(){
-        if(ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(requireActivity(),Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            getUserLocation();
-        }else {
-            requestForPermission();
-        }
     }
 
     private void getUserLocation(){
@@ -274,30 +268,32 @@ public class MainFragment extends Fragment {
         });
     }
 
-    private void requestForPermission(){
-        ActivityCompat.requestPermissions(requireActivity(),new String[] {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST_CODE);
-    }
+    private final ActivityResultLauncher<String[]> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+                if (Boolean.TRUE.equals(result.getOrDefault(Manifest.permission.ACCESS_FINE_LOCATION, false))) {
+                    getUserLocation();
+                } else if (Boolean.TRUE.equals(result.getOrDefault(Manifest.permission.ACCESS_COARSE_LOCATION, false))) {
+                    getUserLocation();
+                } else {
+                    userLocationCity = "İstanbul";
+                    SharedPreferences.Editor editor = myLocationCity.edit();
+                    editor.putString("myLocationCity",userLocationCity);
+                    editor.apply();
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == LOCATION_REQUEST_CODE){
-            if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                getUserLocation();
-            }else {
-                userLocationCity = "İstanbul";
-                SharedPreferences.Editor editor = myLocationCity.edit();
-                editor.putString("myLocationCity",userLocationCity);
-                editor.apply();
+                    userLocationDistrict = "Fatih";
+                    SharedPreferences.Editor editor2 = myLocationDistrict.edit();
+                    editor2.putString("myLocationDistrict",userLocationDistrict);
+                    editor2.apply();
 
-                userLocationDistrict = "Fatih";
-                SharedPreferences.Editor editor2 = myLocationDistrict.edit();
-                editor2.putString("myLocationDistrict",userLocationDistrict);
-                editor2.apply();
+                    getData();
+                }
+            });
 
-                getData();
-            }
-        }
+    private void requestForPermission() {
+        requestPermissionLauncher.launch(new String[]{
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        });
     }
 
     public void dialogShow(View view, String mail, String name, Double lat, Double lng, double radius, DocumentReference documentReference){
@@ -422,12 +418,11 @@ public class MainFragment extends Fragment {
             dlg.show();
         });
 
-        // (Opsiyonel) BottomSheetDialog'un davranışını özelleştirme
         BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from((View) bottomSheetView.getParent());
-        bottomSheetBehavior.setPeekHeight(300); // Başlangıç yüksekliği (piksel cinsinden)
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED); // Başlangıç durumu
+        bottomSheetBehavior.setPeekHeight(300);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
-        dialog.show(); // Dialog'u göster
+        dialog.show();
 
     }
 
@@ -682,11 +677,6 @@ public class MainFragment extends Fragment {
             binding.recyclerViewMain.setVisibility(View.VISIBLE);
             postAdapter.notifyDataSetChanged();
         });
-
-//        binding.shimmerLayout.stopShimmer();
-//        binding.shimmerLayout.setVisibility(View.GONE);
-//        binding.recyclerViewMain.setVisibility(View.VISIBLE);
-//        postAdapter.notifyDataSetChanged();
     }
 
     private void handleFailure(Exception e) {
@@ -704,16 +694,6 @@ public class MainFragment extends Fragment {
         binding.shimmerLayout.setVisibility(View.GONE);
         binding.recyclerViewMain.setVisibility(View.VISIBLE);
         postAdapter.notifyDataSetChanged();
-
-//        handler.postDelayed(() -> {
-//            FindPost post = new FindPost();
-//            post.viewType = 2;
-//            postArrayList.add(post);
-//            binding.shimmerLayout.stopShimmer();
-//            binding.shimmerLayout.setVisibility(View.GONE);
-//            binding.recyclerViewMain.setVisibility(View.VISIBLE);
-//            postAdapter.notifyDataSetChanged();
-//        }, 1000);
     }
 
     private void loadMorePost() {

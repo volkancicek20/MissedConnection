@@ -144,6 +144,7 @@
     <string name="error_post">Gönderi paylaşılırken bir hata oluştu. İnternetinizi kontrol ettikten sonra tekrar deneyiniz.</string>
     <string name="_2_se_ti_iniz_saat_1_se_ti_iniz_saatten_k_k_olamaz">2. seçtiğiniz saat 1. seçtiğiniz saatten önce olamaz</string>
     <string name="_2_se_ti_iniz_tarih_1_se_ti_iniz_tarihten_k_k_olamaz">2. seçtiğiniz tarih 1. seçtiğiniz tarihten önce olamaz</string>
+    <string name="maksimum_10_sat_r_girebilirsiniz">Maksimum 15 satır girebilirsiniz</string>
 
     <!-- ChangePasswordFragment -->
     <string name="gecersiz_sifre">Geçersiz şifre</string>
@@ -192,6 +193,7 @@
     <string name="gecersiz_kullanici">Geçersiz kullanıcı. Lütfen e-posta adresinizi kontrol edin.</string>
     <string name="gecersiz_kimlik">Geçersiz kimlik bilgileri. Lütfen e-posta adresinizi doğru girdiğinizden emin olun.</string>
     <string name="unexpected">Bilinmeyen bir hata oluştu. Lütfen tekrar deneyin.</string>
+    <string name="nternet_ba_lant_s_bulunamad">İnternet bağlantısı bulunamadı</string>
 
     <!-- MainFragment -->
     <string name="kaydedildi">Kaydedildi</string>
@@ -260,6 +262,7 @@
     <string name="contact_us">Bize ulaşın</string>
     <string name="rate_us_on_the_play_store">Play Store\'da bizi değerlendirin</string>
     <string name="follow_us_on_instagram">Bizi Instagram\'da takip edin</string>
+    <string name="no_email_client_found">E-posta istemcisi bulunamadı</string>
 
     <!-- custom_dialog_message_delete -->
     <string name="info_message_delete">Mesajı silerseniz tüm sohbet geri döndürülemez şekilde silinecektir!</string>

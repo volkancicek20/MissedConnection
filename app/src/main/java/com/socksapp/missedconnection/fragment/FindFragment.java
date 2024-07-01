@@ -3,8 +3,6 @@ package com.socksapp.missedconnection.fragment;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -32,13 +30,9 @@ import android.widget.DatePicker;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -52,7 +46,6 @@ import com.socksapp.missedconnection.R;
 import com.socksapp.missedconnection.activity.MainActivity;
 import com.socksapp.missedconnection.databinding.FragmentFindBinding;
 import com.socksapp.missedconnection.myclass.Utils;
-
 import java.lang.reflect.Type;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -115,45 +108,42 @@ public class FindFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.mapView.post(() -> {
-            binding.mapView.onCreate(savedInstanceState);
-            if(lat == 0.0 && lng == 0.0 && rad == 0.0){
-                binding.mapView.getMapAsync(googleMap -> {
-                    disableMapInteractions(googleMap);
+        binding.mapView.onCreate(savedInstanceState);
 
-                    googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map));
+        binding.mapView.getMapAsync(googleMap -> {
+            disableMapInteractions(googleMap);
 
-                    LatLng location = new LatLng(41.008240, 28.978359);
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+            googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map));
 
-                    googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-                        @Override
-                        public void onMapClick(@NonNull LatLng latLng) {
-                            String city = binding.cityCompleteText.getText().toString();
-                            String district = binding.districtCompleteText.getText().toString();
-                            if(!city.isEmpty() && !district.isEmpty()){
-                                Bundle args = new Bundle();
-                                args.putString("fragment_type", "find_post");
-                                args.putString("fragment_city", city);
-                                args.putString("fragment_district", district);
-                                GoogleMapsFragment myFragment = new GoogleMapsFragment();
-                                myFragment.setArguments(args);
-                                FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-                                fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
-                                fragmentTransaction.addToBackStack(null);
-                                fragmentTransaction.commit();
-                            }else {
-                                showSnackbar(requireView(),getString(R.string.l_ve_il_eyi_girmeniz_gerekmektedir));
-                            }
-                        }
-                    });
-                });
-            }else {
-                setMarked(view);
-            }
+            LatLng location = new LatLng(41.008240, 28.978359);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
+
+            googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+                @Override
+                public void onMapClick(@NonNull LatLng latLng) {
+                    String city = binding.cityCompleteText.getText().toString();
+                    String district = binding.districtCompleteText.getText().toString();
+                    if(!city.isEmpty() && !district.isEmpty()){
+                        Bundle args = new Bundle();
+                        args.putString("fragment_type", "find_post");
+                        args.putString("fragment_city", city);
+                        args.putString("fragment_district", district);
+                        GoogleMapsFragment myFragment = new GoogleMapsFragment();
+                        myFragment.setArguments(args);
+                        FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
+                        fragmentTransaction.addToBackStack(null);
+                        fragmentTransaction.commit();
+                    }else {
+                        showSnackbar(requireView(),getString(R.string.l_ve_il_eyi_girmeniz_gerekmektedir));
+                    }
+                }
+            });
         });
 
-//        binding.mapView.onCreate(savedInstanceState);
+        if(lat != 0.0 && lng != 0.0 && rad != 0.0){
+            setMarked(view);
+        }
 
         mainActivity.buttonDrawerToggle.setImageResource(R.drawable.icon_menu);
         mainActivity.bottomNavigationView.setVisibility(View.VISIBLE);
@@ -181,7 +171,6 @@ public class FindFragment extends Fragment {
             binding.districtCompleteText.setText("");
             binding.districtCompleteText.setAdapter(null);
             getAllDistricts(view,selectedCity);
-//            selectDistrict(selectedCity);
             lat = 0.0;
             lng = 0.0;
             rad = 0.0;
@@ -235,35 +224,6 @@ public class FindFragment extends Fragment {
 
         binding.findPost.setOnClickListener(this::findData);
 
-//        binding.mapView.getMapAsync(googleMap -> {
-//
-//            disableMapInteractions(googleMap);
-//
-//            googleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_map));
-//
-//            LatLng location = new LatLng(41.008240, 28.978359);
-//            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
-//
-//            googleMap.setOnMapClickListener(latLng -> {
-//                String city = binding.cityCompleteText.getText().toString();
-//                String district = binding.districtCompleteText.getText().toString();
-//                if(!city.isEmpty() && !district.isEmpty()){
-//                    Bundle args = new Bundle();
-//                    args.putString("fragment_type", "find_post");
-//                    args.putString("fragment_city", city);
-//                    args.putString("fragment_district", district);
-//                    GoogleMapsFragment myFragment = new GoogleMapsFragment();
-//                    myFragment.setArguments(args);
-//                    FragmentTransaction fragmentTransaction = requireActivity().getSupportFragmentManager().beginTransaction();
-//                    fragmentTransaction.replace(R.id.fragmentContainerView2,myFragment);
-//                    fragmentTransaction.addToBackStack(null);
-//                    fragmentTransaction.commit();
-//                }else {
-//                    showSnackbar(view,getString(R.string.l_ve_il_eyi_girmeniz_gerekmektedir));
-//                }
-//            });
-//        });
-
         binding.cityCompleteText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -305,23 +265,9 @@ public class FindFragment extends Fragment {
 
         binding.markedMapView.setText(address);
 
-//        if(lat != 0.0 && lng != 0.0 && rad != 0.0){
-//            setMarked(view);
-//        }
+        binding.dateRangeInputLayout.setEndIconOnClickListener(this::showDatePickerDialogs);
 
-        binding.dateRangeInputLayout.setEndIconOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialogs(v);
-            }
-        });
-
-        binding.timeRangeInputLayout.setEndIconOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showTimePickerDialogs(v);
-            }
-        });
+        binding.timeRangeInputLayout.setEndIconOnClickListener(this::showTimePickerDialogs);
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), new OnBackPressedCallback(true) {
             @Override
@@ -335,12 +281,7 @@ public class FindFragment extends Fragment {
     private void getCoordinatesFromAddress(View view,String city,String district){
         LatLng latLng = handleManualDistricts(city,district);
         if(latLng != null){
-            binding.mapView.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(@NonNull GoogleMap googleMap) {
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
-                }
-            });
+            binding.mapView.getMapAsync(googleMap -> googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13)));
         }else {
             Geocoder geocoder = new Geocoder(requireContext());
             try {
@@ -350,12 +291,7 @@ public class FindFragment extends Fragment {
                     double longitude = addressList.get(0).getLongitude();
 
                     LatLng location = new LatLng(latitude, longitude);
-                    binding.mapView.getMapAsync(new OnMapReadyCallback() {
-                        @Override
-                        public void onMapReady(@NonNull GoogleMap googleMap) {
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13));
-                        }
-                    });
+                    binding.mapView.getMapAsync(googleMap -> googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13)));
                 } else {
 //                        Toast.makeText(view.getContext(),"No location found for the given address.",Toast.LENGTH_SHORT).show();
                     System.out.println("No location found for the given address.");
